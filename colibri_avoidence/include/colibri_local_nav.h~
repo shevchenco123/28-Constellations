@@ -1,0 +1,62 @@
+#include "colibri_ca.h"
+
+#ifndef _COLIBRI_LOCAL_NAV_H_
+#define _COLIBRI_LOCAL_NAV_H_
+
+using namespace std;
+
+
+class scan_ca
+{
+	public:
+		
+		float *ptrScan4ca;
+		float handled_scan4ca[N_SAMPLE];
+
+		float delta_phi_vector[N_SAMPLE];
+		float kp_phi_vector[N_SAMPLE];
+
+		float krf_vector[N_SAMPLE];
+		float kaf_vector[N_SAMPLE];
+		float passfcn_vector[N_SAMPLE];
+		float max_passfcn_value;
+
+		int forward_maxpass_num ;
+		int backward_maxpass_num ;
+
+		int phi_range_start_vector[N_SAMPLE];
+		int phi_range_end_vector[N_SAMPLE];
+
+		float goal_dir;	//goal direction in degree
+		float v;
+		float vth;
+		
+		float angle_adj;
+		float vel_adj;
+		unsigned int colision_potential;
+		unsigned int wander_flag;
+		ros::NodeHandle nh_ca;
+		ros::Subscriber scan_sub4ca;
+
+		scan_ca();
+		~scan_ca();
+		float CalcKpPhi(float vel_center, float d_phi);
+		void CalcKrfTheta(float* ptrKp_phi_vector, int* ptrPhi_range_start, int* ptrPhi_range_end);	
+		void CalcPhiScope(int i, int scope, int* ptrPhi_start, int* ptrPhi_end);
+		void CalcMaxPassValAndForwardBound(unsigned int flag, float* max_passfcn_val, float* ptrK_pg,int* bound_forward);
+		void CalcMaxPassValAndBackwardBound(unsigned int flag, float* max_passfcn_val, float* ptrK_pg,int* bound_backward);
+		float CalcAdjDir(float* ptrPass_fcn_vector, float max_passfcn_val, int* max_passfcn_bound_forward, int* max_passfcn_bound_backward);
+	private:
+
+
+
+		void ScanCallBack(const sensor_msgs::LaserScan::ConstPtr& scan_ca);
+
+		float CalcDsrVc(float vel_center);
+
+
+};
+
+
+#endif
+

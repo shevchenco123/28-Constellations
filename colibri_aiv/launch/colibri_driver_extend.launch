@@ -1,0 +1,4 @@
+<launch>
+	<node pkg="colibri_aiv" type="colibri_aiv_extend" name="colibri_movedriver" output="screen">
+	</node>
+</launch>
