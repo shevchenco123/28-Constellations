@@ -1,0 +1,8 @@
+#ignore severl packages
+cartodom/
+cartographer_ros/
+colibri_description/
+colibri_laser/
+colibri_manctrl/
+openslam_gmapping/
+slam_gmapping/
