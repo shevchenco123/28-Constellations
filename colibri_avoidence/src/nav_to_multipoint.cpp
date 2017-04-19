@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 	bool obtain_flag = false;
 	unsigned int search_start = 0;
 	
-	ros::NodeHandle nh_fp;
+	ros::NodeHandle nh_pp;
 	ros::Timer planner_timer;
 	bool finish_plan = false;
 
@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 	finish_plan = plannerObj.ExecMonoPlanAndGravaton(plannerObj,&local4navObj.cur_robot_state[0],&local4navObj.goal_state[0], search_start,index4gravaton);
 
 	// Set path plan timer
-	planner_timer = nh_fp.createTimer(ros::Duration(PLAN_INTERVAL), boost::bind(&PlannerCallback, &plannerObj, &local4navObj.amcl_cur_state[0],&taskObj.cur_goal[0], timer_finish));
+	planner_timer = nh_pp.createTimer(ros::Duration(PLAN_INTERVAL), boost::bind(&PlannerCallback, &plannerObj, &local4navObj.amcl_cur_state[0],&taskObj.cur_goal[0], timer_finish));
 
 	while (ros::ok())
 	{	
