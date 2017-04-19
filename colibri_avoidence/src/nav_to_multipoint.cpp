@@ -15,32 +15,32 @@ void PlannerCallback(planner *plannerObj, float* start_pos, float* goal_pos, boo
 int main(int argc, char* argv[])
 {	
 
+	ROS_INFO("Start to Go to Mult Goals in Rviz ... ");
+
+	// ROS nav node initial
 	ros::init(argc, argv, "Nav_Mult_RvizGoal_Node");
-	
+	ros::Rate loop_rate(10);		// Set control  freq at 10 hz
+	unsigned int delay_cnt = 0;		// Init delay conter for scanObj 
+
+	// Auto nav obj initial
 	scan_ca scan4caObj;	
 	local_nav local4navObj;
 	nav_action actionObj;
 	planner plannerObj;
 	task_mgr taskObj;
-		
-	ROS_INFO("Start to Go to Mult Rviz Goal ... ");
 
-	ros::Rate loop_rate(10);		// ctrl  freq 10 hz
-	unsigned int delay_cnt = 0;
-		
-
+	// Local key points relation param initial
 	float tmp_delta_dis = 0.0;
 	float tmp_robot2goal_yaw = 0.0;
 	float tmp_laser2goal_yaw = 0.0;
-	bool goal_inlaser_flag = true;
 	float dir_goal_in_laser = 0.0;
 	float self_rotation_angle = 0.0;
+	bool goal_inlaser_flag = true;
 
 	unsigned int turn_adj_flag = 1;
 
 	float tmp_action_cmd_t[2] = {0.0, 0.0};
 	float* ptr_action_cmd_t = tmp_action_cmd_t;
-	float newyaw = 145.0;
 	unsigned int micro_adj_flag = 0;
 
 	unsigned int adj_flag = 0;
@@ -63,33 +63,27 @@ int main(int argc, char* argv[])
 	bool replan_flag = false;
 
 	float rt_r2g_dis = 100.0;
-
-
-	while(taskObj.obtain_goal_flag == false)
+	
+	// Waiting for set goal in Rviz
+	while(taskObj.obtain_goal_flag == false)	
 	{
 		ros::spinOnce();
 		loop_rate.sleep();
-
-	}
-	
-	local4navObj.goal_state[0] = taskObj.cur_goal[0];
+	}	
+	local4navObj.goal_state[0] = taskObj.cur_goal[0];	// Extract the Rviz goal for nav
 	local4navObj.goal_state[1] = taskObj.cur_goal[1];
 	local4navObj.goal_state[2] = taskObj.cur_goal[2];	
-
-
-	cout<<" local4navObj.goal_state.x = "<<local4navObj.goal_state[0]<<endl;
-	cout<<" local4navObj.goal_state.y = "<<local4navObj.goal_state[1]<<endl;		
-
 	
-	while (!ros::service::waitForService(plannerObj.srv4make_plan, ros::Duration(0.2)))
+	while (!ros::service::waitForService(plannerObj.srv4make_plan, ros::Duration(0.2)))		// Waiting for path paln srv
 	{
-		ROS_INFO("Waiting for service move_base/make_plan to become available");
-	}
-	
-	ROS_INFO("Service move_base/make_plan prepared OK...");
+		ROS_INFO("Waiting for srv move_base/make_plan to become available");
+	}	
+	ROS_INFO("Srv move_base/make_plan prepared OK...");
 
+	// Inital path plan calling  and gravaton calc
 	finish_plan = plannerObj.ExecMonoPlanAndGravaton(plannerObj,&local4navObj.cur_robot_state[0],&local4navObj.goal_state[0], search_start,index4gravaton);
-	
+
+	// Set path plan timer
 	planner_timer = nh_fp.createTimer(ros::Duration(PLAN_INTERVAL), boost::bind(&PlannerCallback, &plannerObj, &local4navObj.amcl_cur_state[0],&taskObj.cur_goal[0], timer_finish));
 
 	while (ros::ok())
@@ -110,8 +104,8 @@ int main(int argc, char* argv[])
 				*timer_finish = false;
 				index4gravaton = 0;
 				replan_flag = true;
-
-			}else
+			}
+			else
 			{
 						
 				if((at_gravaton_flag == true && local4navObj.approaching_flag == false)||(replan_flag == true))
@@ -131,7 +125,6 @@ int main(int argc, char* argv[])
 					plannerObj.gravaton.x = taskObj.cur_goal[0];
 					plannerObj.gravaton.y = taskObj.cur_goal[1];
 					plannerObj.gravaton.yaw = taskObj.cur_goal[2];
-
 				}
 			}
 		
@@ -175,7 +168,6 @@ int main(int argc, char* argv[])
 			{
 
 			}
-
 			
 			if(turn_adj_flag == 1)
 			{
@@ -190,24 +182,7 @@ int main(int argc, char* argv[])
 				}
 
 			}
-			
-			cout<<"carto_current_robot_state[0]"<<local4navObj.cur_robot_state[0]<<endl;
-			cout<<"carto_current_robot_state[1]"<<local4navObj.cur_robot_state[1]<<endl;
-			cout<<"carto_current_robot_state[2]"<<local4navObj.cur_robot_state[2]<<endl;
-
-			cout<<"amcl_current_robot_state[0]"<<local4navObj.amcl_cur_state[0]<<endl;
-			cout<<"amcl_current_robot_state[1]"<<local4navObj.amcl_cur_state[1]<<endl;
-			cout<<"amcl_current_robot_state[2]"<<local4navObj.amcl_cur_state[2]<<endl;
-
-			
-			cout<<"adj_angle: "<< scan4caObj.angle_adj <<endl;
-
-			cout<<"tmp_delta_dis: "<<tmp_delta_dis<<endl;
-			cout<<"tmp_robot2goal_yaw: "<<tmp_robot2goal_yaw<<endl;
-			cout<<"tmp_laser2goal_yaw: "<<tmp_laser2goal_yaw<<endl;
-	
-			cout<<"dir_goal_in_laser: "<<dir_goal_in_laser<<endl;
-			
+						
 			//local4navObj.position_OK_flag = local4navObj.ReachGoalPositionOK(&tmp_delta_dis);
 
 			local4navObj.SatuateCmdVel(ptr_action_cmd_t,ptr_action_cmd_t + 1);
@@ -220,14 +195,8 @@ int main(int argc, char* argv[])
 				local4navObj.apf_cmd_vel.linear.x = 0.0;
 				local4navObj.apf_cmd_vel.angular.z = 0.0;
 			}
-			
-			cout<<"approaching_flag: " << local4navObj.approaching_flag <<endl;
-			cout<<"position_OK_flag: " << local4navObj.position_OK_flag <<endl;
 
-			local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel);
-			
-			cout<<"pub_linear_x: " << local4navObj.apf_cmd_vel.linear.x <<endl;
-			cout<<"pub_angular_z: " << local4navObj.apf_cmd_vel.angular.z <<endl;
+			local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel);		
 
 			scan4caObj.fwd_maxpass_num = 0;
 			scan4caObj.bwd_maxpass_num = 0;
@@ -236,7 +205,6 @@ int main(int argc, char* argv[])
 			cout<<"taskObj.cur_goal[1]: "<<taskObj.cur_goal[1]<<endl;
 			cout<<"taskObj.cur_goal[2]: "<<taskObj.cur_goal[2]<<endl;
 
-		
 			ros::spinOnce();
 			loop_rate.sleep();
 			ROS_INFO("------- end --------");
@@ -248,17 +216,11 @@ int main(int argc, char* argv[])
 
 	local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel); 
 
-
-
 	return 0;	
 }
-
 
 void PlannerCallback(planner *plannerObj, float* start_pos, float* goal_pos, bool *finish_flag)
 {		
 	plannerObj->ObtainPathArray(plannerObj->serviceClient, plannerObj->path_srv, start_pos, goal_pos, finish_flag);
 }
-
-
-
 
