@@ -6,3 +6,5 @@ colibri_laser/
 colibri_manctrl/
 openslam_gmapping/
 slam_gmapping/
+*~
+*.[oa]
