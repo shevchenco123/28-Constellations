@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
 	while (ros::ok())
 	{	
 			
-		if(delay_cnt < DELAY_CNT_MAX)
+		if(delay_cnt < DELAY_CNT_MAX)	// Waiting for scan data
 		{
 			delay_cnt++;
 			ros::spinOnce();
@@ -99,27 +99,29 @@ int main(int argc, char* argv[])
 		if(delay_cnt >= DELAY_CNT_MAX)
 		{
 			ROS_INFO("------ start ------");
-			if(*timer_finish == true)
+
+			//--------------------------  Calc gravaton for nav ------------------------------
+			if(*timer_finish == true)	// Path plan timer OK
 			{
 				*timer_finish = false;
 				index4gravaton = 0;
 				replan_flag = true;
 			}
 			else
-			{
-						
+			{						
+				// If path replan or robot at gravaton but not in approaching target goal, calc a new gravaton in the existed planned path
 				if((at_gravaton_flag == true && local4navObj.approaching_flag == false)||(replan_flag == true))
 				{
 					plannerObj.CalcPath2RobotDeltaDis(plannerObj.path_array, local4navObj.amcl_cur_state);
 					index4gravaton = plannerObj.CalcGravatonFromPath(plannerObj.path_array, plannerObj.path2robot_array, index4gravaton, plannerObj.gravaton,exist_gravaton_flag);
-
 					at_gravaton_flag = false;
 					replan_flag = false;
-
 				}
-			
+
+				//judge the amcl pos and gravaton distance relation			
 				at_gravaton_flag = actionObj.ReachGravatonOK(&local4navObj.amcl_cur_state[0],&plannerObj.gravaton.x, delta_robot2gravaton);
-		
+
+				// if robot goes to the setting target goal approching radius, set gravaton same as target goal 
 				if(local4navObj.approaching_flag == true)
 				{
 					plannerObj.gravaton.x = taskObj.cur_goal[0];
@@ -127,7 +129,9 @@ int main(int argc, char* argv[])
 					plannerObj.gravaton.yaw = taskObj.cur_goal[2];
 				}
 			}
-		
+
+			//---------------------------------------------------------------------
+			
 			local4navObj.CalcOffsetOfGoalAndRobot(local4navObj.amcl_cur_state, &plannerObj.gravaton.x, &tmp_delta_dis, &tmp_robot2goal_yaw, &tmp_laser2goal_yaw);
 
 			goal_inlaser_flag = local4navObj.CalcGoalDirOfLaserViewNew(&tmp_laser2goal_yaw, &local4navObj.amcl_cur_state[2], &dir_goal_in_laser, &self_rotation_angle);
@@ -148,16 +152,15 @@ int main(int argc, char* argv[])
 				local4navObj.apf_ctrl_output[0] = (V_MAX - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
 				local4navObj.apf_ctrl_output[1] = scan4caObj.angle_adj / 200.0;	
 			}
-			else
+			else	//if gravaton is not in front of  laser , should exec the still rot 
 			{
 				local4navObj.apf_ctrl_output[0] = 0.0;
 				local4navObj.apf_ctrl_output[1] = 0.0;	
 			}
 							
-			local4navObj.SatuateCmdVel(local4navObj.apf_ctrl_output,local4navObj.apf_ctrl_output+1);
+			local4navObj.SatuateCmdVel(local4navObj.apf_ctrl_output, local4navObj.apf_ctrl_output+1);
 
-			local4navObj.CalcEuclidDistance(local4navObj.amcl_cur_state, taskObj.cur_goal, rt_r2g_dis);
-			
+			local4navObj.CalcEuclidDistance(local4navObj.amcl_cur_state, taskObj.cur_goal, rt_r2g_dis);	// rt_r2g_dis(robot2goal) is different from tmp_delta_dis(robot2gravaton)	
 			local4navObj.approaching_flag = local4navObj.ReachApprochingAreaOK(&rt_r2g_dis);
 			
 			if(tmp_delta_dis >= GOAL_NGHBORHD)
@@ -178,7 +181,7 @@ int main(int argc, char* argv[])
 				}
 				else
 				{
-					ptr_action_cmd_t = actionObj.ApproachingGoalAction(&local4navObj.amcl_cur_state[0],&local4navObj.goal_state[0],&dir_goal_in_laser,&micro_adj_flag);
+					ptr_action_cmd_t = actionObj.ApproachingGoalAction(&local4navObj.amcl_cur_state[0], &local4navObj.goal_state[0], &dir_goal_in_laser,&micro_adj_flag);
 				}
 
 			}
@@ -200,10 +203,6 @@ int main(int argc, char* argv[])
 
 			scan4caObj.fwd_maxpass_num = 0;
 			scan4caObj.bwd_maxpass_num = 0;
-			
-			cout<<"taskObj.cur_goal[0]: "<<taskObj.cur_goal[0]<<endl;
-			cout<<"taskObj.cur_goal[1]: "<<taskObj.cur_goal[1]<<endl;
-			cout<<"taskObj.cur_goal[2]: "<<taskObj.cur_goal[2]<<endl;
 
 			ros::spinOnce();
 			loop_rate.sleep();
@@ -211,9 +210,9 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	// ros is not OK ,should reset the twist() cmd, TODO!
 	local4navObj.apf_cmd_vel.linear.x = 0.0;
 	local4navObj.apf_cmd_vel.angular.z = 0.0;
-
 	local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel); 
 
 	return 0;	
