@@ -99,7 +99,7 @@ float protector::CalcMinDis4Ultrosonic(float* ultra_vec)
 float protector::IntegrateMultiInfo4Safety(enum_act4safe* advise_action)
 {
 
-	enum_dir obs_dir = OMNI;
+	enum_bearing obs_dir = OMNI;
 	
 	if(bumper_signal == true || ultra_unsafe_prob > LEVEL_1_PROB || laser_unsafe_prob > LEVEL_1_PROB)
 	{
