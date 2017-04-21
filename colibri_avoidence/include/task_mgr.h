@@ -27,7 +27,7 @@
 
 using namespace std;
 
-typedef struct 
+typedef struct st_subtask 
 {
 	int tasklist_id;	//subtask belongs to which tasklist
 	int subtask_index;
@@ -39,7 +39,7 @@ typedef struct
 }subtask;			// a subtask is a goal for operation
 
 
-typedef struct 
+typedef struct st_tasklist 
 {
 	int tasklist_id;	//tasklist  identifier
 	int subtask_num;
@@ -59,7 +59,7 @@ typedef enum
 	
 }subtask_exec_sta;
 
-typedef struct 
+typedef struct st_task_track 
 {
 	int tasklist_id;	//tasklist  identifier
 	int subtask_num;
@@ -68,7 +68,7 @@ typedef struct
 
 }task_track;
 
-typedef struct 
+typedef struct st_rec_point 
 {
 	float x;
 	float y;
