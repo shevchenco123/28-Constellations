@@ -16,7 +16,7 @@
 * ctrl output : u(k) = u(k-1)+u_delta(k)
 */
 
-typedef struct
+typedef struct st_PID_param
 {
 	float u_ref;
 	float Kp;
