@@ -103,13 +103,14 @@ class protector
 		
 		~protector();
 
-		float CalcMinDis4LaserScan(float* laser_vec);
-	
+		float CalcMinDis4LaserScan(float* laser_vec);	
 		float CalcMinDis4Ultrosonic(float* ultra_vec);
+		
 		float IntegrateMultiInfo4Safety(enum_act4safe* advise_action);
-		bool StopMovingInForce(void);
-
+		
 		bool Detect4ExceptHighVel(float* v, float* vth);
+
+		bool StopMovingInForce(void);
 		
 	private:
 		
