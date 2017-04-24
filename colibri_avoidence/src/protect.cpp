@@ -35,10 +35,10 @@ protector::~protector()
 
 /*	
 *   float CalcMinDis4LaserScan(float* laser_vec) 
-*   Calc the min dis , index min_scan and colision prob in the scan laser data
-*   return  prob  and results in min_scan, min_index_scan
+*   Description: Calc the min dis , index min_scan and colision prob in the scan laser data
+*   Results in min_scan, min_index_scan
 */
-float protector::CalcMinDis4LaserScan(float* laser_vec)
+void protector::CalcMinDis4LaserScan(float* laser_vec)
 {
 	float tmp_range = *laser_vec;
 	unsigned int index_mindis = 0;
@@ -68,15 +68,14 @@ float protector::CalcMinDis4LaserScan(float* laser_vec)
 		laser_unsafe_prob = 0.0;
 	}
 
-	return laser_unsafe_prob;
 }
 
 /*	
 *   float CalcMinDis4Ultrosonic(float* ultra_vec) 
-*   Calc the min dis , index min_ultra and colision prob in the ultra data
-*   return  prob  and results in min_ultra, min_index_ultra
+*   Description: Calc the min dis , index min_ultra and colision prob in the ultra data
+*   results in min_ultra, min_index_ultra
 */
-float protector::CalcMinDis4Ultrosonic(float* ultra_vec)
+void protector::CalcMinDis4Ultrosonic(float* ultra_vec)
 {
 	float tmp_range = *ultra_vec;
 	unsigned int index_mindis = 0;
@@ -102,13 +101,11 @@ float protector::CalcMinDis4Ultrosonic(float* ultra_vec)
 		ultra_unsafe_prob = 0.0;
 	}
 
-	return ultra_unsafe_prob;
-
 }
 
 /*	
 *   float IntegrateMultiInfo4Safety(enum_act4safe* advise_action)
-*   Using MultiInfo: laser prob, ultra prob and bumper to obtain comprehensive colision prob and remmend action
+*   Description: Using MultiInfo: laser prob, ultra prob and bumper to obtain comprehensive colision prob and remmend action
 *   return  colision_prob  and results in advise_action
 */
 float protector::IntegrateMultiInfo4Safety(enum_act4safe* advise_action)
@@ -182,7 +179,7 @@ float protector::IntegrateMultiInfo4Safety(enum_act4safe* advise_action)
 
 /*	
 *   bool StopMovingInForce(void)
-*   Using IntergrateMultInfo 's comprehensive colision prob
+*   Description: Using IntergrateMultInfo 's comprehensive colision prob to output stop flag
 *   return  stop logic true or false
 */
 bool protector::StopMovingInForce(void)
@@ -200,7 +197,7 @@ bool protector::StopMovingInForce(void)
 
 /*	
 *   bool Detect4ExceptHighVel(float* v, float* vth)
-*   Detect for odom v and vth for exception
+*   Description: Detect for odom v and vth for exception
 *   return  vel exception flag
 */
 bool protector::Detect4ExceptHighVel(float* v, float* vth)
