@@ -25,7 +25,7 @@ protector::protector()
 	scan_sub4safe = nh_safety.subscribe<sensor_msgs::LaserScan>("/scan", 1, &protector::ScanSafeCallBack, this);
 	ultra_sub4safe = nh_safety.subscribe<colibri_aiv::ultrasonic>("/ultrasonic", 1, &protector::UltraSafeCallBack, this);
 	bumper_sub4safe = nh_safety.subscribe<colibri_aiv::collision>("/collision", 1, &protector::BumperSafeCallBack, this);
-	Odom_sub4safe = nh_safety.subscribe<nav_msgs::Odometry>("/odom", 1, &protector::OdomSafeCallBack, this);
+	odom_sub4safe = nh_safety.subscribe<nav_msgs::Odometry>("/odom", 1, &protector::OdomSafeCallBack, this);
 
 }
 protector::~protector()
