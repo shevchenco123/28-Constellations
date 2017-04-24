@@ -147,6 +147,12 @@ void task_mgr::ObtainRvizGoalCallBack(const geometry_msgs::PoseStamped::ConstPtr
 
 }
 
+void task_mgr::Rel2AbsTaskTransfor(void)
+{
+
+}
+
+
 /*
 void task_mgr::ObtainRvizGoalCallBack(const geometry_msgs::PoseStamped& rviz_goal,const int rec_num_max)
 {
