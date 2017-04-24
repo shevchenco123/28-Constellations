@@ -107,7 +107,7 @@ class protector
 	
 		float CalcMinDis4Ultrosonic(float* ultra_vec);
 		float IntegrateMultiInfo4Safety(enum_act4safe* advise_action);
-		bool StopMovingInForce(bool collision_flag, float colision_prob);
+		bool StopMovingInForce(void);
 
 		bool Detect4ExceptHighVel(float* v, float* vth);
 		
