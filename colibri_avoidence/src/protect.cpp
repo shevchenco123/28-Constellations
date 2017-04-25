@@ -34,7 +34,7 @@ protector::~protector()
 }
 
 /*	
-*   float CalcMinDis4LaserScan(float* laser_vec) 
+*   void CalcMinDis4LaserScan(float* laser_vec) 
 *   Description: Calc the min dis , index min_scan and colision prob in the scan laser data
 *   Results in min_scan, min_index_scan
 */
@@ -71,7 +71,7 @@ void protector::CalcMinDis4LaserScan(float* laser_vec)
 }
 
 /*	
-*   float CalcMinDis4Ultrosonic(float* ultra_vec) 
+*   void CalcMinDis4Ultrosonic(float* ultra_vec) 
 *   Description: Calc the min dis , index min_ultra and colision prob in the ultra data
 *   results in min_ultra, min_index_ultra
 */

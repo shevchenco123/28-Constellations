@@ -195,7 +195,7 @@ void task_mgr::Quaternion2Yaw(const geometry_msgs::PoseStamped &pose, float &yaw
 	float y = 0.0;
 	
 	y = 2.0 * (pose.pose.orientation.w * pose.pose.orientation.z + pose.pose.orientation.x * pose.pose.orientation.y);
-	x = 1- 2*(pow(pose.pose.orientation.y, 2) + pow(pose.pose.orientation.z, 2));
+	x = 1.0 - 2 * (pow(pose.pose.orientation.y, 2) + pow(pose.pose.orientation.z, 2));
 	yaw = atan2(y,x) * RAD2DEG;
 
 }
