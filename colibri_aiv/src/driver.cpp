@@ -229,6 +229,20 @@ void colibri_serial::read_callback(unsigned char buf[],boost::system::error_code
 	if((recv_data[START_BYTE1] != CMD_START1) || (recv_data[START_BYTE2] != CMD_START2) || (recv_data[END_BYTE1] != CMD_END1) || (recv_data[END_BYTE2] != CMD_END2))
 	{
 		cout<<"The format of received data is not correct !"<<endl;
+		for(int i = 0;i < bytes_transferred; i ++)
+		{
+			printf(" %x",(unsigned char)recv_cache[i]);	
+
+		}		
+		cout << endl;
+		
+		for(int i = 0;i < bytes_transferred; i ++)
+		{
+			printf(" %x",(unsigned char)recv_data[i]);	
+
+		}
+		cout << endl;
+		
 		return;
 	}
 
@@ -478,9 +492,9 @@ void colibri_serial::read_callback(unsigned char buf[],boost::system::error_code
 					//publish the message
 					odom_pub.publish(odom);
 					
-					ROS_INFO("virtual x/y/yaw: %0.3lfm %0.3lfm %0.2lfdeg", cartodom_x, cartodom_y, cartodom_vx*RAD_TO_DEGREE_COEFF);
+					//ROS_INFO("virtual x/y/yaw: %0.3lfm %0.3lfm %0.2lfdeg", cartodom_x, cartodom_y, cartodom_yaw*RAD_TO_DEGREE_COEFF);
 
-					ROS_INFO("virtual vx/vth: %0.3lfm/s  %0.2lfrad/s",cartodom_vx,cartodom_vth);
+					//ROS_INFO("virtual vx/vth: %0.3lfm/s  %0.2lfrad/s",cartodom_vx,cartodom_vth);
 
 					colibri_serial::req_velocity_start_finish = false;
 					//cout<<"request_velocity cmd is executed successfully !"<<endl;
@@ -513,7 +527,7 @@ void colibri_serial::read_from_serial(void *args)
 		async_read(pserialport,buffer(recv_cache,CMD_MAX_LEN),boost::bind(&colibri_serial::read_callback,this,recv_cache,_1,_2));
 		call_handle();
 		serial_recv_times ++;
-		cout <<"recv times: "<<serial_recv_times<<endl;
+		//cout <<"recv times: "<<serial_recv_times<<endl;
 	}
 }
 
@@ -581,7 +595,7 @@ void colibri_serial::twist_callback(const geometry_msgs::Twist::ConstPtr & twist
 	send_cmd(send_twist,colibri_serial::send_twist_finish);
 	
 	serial_send_times ++;
-	cout <<"send times: "<<serial_send_times<<endl;
+	//cout <<"send times: "<<serial_send_times<<endl;
 }
 
 void colibri_serial::cartodom_callback(const cartodom::Cartodom::ConstPtr & carto_odom)
