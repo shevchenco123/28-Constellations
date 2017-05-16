@@ -5,3 +5,5 @@ uint32 ultrasonic3
 uint32 ultrasonic4
 uint32 ultrasonic5
 uint32 ultrasonic6
+uint32 ultrasonic7
+uint32 ultrasonic8
