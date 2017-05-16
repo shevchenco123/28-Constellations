@@ -23,8 +23,8 @@ protector::protector()
 	min_index_ultra = 0;	
 	
 	scan_sub4safe = nh_safety.subscribe<sensor_msgs::LaserScan>("/scan", 1, &protector::ScanSafeCallBack, this);
-	ultra_sub4safe = nh_safety.subscribe<colibri_aiv::ultrasonic>("/ultrasonic", 1, &protector::UltraSafeCallBack, this);
-	bumper_sub4safe = nh_safety.subscribe<colibri_aiv::collision>("/collision", 1, &protector::BumperSafeCallBack, this);
+	ultra_sub4safe = nh_safety.subscribe<colibri_aiv::Ultrasonic>("/ultrasonic", 1, &protector::UltraSafeCallBack, this);
+	bumper_sub4safe = nh_safety.subscribe<colibri_aiv::Bumper>("/bumper", 1, &protector::BumperSafeCallBack, this);
 	Odom_sub4safe = nh_safety.subscribe<nav_msgs::Odometry>("/odom", 1, &protector::OdomSafeCallBack, this);
 
 }
@@ -207,7 +207,7 @@ void protector::ScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4sa
 
 }
 
-void protector::UltraSafeCallBack(const colibri_aiv::ultrasonic::ConstPtr& ultra4safe)
+void protector::UltraSafeCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra4safe)
 {
 	ultra_vec[0] = ultra4safe->ultrasonic1;
 	ultra_vec[1] = ultra4safe->ultrasonic2;
@@ -215,9 +215,9 @@ void protector::UltraSafeCallBack(const colibri_aiv::ultrasonic::ConstPtr& ultra
 	ultra_vec[3] = ultra4safe->ultrasonic4;
 }
 
-void protector::BumperSafeCallBack(const colibri_aiv::collision::ConstPtr& bumper4safe)
+void protector::BumperSafeCallBack(const colibri_aiv::Bumper::ConstPtr& bumper4safe)
 {	
-	bumper_signal = bumper4safe->collision.data;	
+	bumper_signal = bumper4safe->bumper.data;	
 }
 
 void protector::OdomSafeCallBack(const nav_msgs::Odometry::ConstPtr& odom4safe)
