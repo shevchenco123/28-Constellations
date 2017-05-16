@@ -27,7 +27,7 @@
 
 using namespace std;
 
-typedef struct st_subtask
+typedef struct st_subtask 
 {
 	int tasklist_id;	//subtask belongs to which tasklist
 	int subtask_index;
@@ -67,6 +67,7 @@ typedef struct st_task_track
 	subtask_exec_sta task_sta;
 
 }task_track;
+
 
 typedef struct st_rec_point
 {
