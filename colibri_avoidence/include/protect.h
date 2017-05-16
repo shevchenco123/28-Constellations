@@ -64,7 +64,7 @@ typedef enum
 	FRONT,
 	BACK,
 	
-}enum_dir;
+}enum_bearing;
 
 class protector
 {
