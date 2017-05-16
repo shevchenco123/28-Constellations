@@ -23,6 +23,7 @@ protector::protector()
 	min_index_ultra = 0;	
 	
 	scan_sub4safe = nh_safety.subscribe<sensor_msgs::LaserScan>("/scan", 1, &protector::ScanSafeCallBack, this);
+
 	ultra_sub4safe = nh_safety.subscribe<colibri_aiv::Ultrasonic>("/ultrasonic", 1, &protector::UltraSafeCallBack, this);
 	bumper_sub4safe = nh_safety.subscribe<colibri_aiv::Bumper>("/bumper", 1, &protector::BumperSafeCallBack, this);
 	Odom_sub4safe = nh_safety.subscribe<nav_msgs::Odometry>("/odom", 1, &protector::OdomSafeCallBack, this);
@@ -33,7 +34,12 @@ protector::~protector()
 
 }
 
-float protector::CalcMinDis4LaserScan(float* laser_vec)
+/*	
+*   void CalcMinDis4LaserScan(float* laser_vec) 
+*   Description: Calc the min dis , index min_scan and colision prob in the scan laser data
+*   Results in min_scan, min_index_scan
+*/
+void protector::CalcMinDis4LaserScan(float* laser_vec)
 {
 	float tmp_range = *laser_vec;
 	unsigned int index_mindis = 0;
@@ -63,10 +69,14 @@ float protector::CalcMinDis4LaserScan(float* laser_vec)
 		laser_unsafe_prob = 0.0;
 	}
 
-	return laser_unsafe_prob;
 }
 
-float protector::CalcMinDis4Ultrosonic(float* ultra_vec)
+/*	
+*   void CalcMinDis4Ultrosonic(float* ultra_vec) 
+*   Description: Calc the min dis , index min_ultra and colision prob in the ultra data
+*   results in min_ultra, min_index_ultra
+*/
+void protector::CalcMinDis4Ultrosonic(float* ultra_vec)
 {
 	float tmp_range = *ultra_vec;
 	unsigned int index_mindis = 0;
@@ -92,10 +102,13 @@ float protector::CalcMinDis4Ultrosonic(float* ultra_vec)
 		ultra_unsafe_prob = 0.0;
 	}
 
-	return ultra_unsafe_prob;
-
 }
 
+/*	
+*   float IntegrateMultiInfo4Safety(enum_act4safe* advise_action)
+*   Description: Using MultiInfo: laser prob, ultra prob and bumper to obtain comprehensive colision prob and remmend action
+*   return  colision_prob  and results in advise_action
+*/
 float protector::IntegrateMultiInfo4Safety(enum_act4safe* advise_action)
 {
 
@@ -103,7 +116,7 @@ float protector::IntegrateMultiInfo4Safety(enum_act4safe* advise_action)
 	
 	if(bumper_signal == true || ultra_unsafe_prob > LEVEL_1_PROB || laser_unsafe_prob > LEVEL_1_PROB)
 	{
-		collision_flag = 1;
+		collision_flag = true;
 		colision_prob = 1.0;
 		*advise_action = STOP;
 	}
@@ -165,9 +178,14 @@ float protector::IntegrateMultiInfo4Safety(enum_act4safe* advise_action)
 	return colision_prob;
 }
 
-bool protector::StopMovingInForce(bool collision_flag, float colision_prob)
+/*	
+*   bool StopMovingInForce(void)
+*   Description: Using IntergrateMultInfo 's comprehensive colision prob to output stop flag
+*   return  stop logic true or false
+*/
+bool protector::StopMovingInForce(void)
 {
-	if(collision_flag == true || colision_prob >= UNSAFE_PROB)
+	if(colision_prob >= UNSAFE_PROB)
 	{
 		return true;
 	}
@@ -178,6 +196,11 @@ bool protector::StopMovingInForce(bool collision_flag, float colision_prob)
 	
 }
 
+/*	
+*   bool Detect4ExceptHighVel(float* v, float* vth)
+*   Description: Detect for odom v and vth for exception
+*   return  vel exception flag
+*/
 bool protector::Detect4ExceptHighVel(float* v, float* vth)
 {
 	if(*v >= V_EXCPT_VAL || *vth >= VTH_EXCPT_VAL)

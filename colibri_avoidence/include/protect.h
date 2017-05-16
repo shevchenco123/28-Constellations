@@ -97,19 +97,20 @@ class protector
 		ros::Subscriber scan_sub4safe;
 		ros::Subscriber	ultra_sub4safe;
 		ros::Subscriber	bumper_sub4safe;
-		ros::Subscriber	Odom_sub4safe;
+		ros::Subscriber	odom_sub4safe;
 
 		protector();
 		
 		~protector();
 
-		float CalcMinDis4LaserScan(float* laser_vec);
-	
-		float CalcMinDis4Ultrosonic(float* ultra_vec);
+		void CalcMinDis4LaserScan(float* laser_vec);	
+		void CalcMinDis4Ultrosonic(float* ultra_vec);
+		
 		float IntegrateMultiInfo4Safety(enum_act4safe* advise_action);
-		bool StopMovingInForce(bool collision_flag, float colision_prob);
-
+		
 		bool Detect4ExceptHighVel(float* v, float* vth);
+
+		bool StopMovingInForce(void);
 		
 	private:
 		
