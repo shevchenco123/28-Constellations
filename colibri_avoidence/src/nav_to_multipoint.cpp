@@ -9,9 +9,13 @@
 
 #include "geometry_msgs/PoseStamped.h"
 
+#include<signal.h>
+
+bool node_shutdown  = false;
+int cnt_null_cmdvel = 0;
 
 void PlannerCallback(planner *plannerObj, float* start_pos, float* goal_pos, bool *finish_flag);
-
+void MySigintHandler(int sig);
 int main(int argc, char* argv[])
 {	
 
@@ -63,9 +67,10 @@ int main(int argc, char* argv[])
 	bool replan_flag = false;
 
 	float rt_r2g_dis = 100.0;
-	
-	// Waiting for set goal in Rviz
-	while(taskObj.obtain_goal_flag == false)	
+
+	signal(SIGINT, MySigintHandler);
+
+	while(taskObj.obtain_goal_flag == false)
 	{
 		ros::spinOnce();
 		loop_rate.sleep();
@@ -199,7 +204,21 @@ int main(int argc, char* argv[])
 				local4navObj.apf_cmd_vel.angular.z = 0.0;
 			}
 
-			local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel);		
+			if(node_shutdown == true)
+			{
+				local4navObj.apf_cmd_vel.linear.x = 0.0;
+				local4navObj.apf_cmd_vel.angular.z = 0.0;
+				++cnt_null_cmdvel;
+				if(cnt_null_cmdvel > 5)
+				{
+					ros::shutdown();
+				}
+			}
+
+			local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel);
+			
+			cout<<"pub_linear_x: " << local4navObj.apf_cmd_vel.linear.x <<endl;
+			cout<<"pub_angular_z: " << local4navObj.apf_cmd_vel.angular.z <<endl;
 
 			scan4caObj.fwd_maxpass_num = 0;
 			scan4caObj.bwd_maxpass_num = 0;
@@ -208,12 +227,10 @@ int main(int argc, char* argv[])
 			loop_rate.sleep();
 			ROS_INFO("------- end --------");
 		}
-	}
 
-	// ros is not OK ,should reset the twist() cmd, TODO!
-	local4navObj.apf_cmd_vel.linear.x = 0.0;
-	local4navObj.apf_cmd_vel.angular.z = 0.0;
-	local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel); 
+
+		
+	}
 
 	return 0;	
 }
@@ -223,3 +240,7 @@ void PlannerCallback(planner *plannerObj, float* start_pos, float* goal_pos, boo
 	plannerObj->ObtainPathArray(plannerObj->serviceClient, plannerObj->path_srv, start_pos, goal_pos, finish_flag);
 }
 
+void MySigintHandler(int sig)
+{
+	node_shutdown = true;
+}

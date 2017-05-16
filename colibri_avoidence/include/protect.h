@@ -17,8 +17,8 @@
 
 #include "colibri_ca.h"
 
-#include <colibri_aiv/ultrasonic.h>
-#include <colibri_aiv/collision.h>
+#include <colibri_aiv/Ultrasonic.h>
+#include <colibri_aiv/Bumper.h>
 
 // 3 layers for running safty : laser / ultrosonic  /bumper
 
@@ -115,8 +115,8 @@ class protector
 	private:
 		
 		void ScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4safe);
-		void UltraSafeCallBack(const colibri_aiv::ultrasonic::ConstPtr& ultra4safe);
-		void BumperSafeCallBack(const colibri_aiv::collision::ConstPtr& bumper4safe);
+		void UltraSafeCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra4safe);
+		void BumperSafeCallBack(const colibri_aiv::Bumper::ConstPtr& bumper4safe);
 		void OdomSafeCallBack(const nav_msgs::Odometry::ConstPtr& odom4safe);
 
 

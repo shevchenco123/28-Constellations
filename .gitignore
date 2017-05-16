@@ -1,10 +1,6 @@
-#ignore severl packages
+#ignore several packages
 cartodom/
 cartographer_ros/
-colibri_description/
-colibri_laser/
-colibri_manctrl/
-openslam_gmapping/
-slam_gmapping/
+*.swp
 *~
 *.[oa]

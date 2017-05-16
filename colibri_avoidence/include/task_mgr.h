@@ -66,7 +66,8 @@ typedef struct st_task_track
 
 }task_track;
 
-typedef struct st_rec_point 
+
+typedef struct st_rec_point
 {
 	float x;
 	float y;
