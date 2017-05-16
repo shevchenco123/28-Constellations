@@ -35,7 +35,7 @@
 
 using namespace std;
 
-typedef struct
+typedef struct st_path_point
 {
 	float x;
 	float y;
@@ -43,7 +43,7 @@ typedef struct
 	
 }path_point;
 
-typedef struct
+typedef struct st_path_delta
 {
 	unsigned int index;
 	float delta_dis;	//path point relative yo certain aiv point
