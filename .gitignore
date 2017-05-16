@@ -1,5 +1,6 @@
 #ignore several packages
 cartodom/
 cartographer_ros/
+*.swp
 *~
 *.[oa]
