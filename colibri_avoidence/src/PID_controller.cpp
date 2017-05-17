@@ -44,7 +44,7 @@ void PID_controller::Regulator(float u_r, float u_fb, float* u_out)
     float error = 0.0;
 	
     PID_param.u_ref = u_r;
-    error = PID_param.u_ref- u_fb;
+    error = PID_param.u_ref - u_fb;
    
     PID_param.u_delta= PID_param.a * error + PID_param.b * PID_param.error_1 + PID_param.c * PID_param.error_2;
 
@@ -64,7 +64,6 @@ void PID_controller::DeltaOutBound(float* input, float bound)
     if(*input > bound)
    	{
 		*input = bound;
-
 	}
 	else if(*input < (-1.0 * bound))
 	{

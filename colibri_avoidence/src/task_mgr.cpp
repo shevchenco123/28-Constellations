@@ -143,9 +143,15 @@ void task_mgr::ObtainRvizGoalCallBack(const geometry_msgs::PoseStamped::ConstPtr
 
 	obtain_goal_flag = true;
 
-	pub_cancel_goal.publish(set_goal);
+	pub_cancel_goal.publish(set_goal);	//if get the rviz goal , should remove it for no moving to it
 
 }
+
+void task_mgr::Rel2AbsTaskTransfor(void)
+{
+
+}
+
 
 /*
 void task_mgr::ObtainRvizGoalCallBack(const geometry_msgs::PoseStamped& rviz_goal,const int rec_num_max)
@@ -188,8 +194,8 @@ void task_mgr::Quaternion2Yaw(const geometry_msgs::PoseStamped &pose, float &yaw
 	float x = 0.0;
 	float y = 0.0;
 	
-	y = 2*(pose.pose.orientation.w * pose.pose.orientation.z + pose.pose.orientation.x * pose.pose.orientation.y);
-	x = 1- 2*(pow(pose.pose.orientation.y, 2) + pow(pose.pose.orientation.z, 2));
+	y = 2.0 * (pose.pose.orientation.w * pose.pose.orientation.z + pose.pose.orientation.x * pose.pose.orientation.y);
+	x = 1.0 - 2 * (pow(pose.pose.orientation.y, 2) + pow(pose.pose.orientation.z, 2));
 	yaw = atan2(y,x) * RAD2DEG;
 
 }
