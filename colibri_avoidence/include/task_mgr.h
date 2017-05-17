@@ -17,10 +17,8 @@
 #include <visualization_msgs/Marker.h>
 #include "actionlib_msgs/GoalID.h"
 
-
 #include "colibri_local_nav.h"
 #include "colibri_ca.h"
-
 
 #define SUBTASK_NUM_MAX 10
 #define RVIZ_GOAL_WAITING 5.0
@@ -30,7 +28,7 @@ using namespace std;
 typedef struct st_subtask 
 {
 	int tasklist_id;	//subtask belongs to which tasklist
-	int subtask_index;
+	int subtask_index;	//below goal point in a special task_list index
 	float x;
 	float y;
 	float yaw;
@@ -77,10 +75,7 @@ typedef struct st_rec_point
 
 }record_point;
 
-
-
 const string tasknode = "/import_task";
-
 
 class task_mgr
 {
@@ -126,7 +121,7 @@ class task_mgr
 		
 		void InitGoalMarkers(visualization_msgs::Marker *marker);
 
-		void Rel2AbsTaskTransfor();
+		void Rel2AbsTaskTransfor(void);
 
 	private:
 		
