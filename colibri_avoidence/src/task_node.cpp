@@ -5,15 +5,15 @@ int main(int argc, char* argv[])
 	ros::init(argc, argv, "read_tasklist_node");
 	task_mgr taskObj;
 	
-	//taskObj.ReadTasklist();
+	taskObj.ReadTasklist();
 
-	//taskObj.InitGoalMarkers(&taskObj.goalmark_list);
+	taskObj.InitGoalMarkers(&taskObj.goalmark_list);
 
 
-	ros::Rate loop_rate(10);
+	ros::Rate loop_rate(5);
 	while(ros::ok())
 	{
-		//taskObj.pub_goal_maker.publish(taskObj.goalmark_list);
+		taskObj.pub_goal_maker.publish(taskObj.goalmark_list);
 
 		cout<<"taskObj.cur_goal[0]: "<<taskObj.cur_goal[0]<<endl;
 		cout<<"taskObj.cur_goal[1]: "<<taskObj.cur_goal[1]<<endl;
