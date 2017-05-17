@@ -9,18 +9,15 @@ int main(int argc, char* argv[])
 	ros::Rate loop_rate(15);
 	
 	int delay_cnt = 0;
-	float tmp_prob = 0;
 	float coli_prob = 0.0;
-	enum_act4safe act = HOLD_STATE;
+	
 	ofstream  file1; 
 	file1.open ("laser.txt"); 
 
 	ROS_INFO("Start to detect the safety...");
-
 	
 	while (ros::ok())
 	{	
-	
 		if(delay_cnt < DELAY_CNT_MAX)
 		{
 			delay_cnt++;
@@ -30,12 +27,11 @@ int main(int argc, char* argv[])
 		
 		if(delay_cnt >= DELAY_CNT_MAX)
 		{
-			tmp_prob = protectObj.CalcMinDis4LaserScan(protectObj.scan4safty);
+			protectObj.CalcMinDis4LaserScan(protectObj.scan4safty);
 			
 			cout<<"protectObj.min_scan: "<< protectObj.min_scan << endl;
 			cout<<"protectObj.min_index_scan: "<< protectObj.min_index_scan << endl;
-			cout<<"protectObj.laser_prob_a: "<< tmp_prob << endl;
-			cout<<"protectObj.laser_prob_b: "<< protectObj.laser_unsafe_prob<< endl;
+			cout<<"protectObj.laser_prob: "<< protectObj.laser_unsafe_prob<< endl;
 			
 			for(int j = 1; j <= SCAN4SAFE_NUM; j++)
 			{
@@ -44,9 +40,8 @@ int main(int argc, char* argv[])
 			}
 
 			file1.close();
-			coli_prob = protectObj.IntegrateMultiInfo4Safety(&act);
+			coli_prob = protectObj.IntegrateMultiInfo4Safety(&protectObj.advise_action);
 			cout<<"coli_prob: "<< coli_prob<< endl;
-			cout<<"act : "<< act<< endl;
 
 			ros::spinOnce();
 			loop_rate.sleep();
