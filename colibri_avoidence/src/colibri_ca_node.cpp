@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 			ROS_INFO("start ...");
 			for(int i = 1; i <= NUM_RAY4CA; i++)
 			{
-				scan4caObj.delta_phi_vec[i-1] = asin(D_SF / (*(scan4caObj.ptrScan4ca + i - 1))) * RAD2DEG;
+				scan4caObj.delta_phi_vec[i-1] = asin(D_SF / (*(scan4caObj.ptrScan4ca + i - 1))) * RAD2DEG; //calc the phi ang obs influence range
 				scan4caObj.kp_phi_vec[i-1] = scan4caObj.CalcKpPhi(v_0, *(scan4caObj.ptrScan4ca + i - 1));
 				range_num = floor(scan4caObj.delta_phi_vec[i-1] / RAY_RESOL4CA);
 				

@@ -228,7 +228,7 @@ float scan_ca::CalcKpPhi(float vel_center, float d_phi)
 
 	if(d_phi <= tmpDsr)
 	{
-		kp_phi = 10000;
+		kp_phi = KP_PHI_INF;
 	}
 	else if((d_phi <= D_M)&&(tmpDsr < d_phi))
 	{

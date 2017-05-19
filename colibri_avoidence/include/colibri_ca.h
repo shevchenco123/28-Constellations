@@ -26,11 +26,12 @@ using namespace std;
 
 #define K_SF 	1.2		//adj factor for latitude dir in polar frame
 #define WIDTH 	0.56
-#define D_SF	0.336	//0.5*K_SF*WIDTH 
+#define D_SF	0.336	//0.5*K_SF*WIDTH  lateral safe dis
 
 #define K_SR 	1.1		//adj factor for longitude dir in polar frame
 #define ACC_DEC -2		//accerlaration for decrease vel
 #define D_M 	5		// local ca distance
+#define KP_PHI_INF 10000
 
 #define V_MAX 		0.35
 #define V_MIN 		0.02
