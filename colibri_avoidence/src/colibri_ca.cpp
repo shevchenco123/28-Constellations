@@ -248,9 +248,10 @@ float scan_ca::CalcKpPhi(float vel_center, float d_phi)
 	return kp_phi;
 }
 
-void scan_ca::ResetMaxFcnCnt(void)
+void scan_ca::ResetMaxPassValCnt(void)
 {
-
+	fwd_maxpass_cnt = 0;
+	bwd_maxpass_cnt = 0;
 }
 
 void scan_ca::CalcCorrectedKrf(void)

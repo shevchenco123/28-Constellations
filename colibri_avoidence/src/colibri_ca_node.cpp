@@ -83,8 +83,7 @@ int main(int argc, char* argv[])
 			cout<<"passfcn_max_value: "<< scan4caObj.max_passfcn_val <<endl;
 			cout<<"colision_alarm: "<< scan4caObj.colision_alarm <<endl;
 
-			scan4caObj.fwd_maxpass_cnt = 0;
-			scan4caObj.bwd_maxpass_cnt = 0;
+			scan4caObj.ResetMaxPassValCnt();
 			
 			ros::spinOnce();
 			loop_rate.sleep();

@@ -99,7 +99,7 @@ class scan_ca
 		void CalcCorrectedKrf(void);
 		void CalcCollisionInAPF(void);
 		void CalcPhiParam(float vel_center, float& dir_goal_inlaser);
-		void ResetMaxFcnCnt(void);
+		void ResetMaxPassValCnt(void);
 		
 	private:
 

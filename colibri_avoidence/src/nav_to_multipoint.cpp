@@ -220,8 +220,8 @@ int main(int argc, char* argv[])
 			cout<<"pub_linear_x: " << local4navObj.apf_cmd_vel.linear.x <<endl;
 			cout<<"pub_angular_z: " << local4navObj.apf_cmd_vel.angular.z <<endl;
 
-			scan4caObj.fwd_maxpass_cnt = 0;
-			scan4caObj.bwd_maxpass_cnt = 0;
+			scan4caObj.ResetMaxPassValCnt();
+
 
 			ros::spinOnce();
 			loop_rate.sleep();
