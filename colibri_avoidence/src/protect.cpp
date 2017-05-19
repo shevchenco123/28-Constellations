@@ -28,6 +28,8 @@ protector::protector()
 	bumper_sub4safe = nh_safety.subscribe<colibri_aiv::Bumper>("/bumper", 1, &protector::BumperSafeCallBack, this);
 	odom_sub4safe = nh_safety.subscribe<nav_msgs::Odometry>("/odom", 1, &protector::OdomSafeCallBack, this);
 
+	security_pub4env = nh_safety.advertise<colibri_msgs::EnvSecurity>("/env_secure", 1);
+
 }
 protector::~protector()
 {
@@ -212,6 +214,40 @@ bool protector::Detect4ExceptHighVel(float* v, float* vth)
 		return false;
 	}
 }
+
+void protector::Intg4EnvSecure(void)
+{
+
+	env_secure.header.stamp = ros::Time::now();
+	env_secure.header.frame_id = "robot";
+	
+	env_secure.collision.data = collision_flag;
+	env_secure.collision_prob = colision_prob;
+	
+	env_secure.laser_min_dis = min_scan;
+	env_secure.laser_min_index = min_index_scan;
+	env_secure.laser_prob = laser_unsafe_prob;
+	
+	env_secure.ultra_min_dis = min_ultra;
+	env_secure.ultra_min_index = min_index_ultra;
+	env_secure.ultra_prob = ultra_unsafe_prob;
+
+	if(bumper_signal == true)
+	{
+		env_secure.bumper_min_dis = 0.0;
+		env_secure.bumper_prob = 1.0 ;
+	}
+	else
+	{
+		env_secure.bumper_min_dis = 100.0;
+		env_secure.bumper_prob = 0.0;
+	}
+			
+	env_secure.bumper_min_index = 1;
+
+}
+
+
 
 void protector::ScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4safe)
 {

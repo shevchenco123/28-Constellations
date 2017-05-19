@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 			apf.pos_order_index = scan4caObj.maxfcn_fwdbnd;
 			apf.neg_order_max = scan4caObj.max_passfcn_val;
 			apf.neg_order_index = scan4caObj.maxfcn_bwdbnd;	
-			memcpy(&apf.potential_value[0],&scan4caObj.phi_end_vec[0],NUM_RAY4CA);
+			memcpy(&apf.potential_value[0], &scan4caObj.phi_end_vec[0], NUM_RAY4CA);
 			
 			scan4caObj.apf_pub4mntr.publish(apf);
 
