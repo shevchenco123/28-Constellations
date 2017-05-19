@@ -112,8 +112,8 @@ int main(int argc, char* argv[])
 
 			local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel);
 
-			scan4caObj.fwd_maxpass_num = 0;
-			scan4caObj.bwd_maxpass_num = 0;
+			scan4caObj.fwd_maxpass_cnt = 0;
+			scan4caObj.bwd_maxpass_cnt = 0;
 		
 			ros::spinOnce();
 			loop_rate.sleep();

@@ -74,8 +74,8 @@ int main(int argc, char* argv[])
 
 			scan4caObj.CalcCollisionInAPF();
 
-			cout<<"fwd_maxpass_num: "<<scan4caObj.fwd_maxpass_num<<endl;
-			cout<<"bwd_maxpass_num: "<<scan4caObj.bwd_maxpass_num<<endl;
+			cout<<"fwd_maxpass_cnt: "<<scan4caObj.fwd_maxpass_cnt<<endl;
+			cout<<"bwd_maxpass_cnt: "<<scan4caObj.bwd_maxpass_cnt<<endl;
 			
 			cout<<"passfcn_max_fwdbound: "<< scan4caObj.maxfcn_fwdbnd <<endl;
 			cout<<"passfcn_max_bwdbound: "<< scan4caObj.maxfcn_bwdbnd <<endl;
@@ -83,8 +83,8 @@ int main(int argc, char* argv[])
 			cout<<"passfcn_max_value: "<< scan4caObj.max_passfcn_val <<endl;
 			cout<<"colision_alarm: "<< scan4caObj.colision_alarm <<endl;
 
-			scan4caObj.fwd_maxpass_num = 0;
-			scan4caObj.bwd_maxpass_num = 0;
+			scan4caObj.fwd_maxpass_cnt = 0;
+			scan4caObj.bwd_maxpass_cnt = 0;
 			
 			ros::spinOnce();
 			loop_rate.sleep();

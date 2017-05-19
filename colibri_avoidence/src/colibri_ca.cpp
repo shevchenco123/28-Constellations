@@ -18,8 +18,8 @@ scan_ca::scan_ca()
 	memset(passfcn_vec, 0, NUM_RAY4CA);
 	max_passfcn_val = 0.0;
 
-	fwd_maxpass_num = 0;
-	bwd_maxpass_num = 0;
+	fwd_maxpass_cnt = 0;
+	bwd_maxpass_cnt = 0;
 
 	maxfcn_fwdbnd = 0;
 	maxfcn_bwdbnd = 0;
@@ -181,7 +181,7 @@ float scan_ca::CalcAdjDir(float* ptrPassfcn_vector, float max_passfcn_val, int* 
 	{
 		if(abs(*(ptrPassfcn_vector + *(fwd_bound) - m) - max_passfcn_val) < MAX_PASSFCN_SCOPE)
 		{
-			fwd_maxpass_num++;
+			fwd_maxpass_cnt++;
 		}else
 		{
 			break;
@@ -191,7 +191,7 @@ float scan_ca::CalcAdjDir(float* ptrPassfcn_vector, float max_passfcn_val, int* 
 	{
 		if(abs(*(ptrPassfcn_vector + *(bwd_bound) + n) - max_passfcn_val) < MAX_PASSFCN_SCOPE)
 		{
-			bwd_maxpass_num++;
+			bwd_maxpass_cnt++;
 		}else
 		{
 			break;
@@ -199,12 +199,12 @@ float scan_ca::CalcAdjDir(float* ptrPassfcn_vector, float max_passfcn_val, int* 
 	}
 
 	
-	if (fwd_maxpass_num <= bwd_maxpass_num)
+	if (fwd_maxpass_cnt <= bwd_maxpass_cnt)
 	{
-		adj_dir = *bwd_bound + bwd_maxpass_num / 2.0 - mid_num;
+		adj_dir = *bwd_bound + bwd_maxpass_cnt / 2.0 - mid_num;
 	}else
 	{
-		adj_dir = *fwd_bound - fwd_maxpass_num / 2.0 - mid_num;
+		adj_dir = *fwd_bound - fwd_maxpass_cnt / 2.0 - mid_num;
 	}
 
 	return adj_dir;
@@ -246,6 +246,11 @@ float scan_ca::CalcKpPhi(float vel_center, float d_phi)
 	}
 	
 	return kp_phi;
+}
+
+void scan_ca::ResetMaxFcnCnt(void)
+{
+
 }
 
 void scan_ca::CalcCorrectedKrf(void)

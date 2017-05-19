@@ -66,8 +66,8 @@ class scan_ca
 		float passfcn_vec[NUM_RAY4CA];
 		float max_passfcn_val;
 
-		int fwd_maxpass_num ;
-		int bwd_maxpass_num ;
+		int fwd_maxpass_cnt ;
+		int bwd_maxpass_cnt ;
 
 		int maxfcn_fwdbnd;
 		int maxfcn_bwdbnd;
@@ -99,6 +99,7 @@ class scan_ca
 		void CalcCorrectedKrf(void);
 		void CalcCollisionInAPF(void);
 		void CalcPhiParam(float vel_center, float& dir_goal_inlaser);
+		void ResetMaxFcnCnt(void);
 		
 	private:
 
