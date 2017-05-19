@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 			for(int i = 0; i < NUM_RAY4CA; i++)
 			{
 				scan4caObj.delta_phi_vec[i] = asin(D_SF / (*(scan4caObj.ptrScan4ca + i))) * RAD2DEG; //calc the phi ang obs influence range
-				scan4caObj.kp_phi_vec[i] = scan4caObj.CalcKpPhi(v_0, *(scan4caObj.ptrScan4ca + i)); //from right to left in 181 laser points
+				scan4caObj.kp_phi_vec[i] = scan4caObj.CalcKpPhi(v_0, *(scan4caObj.ptrScan4ca + i)); //from right to left in 181 laser points  and should be positive
 				range_num = floor(scan4caObj.delta_phi_vec[i] / RAY_RESOL4CA); //range_num must be positive
 				
 				file1 << fixed << setprecision(4) << *(scan4caObj.ptrScan4ca + i);
@@ -59,14 +59,13 @@ int main(int argc, char* argv[])
 			scan4caObj.CalcPassFcnAndBwdBnd(scan4caObj.wander, &scan4caObj.max_passfcn_val , scan4caObj.passfcn_vec);
 
 
-			for(int j = 1; j <= NUM_RAY4CA; j++)
+			for(int j = 0; j < NUM_RAY4CA; j++)
 			{
-				file2<< fixed << setprecision(4) << scan4caObj.krf_vec[j-1];
+				file2<< fixed << setprecision(4) << scan4caObj.krf_vec[j];
 				file2 << '\t';
-				file3<< fixed << setprecision(4) << scan4caObj.passfcn_vec[j-1];
+				file3<< fixed << setprecision(4) << scan4caObj.passfcn_vec[j];
 				file3 << '\t';
 			}
-
 
 			scan4caObj.angle_adj = scan4caObj.CalcAdjDir(scan4caObj.passfcn_vec,scan4caObj.max_passfcn_val, &scan4caObj.maxfcn_fwdbnd,&scan4caObj.maxfcn_bwdbnd);
 				

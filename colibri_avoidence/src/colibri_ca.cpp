@@ -68,7 +68,7 @@ void scan_ca::CalcKrfTheta(float* ptrKp_phi_vector, int* ptrPhi_range_start, int
 		{
 			if((theta_index >= *(ptrPhi_range_start+phi_index)) && (theta_index <= *(ptrPhi_range_end+phi_index)))
 			{
-				if(krf_vec[theta_index] <= *(ptrKp_phi_vector + phi_index))
+				if(krf_vec[theta_index] <= *(ptrKp_phi_vector + phi_index)) // to obtain the max [Krf(phi,theta)] as Krf(theta)
 				{	
 					krf_vec[theta_index] = *(ptrKp_phi_vector + phi_index);				
 				}
@@ -110,7 +110,7 @@ void scan_ca::CalcPassFcnAndFwdBnd(unsigned int flag, float* max_passfcn_val, fl
 	float tmp_passfcn_value = 0.0;
 	int tmp_bound_forward = 0;
 		
-		for(int j = 0; j < NUM_RAY4CA; j++)
+		for(int j = 0; j < NUM_RAY4CA; j++) //from right to left search the max passfcn val  and the max passfcn's bound index should locate at left terminal
 		{
 			if(flag == 1)
 			{
@@ -138,7 +138,7 @@ void scan_ca::CalcPassFcnAndBwdBnd(unsigned int flag, float* max_passfcn_val, fl
 	float tmp_passfcn_value = 0.0;
 	int tmp_bound_backward = 0;
 
-	for(int k = NUM_RAY4CA - 1; k >= 0; k--)
+	for(int k = NUM_RAY4CA - 1; k >= 0; k--) //from left to right search the max passfcn val  and the max passfcn's bound index should locate at right terminal
 	{
 		if(flag == 1)
 		{
