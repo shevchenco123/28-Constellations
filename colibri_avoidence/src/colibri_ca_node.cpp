@@ -72,15 +72,8 @@ int main(int argc, char* argv[])
 			file2.close();
 			file3.close();
 
-			if(scan4caObj.max_passfcn_val < PASSFCN_THD_RATIO * D_M)
-			{
-				scan4caObj.colision_alarm = 1;
-			}
-			else
-			{
-				scan4caObj.colision_alarm = 0;
+			scan4caObj.CalcCollisionInAPF();
 
-			}
 			cout<<"fwd_maxpass_num: "<<scan4caObj.fwd_maxpass_num<<endl;
 			cout<<"bwd_maxpass_num: "<<scan4caObj.bwd_maxpass_num<<endl;
 			
