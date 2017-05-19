@@ -12,8 +12,8 @@ scan_ca::scan_ca()
 	memset(phi_start_vec, 1, NUM_RAY4CA);
 	memset(phi_end_vec, 181, NUM_RAY4CA);
 
-	memset(krf_vec, 0.1, NUM_RAY4CA);
-	memset(kaf_vec, 0, NUM_RAY4CA);
+	memset(krf_vec, 1/D_M, NUM_RAY4CA);
+	memset(kaf_vec, 0.0, NUM_RAY4CA);
 
 	memset(passfcn_vec, 0, NUM_RAY4CA);
 	max_passfcn_val = 0.0;

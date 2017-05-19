@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 			for(int i = 0; i < NUM_RAY4CA; i++)
 			{
 				scan4caObj.delta_phi_vec[i] = asin(D_SF / (*(scan4caObj.ptrScan4ca + i))) * RAD2DEG; //calc the phi ang obs influence range
-				scan4caObj.kp_phi_vec[i] = scan4caObj.CalcKpPhi(v_0, *(scan4caObj.ptrScan4ca + i));
+				scan4caObj.kp_phi_vec[i] = scan4caObj.CalcKpPhi(v_0, *(scan4caObj.ptrScan4ca + i)); //from right to left in 181 laser points
 				range_num = floor(scan4caObj.delta_phi_vec[i] / RAY_RESOL4CA); //range_num must be positive
 				
 				file1 << fixed << setprecision(4) << *(scan4caObj.ptrScan4ca + i);
@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
 				
 				scan4caObj.CalcPhiRange(i,range_num,&scan4caObj.phi_start_vec[i],&scan4caObj.phi_end_vec[i]);
 
-				tmp_theta_obs = i - 1.0; // unit in degree
+				tmp_theta_obs = i; // unit in degree
 				scan4caObj.kaf_vec[i] = cos((tmp_theta_obs - scan4caObj.goal_dir) * DEG2RAD);
 				scan4caObj.krf_vec[i] = scan4caObj.kp_phi_vec[i];  //init the repulse field using kp_phi_vec
 
