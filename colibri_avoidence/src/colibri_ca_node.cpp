@@ -14,6 +14,7 @@ int main(int argc, char* argv[])
 
 	float tmp_theta_obs = 0.0;	//obstacle 's theta angle
 	float tmp_passfcn_value = 0.0;
+	colibri_msgs::AngPotnEngy apf;
 
 	ofstream  file1,file2,file3; 
 	file1.open ("cppscan4ca_vector.txt"); 
@@ -34,6 +35,28 @@ int main(int argc, char* argv[])
 		if(delay_cnt >= DELAY_CNT_MAX)
 		{
 			ROS_INFO("start ...");
+
+			
+			apf.header.stamp = ros::Time::now();
+			apf.header.frame_id = "laser";
+			apf.angle_min = 0.0;
+			apf.angle_max = 180.0;
+			apf.angle_increment = 1.0;
+			apf.max_potn_engy = 100;
+			apf.max_index = 90;
+			apf.pos_order_max = 1000;
+			apf.pos_order_index = 91;
+			apf.neg_order_max = 1;
+			apf.neg_order_index = 89;
+					
+			for(int i = 0; i < NUM_RAY4CA; i++)
+			{
+				apf.potential_value[i] = 0.1 + i * 0.1;
+			}
+			
+			scan4caObj.apf_pub4mntr.publish(apf);
+
+			
 			for(int i = 0; i < NUM_RAY4CA; i++)
 			{
 				scan4caObj.delta_phi_vec[i] = asin(D_SF / (*(scan4caObj.ptrScan4ca + i))) * RAD2DEG; //calc the phi ang obs influence range

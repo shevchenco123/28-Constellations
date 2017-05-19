@@ -34,7 +34,7 @@ scan_ca::scan_ca()
 	wander = 0;
 	
 	scan_sub4ca = nh_ca.subscribe<sensor_msgs::LaserScan>("/scan", 1, &scan_ca::ScanCallBack, this);
-	
+	apf_pub4mntr = nh_ca.advertise<colibri_msgs::AngPotnEngy>("/apf", 10);
 }
 
 scan_ca::~scan_ca()

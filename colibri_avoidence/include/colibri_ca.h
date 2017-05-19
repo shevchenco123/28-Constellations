@@ -10,6 +10,7 @@
 #include <nav_msgs/Odometry.h>
 #include <tf/transform_broadcaster.h>
 #include <sensor_msgs/LaserScan.h>
+#include "colibri_msgs/AngPotnEngy.h"
 
 #ifndef _COLIBRI_CA_H_
 #define _COLIBRI_CA_H_
@@ -86,7 +87,8 @@ class scan_ca
 		
 		ros::NodeHandle nh_ca;
 		ros::Subscriber scan_sub4ca;
-
+		ros::Publisher apf_pub4mntr;
+		
 		scan_ca();
 		~scan_ca();
 		
