@@ -42,20 +42,6 @@ int main(int argc, char* argv[])
 			apf.angle_min = 0.0;
 			apf.angle_max = 180.0;
 			apf.angle_increment = 1.0;
-			apf.max_potn_engy = 100;
-			apf.max_index = 90;
-			apf.pos_order_max = 1000;
-			apf.pos_order_index = 91;
-			apf.neg_order_max = 1;
-			apf.neg_order_index = 89;
-					
-			for(int i = 0; i < NUM_RAY4CA; i++)
-			{
-				apf.potential_value[i] = 0.1 + i * 0.1;
-			}
-			
-			scan4caObj.apf_pub4mntr.publish(apf);
-
 			
 			for(int i = 0; i < NUM_RAY4CA; i++)
 			{
@@ -81,6 +67,15 @@ int main(int argc, char* argv[])
 			scan4caObj.CalcPassFcnAndFwdBnd(scan4caObj.wander, &scan4caObj.max_passfcn_val , scan4caObj.passfcn_vec);
 			scan4caObj.CalcPassFcnAndBwdBnd(scan4caObj.wander, &scan4caObj.max_passfcn_val , scan4caObj.passfcn_vec);
 
+			apf.max_potn_engy = scan4caObj.max_passfcn_val;
+			apf.max_index = (unsigned int) (scan4caObj.maxfcn_fwdbnd + scan4caObj.maxfcn_bwdbnd) / 2;
+			apf.pos_order_max = scan4caObj.max_passfcn_val;
+			apf.pos_order_index = scan4caObj.maxfcn_fwdbnd;
+			apf.neg_order_max = scan4caObj.max_passfcn_val;
+			apf.neg_order_index = scan4caObj.maxfcn_bwdbnd;	
+			memcpy(&apf.potential_value[0],&scan4caObj.phi_end_vec[0],NUM_RAY4CA);
+			
+			scan4caObj.apf_pub4mntr.publish(apf);
 
 			for(int j = 0; j < NUM_RAY4CA; j++)
 			{
