@@ -29,9 +29,9 @@ using namespace std;
 #define D_SF	0.336	//0.5*K_SF*WIDTH  lateral safe dis
 
 #define K_SR 	1.1		//adj factor for longitude dir in polar frame
-#define ACC_DEC -2		//accerlaration for decrease vel
-#define D_M 	5		// local ca distance
-#define KP_PHI_INF 10000
+#define ACC_DEC -2.0		//accerlaration for decrease vel
+#define D_M 	5.0		// local ca distance
+#define KP_PHI_INF 10000.0
 
 #define V_MAX 		0.35
 #define V_MIN 		0.02
@@ -49,11 +49,7 @@ using namespace std;
 #define	DEG2RAD_PARAM(deg)	PI * deg / 180.0
 #define	RAD2DEG_PARAM(rad)	180.0 * rad / PI
 
-
-
-
 #define DELAY_CNT_MAX 	10
-
 
 class scan_ca
 {

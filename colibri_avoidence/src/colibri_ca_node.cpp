@@ -34,25 +34,24 @@ int main(int argc, char* argv[])
 		if(delay_cnt >= DELAY_CNT_MAX)
 		{
 			ROS_INFO("start ...");
-			for(int i = 1; i <= NUM_RAY4CA; i++)
+			for(int i = 0; i < NUM_RAY4CA; i++)
 			{
-				scan4caObj.delta_phi_vec[i-1] = asin(D_SF / (*(scan4caObj.ptrScan4ca + i - 1))) * RAD2DEG; //calc the phi ang obs influence range
-				scan4caObj.kp_phi_vec[i-1] = scan4caObj.CalcKpPhi(v_0, *(scan4caObj.ptrScan4ca + i - 1));
-				range_num = floor(scan4caObj.delta_phi_vec[i-1] / RAY_RESOL4CA);
+				scan4caObj.delta_phi_vec[i] = asin(D_SF / (*(scan4caObj.ptrScan4ca + i))) * RAD2DEG; //calc the phi ang obs influence range
+				scan4caObj.kp_phi_vec[i] = scan4caObj.CalcKpPhi(v_0, *(scan4caObj.ptrScan4ca + i));
+				range_num = floor(scan4caObj.delta_phi_vec[i] / RAY_RESOL4CA); //range_num must be positive
 				
-				file1 << fixed << setprecision(4) << *(scan4caObj.ptrScan4ca + i - 1);
+				file1 << fixed << setprecision(4) << *(scan4caObj.ptrScan4ca + i);
 				file1 << '\t';	
 				
-				scan4caObj.CalcPhiRange(i,range_num,&scan4caObj.phi_start_vec[i-1],&scan4caObj.phi_end_vec[i-1]);
+				scan4caObj.CalcPhiRange(i,range_num,&scan4caObj.phi_start_vec[i],&scan4caObj.phi_end_vec[i]);
 
 				tmp_theta_obs = i - 1.0; // unit in degree
-				scan4caObj.kaf_vec[i-1] = cos((tmp_theta_obs - scan4caObj.goal_dir) * DEG2RAD);
-				scan4caObj.krf_vec[i-1] = scan4caObj.kp_phi_vec[i-1];
+				scan4caObj.kaf_vec[i] = cos((tmp_theta_obs - scan4caObj.goal_dir) * DEG2RAD);
+				scan4caObj.krf_vec[i] = scan4caObj.kp_phi_vec[i];  //init the repulse field using kp_phi_vec
 
 			}
 
-
-			file1.close();
+			file1.close();  //record laser dis completed
 		
 			scan4caObj.CalcKrfTheta(scan4caObj.kp_phi_vec, scan4caObj.phi_start_vec, scan4caObj.phi_end_vec);
 	
