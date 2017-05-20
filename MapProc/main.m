@@ -120,7 +120,7 @@ while(map_proc)
        break;
    end
 end
-
+delete(h);
 figure(2)
-imshow(nav_map);
-saveas(gcf, 'correct', 'pgm');
+imshow(nav_map,'Border','tight');
+imwrite(nav_map,'correct.pgm', 'pgm');
