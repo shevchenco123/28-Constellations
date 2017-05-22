@@ -25,6 +25,8 @@ api.setPositionConstraintFcn(fcn);
 
 hold on;
 
+[ focus_xy ] = CalcRelativeCoord( [80,298], 0.05, [1,1068])
+
 map_proc = 1;   % branch proc flags for set init/target point,nav path poing,fill/clear/unknown a area
 exit_flag = 0;
 init_flag = 0;
