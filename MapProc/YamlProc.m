@@ -21,9 +21,9 @@ new_resol_str = num2str(new_resol);
 new_2 = ['resolution: ',new_resol_str];
 
 %% process 3rd line for origin
-new_ori_x = 1.055; new_ori_y = 1.0; new_ori_z = 0.0;
+new_ori_x = 1.055; new_ori_y = 1.0; new_ori_yaw = 0.0;
 line_3 = fgetl(fid_ori);
-new_ori = ['[',num2str(new_ori_x),', ',num2str(new_ori_y), ', ', num2str(new_ori_z), ']'];
+new_ori = ['[',num2str(new_ori_x),', ',num2str(new_ori_y), ', ', num2str(new_ori_yaw), ']'];
 new_3 = ['origin: ',new_ori];
 
 %% process 4th line for negate
@@ -60,6 +60,3 @@ fprintf(fid_mdf, '\n');
 
 fclose(fid_ori);
 fclose(fid_mdf);
-
-
-
