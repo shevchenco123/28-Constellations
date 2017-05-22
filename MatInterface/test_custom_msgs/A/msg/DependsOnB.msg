@@ -1,0 +1,2 @@
+std_msgs/String stringProperty
+B/Standalone dependentProperty 

@@ -65,8 +65,8 @@ while(map_proc)
            disp('+++ Fill an Rec Area...');
            if(fill_flag == 0)
                 [rec, center] = CalcRecParam(h);
-                nav_map = ModifyGreyValue( nav_map, black_gray, rec);
-                rectangle('Position',rec,'LineWidth',0.1,'FaceColor',[0.004 0.004 0.004],'EdgeColor','y');
+                nav_map = ModifyEdgeGreyValue( nav_map, black_gray, rec, 2);
+                rectangle('Position',rec,'LineWidth',0.1,'EdgeColor','y');
                 plot(center(1, 1), center(1, 2),'+', 'MarkerSize', 4, 'MarkerEdgeColor', 'g', 'MarkerFaceColor', 'y');
                 fill_flag = 1;
            end
