@@ -1,8 +1,12 @@
+%% Modify the Nav Map for Fill and Clear Obs/Grey Area and Set Goal/Init Pos/Nav Point 
+%% Create: wwang
+%% Time: 20170522
+
 clc;
 clear;
 close all;
-
-map_name = 'map_set/fac505.pgm';
+name = 'map_set/fac505';
+map_name = [name, '.pgm'];
 nav_map = imread(map_name);
 disp('Load Map Picture...');
 
@@ -121,6 +125,18 @@ while(map_proc)
    end
 end
 delete(h);
+
+%% Read map 1st line for image name
+yaml_name = [name, '.yaml'];
+fid_ori = fopen(yaml_name, 'r');
+line_1 = fgetl(fid_ori);
+len_1 = length(line_1);
+name = [line_1(8:end-4), '_mdf'];
+name_mdf = [name, '.pgm'];
+
 figure(2)
 imshow(nav_map,'Border','tight');
-imwrite(nav_map,'correct.pgm', 'pgm');
+imwrite(nav_map, name_mdf, 'pgm');
+
+fclose(fid_ori);
+
