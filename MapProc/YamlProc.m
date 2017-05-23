@@ -5,7 +5,7 @@
 clc;
 clear;
 
-yaml_path = 'map_set/215.yaml';
+yaml_path = 'map_store/215.yaml';
 fid_ori = fopen(yaml_path);
 %% process 1st line for image name
 line_1 = fgetl(fid_ori);

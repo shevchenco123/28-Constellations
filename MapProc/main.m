@@ -5,10 +5,19 @@
 clc;
 clear;
 close all;
-name = 'map_set/215';
+name = 'map_store/fac505';
 map_name = [name, '.pgm'];
 nav_map = imread(map_name);
 disp('Load Map Picture...');
+
+map_proc = 1;
+init_flag = 0;
+target_flag = 0;
+nav_flag = 0;
+fill_flag = 0;
+clear_flag = 0;
+unknown_flag = 0;
+exit_flag = 0;
 
 figure(1);
 imshow(nav_map);
@@ -25,20 +34,41 @@ api.setPositionConstraintFcn(fcn);
 
 hold on;
 
-[ focus_xy ] = CalcRelativeCoord( [80,298], 0.05, [1,1068])
-
-map_proc = 1;   % branch proc flags for set init/target point,nav path poing,fill/clear/unknown a area
-exit_flag = 0;
-init_flag = 0;
-target_flag = 0;
-nav_flag = 0;
-fill_flag = 0;
-clear_flag = 0;
-unknown_flag = 0;
-
 black_gray = 0;     % gray value for modify the ROI and should not changed for ROS systerm
 white_gray = 254;
 unknown_gray = 205;
+
+robot_init = zeros(1, 6);
+target_num = 10;
+robot_target = zeros(target_num, 6);    % maximum nav point is 10 target
+nav_num = 9;
+nav_guide_point = zeros(nav_num, 6);  % maximum guide point is 9 during naving to target
+
+target_cnt = 0;
+nav_guide_cnt = 0;
+
+
+%% Read map YAML for param init
+yaml_name = [name, '.yaml'];
+fid_yaml = fopen(yaml_name, 'r');
+line_1 = fgetl(fid_yaml);
+len_1 = length(line_1);
+name = [line_1(8:end-4), '_mdf'];
+name_mdf = [name, '.pgm'];
+
+%% process 2nd line for resolution
+line_2 = fgetl(fid_yaml);
+resol = str2double(line_2(13:end));
+
+%% process 3rd line for origin
+line_3 = fgetl(fid_yaml);
+key_str = line_3(10:end-1);
+[LD_x, sub_str] = strtok(key_str, ', ');
+[LD_y, sub_str] = strtok(sub_str, ', ');
+LD_corner = [str2double(LD_x), str2double(LD_y)];
+
+
+[coord_origin] = CalcMapCoordOrigin( map_sz, resol, LD_corner );
 
 while(map_proc)
    op = input('Input map operation mode: ');
@@ -54,16 +84,28 @@ while(map_proc)
            if(target_flag == 0)
                 [rec, center] = CalcRecParam(h);
                 plot(center(1, 1), center(1, 2),'p', 'MarkerSize', 8, 'MarkerEdgeColor', 'r', 'MarkerFaceColor', 'r');
-                target_flag = 1;
+                target_flag = 1; 
+                [ target ] = CalcRelativeCoord( coord_origin, resol, center);
+                target_cnt = target_cnt + 1;
+                if(target_cnt <= target_num )
+                    robot_target(target_cnt, :) = [target_cnt, target, 0.0, 5.0, 1];              
+                else
+                    target_cnt = 1;
+                    robot_target(target_cnt, :) = [target_cnt, target, 0.0, 5.0, 1];
+                end           
            end
            hold on;
+           
+           
        %%
        case 2
            disp('+++ Set Robot Init Pos...');
            if(init_flag == 0)
                 [rec, center] = CalcRecParam(h);
                 plot(center(1, 1), center(1, 2),'s', 'MarkerSize', 6, 'MarkerEdgeColor', 'g', 'MarkerFaceColor', 'g');
-                init_flag = 1;
+                init_flag = 1;              
+                [ init ] = CalcRelativeCoord( coord_origin, resol, center);
+                robot_init = [0, init, 0.0, 0.0, 0];
            end
            hold on;
        %%
@@ -105,7 +147,16 @@ while(map_proc)
            if(nav_flag == 0)
                 [rec, center] = CalcRecParam(h);
                 plot(center(1, 1), center(1, 2),'x', 'MarkerSize', 6, 'MarkerEdgeColor', 'b');
-                nav_flag = 1;
+                nav_flag = 1;              
+                [ nav ] = CalcRelativeCoord( coord_origin, resol, center);
+                nav_guide_cnt = nav_guide_cnt + 1;
+                if(nav_guide_cnt <= nav_num )
+                    nav_guide_point(nav_guide_cnt, :) = [target_cnt/10, nav, 0.0, 0.0, 0.0];              
+                else
+                    target_cnt = 1;
+                    nav_guide_point(nav_guide_cnt, :) = [target_cnt/10, nav, 0.0, 0.0, 0.0];
+                end         
+                
            end
            hold on;
        %%
@@ -120,6 +171,7 @@ while(map_proc)
            
        otherwise
            disp('~~~ An Error Input Mode Param !!!');
+           exit_flag = 1;
    end
    
    if(exit_flag == 1)
@@ -128,18 +180,41 @@ while(map_proc)
 end
 delete(h);
 
-%% Read map 1st line for image name
-yaml_name = [name, '.yaml'];
-fid_ori = fopen(yaml_name, 'r');
-line_1 = fgetl(fid_ori);
-len_1 = length(line_1);
-name = [line_1(8:end-4), '_mdf'];
-name_mdf = [name, '.pgm'];
-
+%% plot the modified map and save into *_mdf.pgm in folder map_nav
 figure(2)
 cd map_nav
 imshow(nav_map,'Border','tight');
 imwrite(nav_map, name_mdf, 'pgm');
 
-fclose(fid_ori);
+fclose(fid_yaml);
+
+%% Save the INIT/TARGET/NAV.po
+cd ../map_deploy;
+
+init_name = ['init', '.po'];
+fid_init = fopen(init_name, 'w+');
+fprintf(fid_init, num2str(robot_init));
+fclose(fid_init);
+
+target_name = ['target', '.po'];
+fid_target = fopen(target_name, 'w+');
+index = 1;
+while(robot_target(index,1) ~= 0)
+    fprintf(fid_target, num2str(robot_target(index, :)));
+    fprintf(fid_target, '\n');
+    index = index + 1;
+end
+fclose(fid_target);
+
+nav_name = ['nav', '.po'];
+fid_nav = fopen(nav_name, 'w+');
+index = 1;
+while(nav_guide_point(index,1) ~= 0)
+    fprintf(fid_nav, num2str(nav_guide_point(index, :)));
+    fprintf(fid_nav, '\n');
+    index = index + 1;
+end
+fclose(fid_nav);
+cd ..
+
 
