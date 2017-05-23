@@ -5,7 +5,7 @@
 clc;
 clear;
 close all;
-name = 'map_set/fac505';
+name = 'map_set/215';
 map_name = [name, '.pgm'];
 nav_map = imread(map_name);
 disp('Load Map Picture...');
@@ -137,7 +137,7 @@ name = [line_1(8:end-4), '_mdf'];
 name_mdf = [name, '.pgm'];
 
 figure(2)
-cd map_mdf
+cd map_nav
 imshow(nav_map,'Border','tight');
 imwrite(nav_map, name_mdf, 'pgm');
 

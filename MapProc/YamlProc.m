@@ -5,7 +5,7 @@
 clc;
 clear;
 
-yaml_path = 'map_set/fac505.yaml';
+yaml_path = 'map_set/215.yaml';
 fid_ori = fopen(yaml_path);
 %% process 1st line for image name
 line_1 = fgetl(fid_ori);
@@ -42,7 +42,7 @@ line_6 = fgetl(fid_ori);
 new_6 = ['free_thresh: ',num2str(new_free_thd)];
 
 %% create new yaml
-cd map_mdf;
+cd map_nav;
 mdf_name = [name, '.yaml'];
 fid_mdf = fopen(mdf_name, 'w+');
 
