@@ -42,7 +42,8 @@ line_6 = fgetl(fid_ori);
 new_6 = ['free_thresh: ',num2str(new_free_thd)];
 
 %% create new yaml
-mdf_name = [name,'.yaml'];
+cd map_mdf;
+mdf_name = [name, '.yaml'];
 fid_mdf = fopen(mdf_name, 'w+');
 
 fprintf(fid_mdf, new_1);

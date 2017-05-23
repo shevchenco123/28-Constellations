@@ -137,6 +137,7 @@ name = [line_1(8:end-4), '_mdf'];
 name_mdf = [name, '.pgm'];
 
 figure(2)
+cd map_mdf
 imshow(nav_map,'Border','tight');
 imwrite(nav_map, name_mdf, 'pgm');
 
