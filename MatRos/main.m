@@ -4,28 +4,47 @@
 % setenv('ROS_IP','192.168.0.130');
 clc;
 clear;
+close all;
+
+delete(timerfind);
+
 rosinit();
-% scandata = rosmessage('colibri_msgs/AngPotnEngy')
+
+
+rad_scan = -pi/6:pi/360:7*pi/6;
+global laser;
 laser = rossubscriber('/scan');
-apf = rossubscriber('/apf');
-rad = -pi/6:pi/360:7*pi/6;
+
 rad_apf = 0:pi/180:pi;
-    
+global apf;
+apf = rossubscriber('/apf');
+
+global scandata;
+global apfdata;
+
+% figure(1);
+
+scandata = receive(laser,1);
+apfdata = receive(apf,1);
+pscan = polar(rad_scan, (scandata.Ranges)', 'r');
+
+hold on;
+papf = polar(rad_apf, (apfdata.PotentialValue)', 'g');
+
+t = timer('StartDelay',0 ,'TimerFcn',@TimerCallBack,'Period',0.1,'ExecutionMode','fixedRate');  
+
+start(t);
+
 for i=1: 1: 1000
-%     scandata = receive(laser,1);
-%     pscan = polar(rad, (scandata.Ranges)', 'r');
-    % [ cartxy ] = Polar2Cart((scandata.Ranges)',[-30,210],0.5);
-    % plot(cartxy(1,:),cartxy(2,:),'r');
-%     hold on;
-    grid on;
-    apfdata = receive(apf,1);
+    delete(pscan);
+    delete(papf);
+    %drawnow;
+    pscan = polar(rad_scan, (scandata.Ranges)', 'r');
+    hold on;
     papf = polar(rad_apf, (apfdata.PotentialValue)', 'g');
-    % [ apfxy ] = Polar2Cart((apfdata.PotentialValue)',[0,180],1);
-    % plot(apfxy(1,:),apfxy(2,:),'g');
-    
-    drawnow;
-    
-%     delete(pscan)
-%     delete(papf)
-    pause(0.02);
+    pause(0.01);
 end
+
+delete(t);
+
+
