@@ -124,6 +124,7 @@ float protector::IntegrateMultiInfo4Safety(enum_act4safe* advise_action)
 	}
 	else
 	{
+		collision_flag = false;
 		if(bumper_signal == false)
 		{
 			colision_prob = MAX(laser_unsafe_prob, ultra_unsafe_prob);
