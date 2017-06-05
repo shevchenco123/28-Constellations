@@ -97,7 +97,7 @@ class scan_ca
 		void CalcPhiRange(int i, int range_num, int* ptrPhi_start, int* ptrPhi_end);
 		void CalcPassFcnAndFwdBnd(unsigned int flag, float* max_passfcn_val, float* ptrK_pg);
 		void CalcPassFcnAndBwdBnd(unsigned int flag, float* max_passfcn_val, float* ptrK_pg);
-		float CalcAdjDir(float* ptrPass_fcn_vector, float max_passfcn_val, int* fwd_bound, int* max_passfcn_bound_bwd);
+		float CalcAdjDir(float* ptrPass_fcn_vector, float max_passfcn_val, int* fwd_bound, int* bwd_bound);
 		void CalcCorrectedKrf(void);
 		void CalcCollisionInAPF(void);
 		void CalcPhiParam(float vel_center, float& dir_goal_inlaser);
