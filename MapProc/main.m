@@ -146,16 +146,10 @@ while(map_proc)
            disp('+++ Set Barrier Line in map from the rec diag line...');
            if(nav_flag == 0)
                 [rec, center] = CalcRecParam(h);
-                plot(center(1, 1), center(1, 2),'x', 'MarkerSize', 6, 'MarkerEdgeColor', 'b');
-                nav_flag = 1;              
-                [ nav ] = CalcRelativeCoord( coord_origin, resol, center);
-                nav_guide_cnt = nav_guide_cnt + 1;
-                if(nav_guide_cnt <= nav_num )
-                    nav_guide_point(nav_guide_cnt, :) = [target_cnt/10, nav, 0.0, 0.0, 0.0];              
-                else
-                    target_cnt = 1;
-                    nav_guide_point(nav_guide_cnt, :) = [target_cnt/10, nav, 0.0, 0.0, 0.0];
-                end         
+                [lu, rd] = CalcDiagFromRec(rec);
+                nav_map = DrawLine(nav_map,lu(1,1),lu(1,2),rd(1,1),rd(1,2));
+                plot(center(1, 1), center(1, 2),'^', 'MarkerSize', 6, 'MarkerEdgeColor', 'k');
+                diag_flag = 1;                   
                 
            end
            hold on;
@@ -199,6 +193,7 @@ while(map_proc)
            init_flag = 0;
            target_flag = 0;
            nav_flag = 0;
+           diag_flag = 0;
            fill_flag = 0;
            clear_flag = 0;
            unknown_flag = 0;

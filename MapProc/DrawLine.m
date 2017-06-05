@@ -22,7 +22,7 @@ end
 % 1-D indexes are calculated here:
     ind = sub2ind( size(img), yc, xc );
 % draw line on the image (change value of '255' to one that you need)
-    img(ind) = 1;
+    img(ind) = 0;
     img_dl = img;
 end
 
