@@ -19,12 +19,9 @@ void MySigintHandler(int sig);
 int main(int argc, char* argv[])
 {	
 
-	ROS_INFO("Start to Go to Mult Goals in Rviz ... ");
-
 	// ROS nav node initial
 	ros::init(argc, argv, "Nav_Mult_RvizGoal_Node");
-	ros::Rate loop_rate(10);		// Set control  freq at 10 hz
-	unsigned int delay_cnt = 0;		// Init delay conter for scanObj 
+	ROS_INFO("Start to Go to Mult Goals in Rviz ... ");
 
 	// Auto nav obj initial
 	scan_ca scan4caObj;	
@@ -67,6 +64,9 @@ int main(int argc, char* argv[])
 	bool replan_flag = false;
 
 	float rt_r2g_dis = 100.0;
+
+	ros::Rate loop_rate(10);		// Set control  freq at 10 hz
+	unsigned int delay_cnt = 0;		// Init delay conter for scanObj 
 
 	signal(SIGINT, MySigintHandler);
 
@@ -155,7 +155,7 @@ int main(int argc, char* argv[])
 			if(goal_inlaser_flag == true)
 			{
 				local4navObj.apf_ctrl_output[0] = (V_MAX - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
-				local4navObj.apf_ctrl_output[1] = scan4caObj.angle_adj / 200.0;	
+				local4navObj.apf_ctrl_output[1] = scan4caObj.angle_adj / 250.0;	
 			}
 			else	//if gravaton is not in front of  laser , should exec the still rot 
 			{
