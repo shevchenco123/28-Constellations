@@ -15,6 +15,8 @@ int main(int argc, char* argv[])
 	float tmp_theta_obs = 0.0;	//obstacle 's theta angle
 	float tmp_passfcn_value = 0.0;
 	colibri_msgs::AngPotnEngy apf;
+	colibri_msgs::AngPotnEngy rf;
+
 
 	ofstream  file1,file2,file3; 
 	file1.open ("cppscan4ca_vector.txt"); 
@@ -42,9 +44,15 @@ int main(int argc, char* argv[])
 			apf.angle_min = 0.0;
 			apf.angle_max = 180.0;
 			apf.angle_increment = 1.0;
+			
+			rf.header.stamp = ros::Time::now();
+			rf.header.frame_id = "laser";
+			rf.angle_min = 0.0;
+			rf.angle_max = 180.0;
+			rf.angle_increment = 1.0;
 
-			float krf_vec_mntr[NUM_RAY4CA];
-			float kaf_vec_mntr[NUM_RAY4CA];
+			float rf_vec_mntr[NUM_RAY4CA];
+			float apf_vec_mntr[NUM_RAY4CA];
 
 			
 			for(int i = 0; i < NUM_RAY4CA; i++)
@@ -60,7 +68,6 @@ int main(int argc, char* argv[])
 
 				tmp_theta_obs = i; // unit in degree
 				scan4caObj.kaf_vec[i] = cos((tmp_theta_obs - scan4caObj.goal_dir) * DEG2RAD);
-				kaf_vec_mntr[i] = 10 * scan4caObj.kaf_vec[i];
 				scan4caObj.krf_vec[i] = scan4caObj.kp_phi_vec[i];  //init the repulse field using kp_phi_vec
 				
 
@@ -80,14 +87,24 @@ int main(int argc, char* argv[])
 			apf.neg_order_max = scan4caObj.max_passfcn_val;
 			apf.neg_order_index = scan4caObj.maxfcn_bwdbnd;	
 
+			rf.max_potn_engy = scan4caObj.max_passfcn_val;
+			rf.max_index = (unsigned int) (scan4caObj.maxfcn_fwdbnd + scan4caObj.maxfcn_bwdbnd) / 2;
+			rf.pos_order_max = scan4caObj.max_passfcn_val;
+			rf.pos_order_index = scan4caObj.maxfcn_fwdbnd;
+			rf.neg_order_max = scan4caObj.max_passfcn_val;
+			rf.neg_order_index = scan4caObj.maxfcn_bwdbnd;	
+
 			for(int i = 0; i < NUM_RAY4CA; i++)
 			{
-				krf_vec_mntr[i] = 1 / scan4caObj.krf_vec[i];
+				apf_vec_mntr[i] =  scan4caObj.passfcn_vec[i];
+				rf_vec_mntr[i] = 1 / scan4caObj.krf_vec[i];
 			}
-			
-			memcpy(&apf.potential_value[0], &krf_vec_mntr[0], sizeof(krf_vec_mntr));
+
+			memcpy(&apf.potential_value[0], &apf_vec_mntr[0], sizeof(apf_vec_mntr));
+			memcpy(&rf.potential_value[0], &rf_vec_mntr[0], sizeof(rf_vec_mntr));
 			
 			scan4caObj.apf_pub4mntr.publish(apf);
+			scan4caObj.rf_pub4mntr.publish(rf);
 
 			for(int j = 0; j < NUM_RAY4CA; j++)
 			{

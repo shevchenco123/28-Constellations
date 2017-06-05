@@ -5,7 +5,10 @@ function [ ] = TimerCallBack(hObject,eventdata)
     global laser;
     global apfdata;
     global apf;
+    global rf;
+    global rfdata;
 
     scandata = receive(laser,1);
-    apfdata = receive(apf,1);    
+%     apfdata = receive(apf,1); 
+    rfdata = receive(rf,1);
 end

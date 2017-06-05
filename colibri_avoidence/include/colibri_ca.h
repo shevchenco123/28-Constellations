@@ -88,6 +88,7 @@ class scan_ca
 		ros::NodeHandle nh_ca;
 		ros::Subscriber scan_sub4ca;
 		ros::Publisher apf_pub4mntr;
+		ros::Publisher rf_pub4mntr;
 		
 		scan_ca();
 		~scan_ca();
