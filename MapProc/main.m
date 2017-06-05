@@ -17,6 +17,7 @@ nav_flag = 0;
 fill_flag = 0;
 clear_flag = 0;
 unknown_flag = 0;
+diag_flag = 0;
 exit_flag = 0;
 
 figure(1);
@@ -113,7 +114,7 @@ while(map_proc)
            disp('+++ Fill an Rec Area...');
            if(fill_flag == 0)
                 [rec, center] = CalcRecParam(h);
-                nav_map = ModifyEdgeGreyValue( nav_map, black_gray, rec, 2);
+                nav_map = ModifyEdgeGreyValue( nav_map, black_gray, rec, 1);
                 rectangle('Position',rec,'LineWidth',0.1,'EdgeColor','y');
                 plot(center(1, 1), center(1, 2),'+', 'MarkerSize', 4, 'MarkerEdgeColor', 'g', 'MarkerFaceColor', 'y');
                 fill_flag = 1;
@@ -144,32 +145,29 @@ while(map_proc)
        %%
        case 6
            disp('+++ Set Barrier Line in map from the rec diag line...');
-           if(nav_flag == 0)
+           if(diag_flag == 0)
                 [rec, center] = CalcRecParam(h);
+                rectangle('Position',rec,'LineWidth',0.1,'EdgeColor','y');
                 [lu, rd] = CalcDiagFromRec(rec);
                 nav_map = DrawLine(nav_map,lu(1,1),lu(1,2),rd(1,1),rd(1,2));
-                plot(center(1, 1), center(1, 2),'^', 'MarkerSize', 6, 'MarkerEdgeColor', 'k');
+                plot(center(1, 1), center(1, 2),'^', 'MarkerSize', 6, 'MarkerEdgeColor', 'r');
                 diag_flag = 1;                   
                 
            end
            hold on;
        case 7
-           disp('+++ Set Robot Nav Path Point...');
-           if(nav_flag == 0)
+           disp('+++  Set Barrier Line in map from the rec mirror diag line...');
+           if(diag_flag == 0)
                 [rec, center] = CalcRecParam(h);
-                plot(center(1, 1), center(1, 2),'x', 'MarkerSize', 6, 'MarkerEdgeColor', 'b');
-                nav_flag = 1;              
-                [ nav ] = CalcRelativeCoord( coord_origin, resol, center);
-                nav_guide_cnt = nav_guide_cnt + 1;
-                if(nav_guide_cnt <= nav_num )
-                    nav_guide_point(nav_guide_cnt, :) = [target_cnt/10, nav, 0.0, 0.0, 0.0];              
-                else
-                    target_cnt = 1;
-                    nav_guide_point(nav_guide_cnt, :) = [target_cnt/10, nav, 0.0, 0.0, 0.0];
-                end         
+                [ld, ru] = CalcMirDiagFromRec(rec);
+                rectangle('Position',rec,'LineWidth',0.1,'EdgeColor','y');
+                nav_map = DrawLine(nav_map,ld(1,1),ld(1,2),ru(1,1),ru(1,2));
+                plot(center(1, 1), center(1, 2),'^', 'MarkerSize', 6, 'MarkerEdgeColor', 'b');
+                diag_flag = 1;                   
                 
            end
-           hold on;           
+           hold on;
+      
        case 8
            disp('+++ Set Robot Nav Path Point...');
            if(nav_flag == 0)
