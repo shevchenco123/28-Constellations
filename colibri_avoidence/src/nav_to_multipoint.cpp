@@ -19,12 +19,9 @@ void MySigintHandler(int sig);
 int main(int argc, char* argv[])
 {	
 
-	ROS_INFO("Start to Go to Mult Goals in Rviz ... ");
-
 	// ROS nav node initial
 	ros::init(argc, argv, "Nav_Mult_RvizGoal_Node");
-	ros::Rate loop_rate(10);		// Set control  freq at 10 hz
-	unsigned int delay_cnt = 0;		// Init delay conter for scanObj 
+	ROS_INFO("Start to Go to Mult Goals in Rviz ... ");
 
 	// Auto nav obj initial
 	scan_ca scan4caObj;	
@@ -67,6 +64,9 @@ int main(int argc, char* argv[])
 	bool replan_flag = false;
 
 	float rt_r2g_dis = 100.0;
+
+	ros::Rate loop_rate(10);		// Set control  freq at 10 hz
+	unsigned int delay_cnt = 0;		// Init delay conter for scanObj 
 
 	signal(SIGINT, MySigintHandler);
 
@@ -220,8 +220,8 @@ int main(int argc, char* argv[])
 			cout<<"pub_linear_x: " << local4navObj.apf_cmd_vel.linear.x <<endl;
 			cout<<"pub_angular_z: " << local4navObj.apf_cmd_vel.angular.z <<endl;
 
-			scan4caObj.fwd_maxpass_num = 0;
-			scan4caObj.bwd_maxpass_num = 0;
+			scan4caObj.ResetMaxPassValCnt();
+
 
 			ros::spinOnce();
 			loop_rate.sleep();
