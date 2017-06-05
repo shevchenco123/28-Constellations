@@ -143,6 +143,40 @@ while(map_proc)
            hold on;
        %%
        case 6
+           disp('+++ Set Barrier Line in map from the rec diag line...');
+           if(nav_flag == 0)
+                [rec, center] = CalcRecParam(h);
+                plot(center(1, 1), center(1, 2),'x', 'MarkerSize', 6, 'MarkerEdgeColor', 'b');
+                nav_flag = 1;              
+                [ nav ] = CalcRelativeCoord( coord_origin, resol, center);
+                nav_guide_cnt = nav_guide_cnt + 1;
+                if(nav_guide_cnt <= nav_num )
+                    nav_guide_point(nav_guide_cnt, :) = [target_cnt/10, nav, 0.0, 0.0, 0.0];              
+                else
+                    target_cnt = 1;
+                    nav_guide_point(nav_guide_cnt, :) = [target_cnt/10, nav, 0.0, 0.0, 0.0];
+                end         
+                
+           end
+           hold on;
+       case 7
+           disp('+++ Set Robot Nav Path Point...');
+           if(nav_flag == 0)
+                [rec, center] = CalcRecParam(h);
+                plot(center(1, 1), center(1, 2),'x', 'MarkerSize', 6, 'MarkerEdgeColor', 'b');
+                nav_flag = 1;              
+                [ nav ] = CalcRelativeCoord( coord_origin, resol, center);
+                nav_guide_cnt = nav_guide_cnt + 1;
+                if(nav_guide_cnt <= nav_num )
+                    nav_guide_point(nav_guide_cnt, :) = [target_cnt/10, nav, 0.0, 0.0, 0.0];              
+                else
+                    target_cnt = 1;
+                    nav_guide_point(nav_guide_cnt, :) = [target_cnt/10, nav, 0.0, 0.0, 0.0];
+                end         
+                
+           end
+           hold on;           
+       case 8
            disp('+++ Set Robot Nav Path Point...');
            if(nav_flag == 0)
                 [rec, center] = CalcRecParam(h);
