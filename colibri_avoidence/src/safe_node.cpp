@@ -43,6 +43,9 @@ int main(int argc, char* argv[])
 			coli_prob = protectObj.IntegrateMultiInfo4Safety(&protectObj.advise_action);
 			cout<<"coli_prob: "<< coli_prob<< endl;
 
+			protectObj.Intg4EnvSecure();	
+			protectObj.security_pub4env.publish(protectObj.env_secure);
+
 			ros::spinOnce();
 			loop_rate.sleep();
 			ROS_INFO("end ...");
@@ -53,6 +56,4 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
-
-
 

@@ -12,14 +12,14 @@ scan_ca::scan_ca()
 	memset(phi_start_vec, 1, NUM_RAY4CA);
 	memset(phi_end_vec, 181, NUM_RAY4CA);
 
-	memset(krf_vec, 0.1, NUM_RAY4CA);
-	memset(kaf_vec, 0, NUM_RAY4CA);
+	memset(krf_vec, 1/D_M, NUM_RAY4CA);
+	memset(kaf_vec, 0.0, NUM_RAY4CA);
 
 	memset(passfcn_vec, 0, NUM_RAY4CA);
 	max_passfcn_val = 0.0;
 
-	fwd_maxpass_num = 0;
-	bwd_maxpass_num = 0;
+	fwd_maxpass_cnt = 0;
+	bwd_maxpass_cnt = 0;
 
 	maxfcn_fwdbnd = 0;
 	maxfcn_bwdbnd = 0;
@@ -34,7 +34,8 @@ scan_ca::scan_ca()
 	wander = 0;
 	
 	scan_sub4ca = nh_ca.subscribe<sensor_msgs::LaserScan>("/scan", 1, &scan_ca::ScanCallBack, this);
-	
+	apf_pub4mntr = nh_ca.advertise<colibri_msgs::AngPotnEngy>("/apf", 5);
+	rf_pub4mntr = nh_ca.advertise<colibri_msgs::AngPotnEngy>("/rf", 5);
 }
 
 scan_ca::~scan_ca()
@@ -68,7 +69,7 @@ void scan_ca::CalcKrfTheta(float* ptrKp_phi_vector, int* ptrPhi_range_start, int
 		{
 			if((theta_index >= *(ptrPhi_range_start+phi_index)) && (theta_index <= *(ptrPhi_range_end+phi_index)))
 			{
-				if(krf_vec[theta_index] <= *(ptrKp_phi_vector + phi_index))
+				if(krf_vec[theta_index] <= *(ptrKp_phi_vector + phi_index)) // to obtain the max [Krf(phi,theta)] as Krf(theta)
 				{	
 					krf_vec[theta_index] = *(ptrKp_phi_vector + phi_index);				
 				}
@@ -110,7 +111,7 @@ void scan_ca::CalcPassFcnAndFwdBnd(unsigned int flag, float* max_passfcn_val, fl
 	float tmp_passfcn_value = 0.0;
 	int tmp_bound_forward = 0;
 		
-		for(int j = 0; j < NUM_RAY4CA; j++)
+		for(int j = 0; j < NUM_RAY4CA; j++) //from right to left search the max passfcn val  and the max passfcn's bound index should locate at left terminal
 		{
 			if(flag == 1)
 			{
@@ -138,7 +139,7 @@ void scan_ca::CalcPassFcnAndBwdBnd(unsigned int flag, float* max_passfcn_val, fl
 	float tmp_passfcn_value = 0.0;
 	int tmp_bound_backward = 0;
 
-	for(int k = NUM_RAY4CA - 1; k >= 0; k--)
+	for(int k = NUM_RAY4CA - 1; k >= 0; k--) //from left to right search the max passfcn val  and the max passfcn's bound index should locate at right terminal
 	{
 		if(flag == 1)
 		{
@@ -177,21 +178,21 @@ float scan_ca::CalcAdjDir(float* ptrPassfcn_vector, float max_passfcn_val, int* 
 	int mid_num = 90;
 	float adj_dir = 0.0;
 	
-	for(int m = 0; m <= mid_num; m++)  //backward directrion search using forward bound
+	for(int m = 0; m <= mid_num; m++)  //backward directrion(CW 180->0) search using forward bound
 	{
 		if(abs(*(ptrPassfcn_vector + *(fwd_bound) - m) - max_passfcn_val) < MAX_PASSFCN_SCOPE)
 		{
-			fwd_maxpass_num++;
+			fwd_maxpass_cnt++;
 		}else
 		{
 			break;
 		}
 	}
-	for(int n = 0; n <= mid_num; n++)	// forward direction search using backward bound
+	for(int n = 0; n <= mid_num; n++)	// forward direction(CCW 0->180) search using backward bound
 	{
 		if(abs(*(ptrPassfcn_vector + *(bwd_bound) + n) - max_passfcn_val) < MAX_PASSFCN_SCOPE)
 		{
-			bwd_maxpass_num++;
+			bwd_maxpass_cnt++;
 		}else
 		{
 			break;
@@ -199,12 +200,12 @@ float scan_ca::CalcAdjDir(float* ptrPassfcn_vector, float max_passfcn_val, int* 
 	}
 
 	
-	if (fwd_maxpass_num <= bwd_maxpass_num)
+	if (fwd_maxpass_cnt <= bwd_maxpass_cnt)
 	{
-		adj_dir = *bwd_bound + bwd_maxpass_num / 2.0 - mid_num;
+		adj_dir = *bwd_bound + bwd_maxpass_cnt / 2.0 - mid_num;
 	}else
 	{
-		adj_dir = *fwd_bound - fwd_maxpass_num / 2.0 - mid_num;
+		adj_dir = *fwd_bound - fwd_maxpass_cnt / 2.0 - mid_num;
 	}
 
 	return adj_dir;
@@ -228,7 +229,7 @@ float scan_ca::CalcKpPhi(float vel_center, float d_phi)
 
 	if(d_phi <= tmpDsr)
 	{
-		kp_phi = 10000;
+		kp_phi = KP_PHI_INF;
 	}
 	else if((d_phi <= D_M)&&(tmpDsr < d_phi))
 	{
@@ -246,6 +247,12 @@ float scan_ca::CalcKpPhi(float vel_center, float d_phi)
 	}
 	
 	return kp_phi;
+}
+
+void scan_ca::ResetMaxPassValCnt(void)
+{
+	fwd_maxpass_cnt = 0;
+	bwd_maxpass_cnt = 0;
 }
 
 void scan_ca::CalcCorrectedKrf(void)

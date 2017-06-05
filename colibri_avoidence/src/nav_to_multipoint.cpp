@@ -155,7 +155,7 @@ int main(int argc, char* argv[])
 			if(goal_inlaser_flag == true)
 			{
 				local4navObj.apf_ctrl_output[0] = (V_MAX - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
-				local4navObj.apf_ctrl_output[1] = scan4caObj.angle_adj / 250.0;	
+				local4navObj.apf_ctrl_output[1] = scan4caObj.angle_adj / 200.0;	
 			}
 			else	//if gravaton is not in front of  laser , should exec the still rot 
 			{
@@ -220,8 +220,8 @@ int main(int argc, char* argv[])
 			cout<<"pub_linear_x: " << local4navObj.apf_cmd_vel.linear.x <<endl;
 			cout<<"pub_angular_z: " << local4navObj.apf_cmd_vel.angular.z <<endl;
 
-			scan4caObj.fwd_maxpass_num = 0;
-			scan4caObj.bwd_maxpass_num = 0;
+			scan4caObj.ResetMaxPassValCnt();
+
 
 			ros::spinOnce();
 			loop_rate.sleep();

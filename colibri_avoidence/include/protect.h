@@ -17,8 +17,9 @@
 
 #include "colibri_ca.h"
 
-#include <colibri_aiv/Ultrasonic.h>
-#include <colibri_aiv/Bumper.h>
+#include "colibri_aiv/Ultrasonic.h"
+#include "colibri_aiv/Bumper.h"
+#include "colibri_msgs/EnvSecurity.h"
 
 // 3 layers for running safty : laser / ultrosonic  /bumper
 
@@ -98,6 +99,10 @@ class protector
 		ros::Subscriber	ultra_sub4safe;
 		ros::Subscriber	bumper_sub4safe;
 		ros::Subscriber	odom_sub4safe;
+  
+		ros::Publisher security_pub4env;
+		colibri_msgs::EnvSecurity env_secure;
+
 
 		protector();
 		
@@ -106,20 +111,17 @@ class protector
 		void CalcMinDis4LaserScan(float* laser_vec);	
 		void CalcMinDis4Ultrosonic(float* ultra_vec);
 		
-		float IntegrateMultiInfo4Safety(enum_act4safe* advise_action);
-		
+		float IntegrateMultiInfo4Safety(enum_act4safe* advise_action);	
 		bool Detect4ExceptHighVel(float* v, float* vth);
-
 		bool StopMovingInForce(void);
-		
+		void Intg4EnvSecure(void);
+	
 	private:
 		
 		void ScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4safe);
 		void UltraSafeCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra4safe);
 		void BumperSafeCallBack(const colibri_aiv::Bumper::ConstPtr& bumper4safe);
 		void OdomSafeCallBack(const nav_msgs::Odometry::ConstPtr& odom4safe);
-
-
 
 };
 
