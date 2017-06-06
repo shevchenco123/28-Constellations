@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 	float v_0 = 0.0;
 	int range_num = 0;
 
-	float tmp_theta_obs = 0.0;	//obstacle 's theta angle
+	float tmp_delta_o2g = 0.0;	//obstacle 's theta angle -goal_dir
 	float tmp_passfcn_value = 0.0;
 	colibri_msgs::AngPotnEngy apf;
 	colibri_msgs::AngPotnEngy rf;
@@ -66,8 +66,9 @@ int main(int argc, char* argv[])
 				
 				scan4caObj.CalcPhiRange(i,range_num,&scan4caObj.phi_start_vec[i],&scan4caObj.phi_end_vec[i]);
 
-				tmp_theta_obs = i; // unit in degree
-				scan4caObj.kaf_vec[i] = cos((tmp_theta_obs - scan4caObj.goal_dir) * DEG2RAD);
+				tmp_delta_o2g = i - scan4caObj.goal_dir; // unit in degree
+				scan4caObj.LimitAngle(tmp_delta_o2g);
+				scan4caObj.kaf_vec[i] = cos(tmp_delta_o2g * DEG2RAD);
 				scan4caObj.krf_vec[i] = scan4caObj.kp_phi_vec[i];  //init the repulse field using kp_phi_vec
 				
 
@@ -76,7 +77,7 @@ int main(int argc, char* argv[])
 			file1.close();  //record laser dis completed
 		
 			scan4caObj.CalcKrfTheta(scan4caObj.kp_phi_vec, scan4caObj.phi_start_vec, scan4caObj.phi_end_vec);
-	
+			//scan4caObj.CalcCorrectedKrf();
 			scan4caObj.CalcPassFcnAndFwdBnd(scan4caObj.wander, &scan4caObj.max_passfcn_val , scan4caObj.passfcn_vec);
 			scan4caObj.CalcPassFcnAndBwdBnd(scan4caObj.wander, &scan4caObj.max_passfcn_val , scan4caObj.passfcn_vec);
 

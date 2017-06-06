@@ -6,7 +6,7 @@ int main(int argc, char* argv[])
 	
 	protector protectObj;
 	
-	ros::Rate loop_rate(15);
+	ros::Rate loop_rate(10);
 	
 	int delay_cnt = 0;
 	float coli_prob = 0.0;
@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 			protectObj.CalcMinDis4LaserScan(protectObj.scan4safty);
 			
 			cout<<"protectObj.min_scan: "<< protectObj.min_scan << endl;
-			cout<<"protectObj.min_index_scan: "<< protectObj.min_index_scan << endl;
+			cout<<"protectObj.min_scan_angle: "<< protectObj.min_scan_angle<< endl;
 			cout<<"protectObj.laser_prob: "<< protectObj.laser_unsafe_prob<< endl;
 			
 			for(int j = 1; j <= SCAN4SAFE_NUM; j++)

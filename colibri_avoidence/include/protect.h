@@ -24,21 +24,21 @@
 // 3 layers for running safty : laser / ultrosonic  /bumper
 
 
-#define SCAN4SAFE_NUM 211	//obtain the  210 degree laser scan for resolution at 1 degree 
+#define SCAN4SAFE_NUM 211	//obtain the  210 degree laser scan for resolution at 1 degree  from  (-15~195) degree
+#define LASER_SAFE_MIN	0.15	//static safe limit
+#define LASER_SAFE_MAX	4.0
+
 #define ULTRA_NUM	  4		//front 4 ultrasonic, ignore the back 4 ultrasonic
+#define ULTRA_SAFE_MIN	0.10
+#define ULTRA_SAFE_MAX	4.0
 
-#define LASER_SAFE_MIN	0.1	//static safe limit
-#define LASER_SAFE_MAX	0.5
+#define UNSAFE_PROB		0.97 // >0.97 must stop
+#define LEVEL_1_PROB 	0.95 // >0.95 advise stop
+#define LEVEL_2_PROB 	0.85 // >0.85 turn for ca
+#define LEVEL_3_PROB 	0.35 // > 0.35 dec vel  ; <0.35 hold on the current state
 
-#define ULTRA_SAFE_MIN	0.3
-
-#define UNSAFE_PROB		0.9
-#define LEVEL_1_PROB 	0.85
-#define LEVEL_2_PROB 	0.35
-#define LEVEL_3_PROB 	0.15
-
-#define V_EXCPT_VAL   1.5
-#define VTH_EXCPT_VAL 0.6
+#define V_EXCPT_VAL   1.25
+#define VTH_EXCPT_VAL 0.785	// 45 deg/sec
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
@@ -79,6 +79,7 @@ class protector
 
 		unsigned int min_index_scan;
 		unsigned int min_index_ultra;
+		int min_scan_angle;
 		
 		bool bumper_signal;
 

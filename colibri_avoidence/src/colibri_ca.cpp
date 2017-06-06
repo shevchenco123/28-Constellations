@@ -255,6 +255,22 @@ void scan_ca::ResetMaxPassValCnt(void)
 	bwd_maxpass_cnt = 0;
 }
 
+void scan_ca::LimitAngle(float & delta_ang)
+{
+	if(delta_ang >= 90) // for calc attract field , the delta angle should be -90~90 deg to ignore neg val
+	{
+		delta_ang = 90;
+	}
+	else if (delta_ang <= -90)
+	{
+		delta_ang = -90;
+	}
+	else
+	{
+
+	}
+}
+
 void scan_ca::CalcCorrectedKrf(void)
 {
 	float corrector;

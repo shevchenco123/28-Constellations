@@ -103,6 +103,7 @@ class scan_ca
 		void CalcCollisionInAPF(void);
 		void CalcPhiParam(float vel_center, float& dir_goal_inlaser);
 		void ResetMaxPassValCnt(void);
+		void LimitAngle(float& delta_ang);
 		
 	private:
 

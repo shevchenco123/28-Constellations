@@ -20,6 +20,7 @@ protector::protector()
 	min_ultra = 1.0;
 
 	min_index_scan = 0;
+	min_scan_angle = 90;
 	min_index_ultra = 0;	
 	
 	scan_sub4safe = nh_safety.subscribe<sensor_msgs::LaserScan>("/scan", 1, &protector::ScanSafeCallBack, this);
@@ -57,6 +58,7 @@ void protector::CalcMinDis4LaserScan(float* laser_vec)
 	
 	min_scan = tmp_range;
 	min_index_scan = index_mindis;
+	min_scan_angle = (int)(index_mindis) - 15; //-15  is the laser safty start angle
 
 	if(tmp_range <= LASER_SAFE_MIN)
 	{
@@ -97,7 +99,11 @@ void protector::CalcMinDis4Ultrosonic(float* ultra_vec)
 
 	if(tmp_range <= ULTRA_SAFE_MIN)
 	{
-		laser_unsafe_prob = (ULTRA_SAFE_MIN - tmp_range) / ULTRA_SAFE_MIN;
+		laser_unsafe_prob = 1.0;
+	}
+	else if(tmp_range <= ULTRA_SAFE_MAX)
+	{
+		laser_unsafe_prob = (ULTRA_SAFE_MAX - tmp_range) / (ULTRA_SAFE_MAX - ULTRA_SAFE_MIN);
 	}
 	else
 	{
@@ -141,7 +147,7 @@ float protector::IntegrateMultiInfo4Safety(enum_act4safe* advise_action)
 			}
 			else
 			{
-				if(min_index_scan <= ULTRA_NUM / 2)
+				if(min_index_ultra<= ULTRA_NUM / 2)
 				{
 					obs_dir = RIGHT;
 				}
