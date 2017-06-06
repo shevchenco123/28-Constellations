@@ -4,3 +4,5 @@ cartographer_ros/
 *.swp
 *~
 *.[oa]
+*.jpg
+*.bmp

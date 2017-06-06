@@ -65,15 +65,8 @@ int main(int argc, char* argv[])
 
 			scan4caObj.angle_adj = scan4caObj.CalcAdjDir(scan4caObj.passfcn_vec,scan4caObj.max_passfcn_val, &scan4caObj.maxfcn_fwdbnd,&scan4caObj.maxfcn_bwdbnd);
 				
-			if(scan4caObj.max_passfcn_val <= PASSFCN_THD_RATIO * D_M)
-			{
-				scan4caObj.colision_alarm = 1;
-			}
-			else
-			{
-				scan4caObj.colision_alarm = 0;
-			}
-		
+			scan4caObj.CalcCollisionInAPF();
+
 			cout<<"current_robot_state[0]"<<local4navObj.cur_robot_state[0]<<endl;
 			cout<<"current_robot_state[1]"<<local4navObj.cur_robot_state[1]<<endl;
 			cout<<"current_robot_state[2]"<<local4navObj.cur_robot_state[2]<<endl;
@@ -119,8 +112,8 @@ int main(int argc, char* argv[])
 
 			local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel);
 
-			scan4caObj.fwd_maxpass_num = 0;
-			scan4caObj.bwd_maxpass_num = 0;
+			scan4caObj.ResetMaxPassValCnt();
+
 		
 			ros::spinOnce();
 			loop_rate.sleep();

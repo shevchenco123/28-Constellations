@@ -88,15 +88,8 @@ int main(int argc, char* argv[])
 
 			scan4caObj.angle_adj = scan4caObj.CalcAdjDir(scan4caObj.passfcn_vec,scan4caObj.max_passfcn_val, &scan4caObj.maxfcn_fwdbnd,&scan4caObj.maxfcn_bwdbnd);
 				
-			if(scan4caObj.max_passfcn_val <= PASSFCN_THD_RATIO * D_M)
-			{
-				scan4caObj.colision_alarm = 1;
-			}
-			else
-			{
-				scan4caObj.colision_alarm = 0;
-			}
-		
+			scan4caObj.CalcCollisionInAPF();
+			
 			if(goal_inlaser_flag == true)
 			{
 				local4navObj.apf_ctrl_output[0] = (V_MAX - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
@@ -176,9 +169,8 @@ int main(int argc, char* argv[])
 			cout<<"pub_linear_x: " << local4navObj.apf_cmd_vel.linear.x <<endl;
 			cout<<"pub_angular_z: " << local4navObj.apf_cmd_vel.angular.z <<endl;
 
-			scan4caObj.fwd_maxpass_num = 0;
-			scan4caObj.bwd_maxpass_num = 0;
-		
+			scan4caObj.ResetMaxPassValCnt();
+	
 			ros::spinOnce();
 			loop_rate.sleep();
 			ROS_INFO("---end ...");
