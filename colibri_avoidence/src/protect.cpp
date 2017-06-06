@@ -99,11 +99,11 @@ void protector::CalcMinDis4Ultrosonic(float* ultra_vec)
 
 	if(tmp_range <= ULTRA_SAFE_MIN)
 	{
-		laser_unsafe_prob = 1.0;
+		ultra_unsafe_prob = 1.0;
 	}
 	else if(tmp_range <= ULTRA_SAFE_MAX)
 	{
-		laser_unsafe_prob = (ULTRA_SAFE_MAX - tmp_range) / (ULTRA_SAFE_MAX - ULTRA_SAFE_MIN);
+		ultra_unsafe_prob = (ULTRA_SAFE_MAX - tmp_range) / (ULTRA_SAFE_MAX - ULTRA_SAFE_MIN);
 	}
 	else
 	{
