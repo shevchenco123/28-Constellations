@@ -53,7 +53,7 @@ void PID_controller::Regulator(float u_r, float u_fb, float* u_out)
 	
 	DeltaOutBound(&(PID_param.u_delta), PID_param.bound4delta);
 	
-	//PID_param.u_out += PID_param.u_delta;  			//positon mode
+	//PID_param.u_out += PID_param.u_delta;  	//positon mode
     PID_param.u_out = PID_param.u_delta;  		//delta mode 
   
     *u_out = PID_param.u_out;  
