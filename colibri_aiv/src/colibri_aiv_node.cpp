@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 
 	//my_port.SendCmd(my_port.req_encoder_start,AIV_Driver::req_encoder_start_finish);
 
-	//my_port.SendCmd(my_port.req_ultra_start,AIV_Driver::req_ultra_start_finish);
+	my_port.SendCmd(my_port.req_ultra_start,AIV_Driver::req_ultra_start_finish);
 
 	//my_port.SendCmd(my_port.req_bumper_start,AIV_Driver::req_bumper_start_finish);
 

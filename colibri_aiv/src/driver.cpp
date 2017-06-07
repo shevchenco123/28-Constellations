@@ -79,7 +79,7 @@ AIV_Driver::AIV_Driver()
 	GenerateCmd(req_vel_stop, REQ_VELOCITY, RSVD_VAL, FRAME_CMD_STOP, cmd_data);
 		
 	//cout<<"enable_motor:"<<endl;
-	//DisplayFrame(enable_motor);
+	DisplayFrame(req_ultra_start);
 	
 	cartodom_x = -OFFSET_LASER_X;
 	cartodom_y = 0.0;
@@ -381,7 +381,8 @@ void AIV_Driver::ReadInfoProc(unsigned char buf[], boost::system::error_code ec,
 						ultra.ultrasonic5 = (recv_data[VALID_DATA_START_INDX + 8] * 256 + recv_data[VALID_DATA_START_INDX + 9]) & 0xffff;
 						ultra.ultrasonic6 = (recv_data[VALID_DATA_START_INDX + 10] * 256 + recv_data[VALID_DATA_START_INDX + 11]) & 0xffff;
 						ultra.ultrasonic7 = (recv_data[VALID_DATA_START_INDX + 12] * 256 + recv_data[VALID_DATA_START_INDX + 13]) & 0xffff;
-						ultra.ultrasonic8 = (recv_data[VALID_DATA_START_INDX + 14] * 256 + recv_data[VALID_DATA_START_INDX + 15]) & 0xffff;						ultrasonic_pub.publish(ultra);
+						ultra.ultrasonic8 = (recv_data[VALID_DATA_START_INDX + 14] * 256 + recv_data[VALID_DATA_START_INDX + 15]) & 0xffff;						
+						ultrasonic_pub.publish(ultra);
 						AIV_Driver::req_ultra_start_finish = false;
 						cout<<"request_ultrasonic cmd is executed successfully !"<<endl;
 					}
