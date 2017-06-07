@@ -297,7 +297,8 @@ void scan_ca::CalcPhiParam(float vel_center, float& dir_goal_inlaser)
 {
 
 	int range_num = 0;
-	float tmp_theta_laseray = 0.0;	//obstacle 's theta angle
+	//float tmp_theta_laseray = 0.0;	//obstacle 's theta angle
+	float tmp_delta = 0.0;
 
 	for(int i = 0; i < NUM_RAY4CA; i++)
 	{
@@ -308,8 +309,9 @@ void scan_ca::CalcPhiParam(float vel_center, float& dir_goal_inlaser)
 		kp_phi_vec[i] = CalcKpPhi(vel_center, *(ptrScan4ca + i));		
 		krf_vec[i] = kp_phi_vec[i];
 	
-		tmp_theta_laseray = i;			// unit in degree
-		kaf_vec[i] = cos((tmp_theta_laseray - dir_goal_inlaser) * DEG2RAD);  //dir_goal_in_laser is 0~180 degree from right side
+		tmp_delta = i - dir_goal_inlaser;			// unit in degree
+		LimitAngle(tmp_delta);
+		kaf_vec[i] = cos(tmp_delta * DEG2RAD);  //dir_goal_in_laser is 0~180 degree from right side
 		
 	}
 
