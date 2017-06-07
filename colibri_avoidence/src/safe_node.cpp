@@ -30,6 +30,7 @@ int main(int argc, char* argv[])
 			protectObj.CalcMinDis4LaserScan(protectObj.scan4safty);
 			
 			cout<<"protectObj.min_scan: "<< protectObj.min_scan << endl;
+			cout<<"protectObj.min_index_scan: "<< protectObj.min_index_scan<< endl;
 			cout<<"protectObj.min_scan_angle: "<< protectObj.min_scan_angle<< endl;
 			cout<<"protectObj.laser_prob: "<< protectObj.laser_unsafe_prob<< endl;
 			
