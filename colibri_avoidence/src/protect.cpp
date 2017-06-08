@@ -45,7 +45,7 @@ protector::~protector()
 void protector::CalcMinDis4LaserScan(float* laser_vec)
 {
 	float tmp_range = *laser_vec;
-	unsigned int index_mindis = 0;
+	int index_mindis = 0;
 	
 	for(int i = 0; i < SCAN4SAFE_NUM; i++)
 	{
@@ -58,7 +58,7 @@ void protector::CalcMinDis4LaserScan(float* laser_vec)
 	
 	min_scan = tmp_range;
 	min_index_scan = index_mindis;
-	min_scan_angle = (int)(index_mindis) - 15; //-15  is the laser safty start angle
+	min_scan_angle = index_mindis - 15; //-15  is the laser safty start angle
 
 	if(tmp_range <= LASER_SAFE_MIN)
 	{
@@ -232,7 +232,7 @@ void protector::Intg4EnvSecure(void)
 	env_secure.collision_prob = colision_prob;
 	
 	env_secure.laser_min_dis = min_scan;
-	env_secure.laser_min_index = min_index_scan;
+	env_secure.laser_min_angle = min_scan_angle;
 	env_secure.laser_prob = laser_unsafe_prob;
 	
 	env_secure.ultra_min_dis = min_ultra;
