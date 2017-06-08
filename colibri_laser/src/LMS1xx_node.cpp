@@ -28,6 +28,7 @@
 #include "sensor_msgs/LaserScan.h"
 
 #define DEG2RAD M_PI/180.0
+#define MIN(x,y) (x<=y)?(x):(y)
 
 int main(int argc, char **argv)
 {
@@ -47,7 +48,7 @@ int main(int argc, char **argv)
   ros::NodeHandle n("~");
   ros::Publisher scan_pub = nh.advertise<sensor_msgs::LaserScan>("scan", 1);
 
-  n.param<std::string>("host", host, "192.168.1.100");
+  n.param<std::string>("host", host, "192.168.10.100");
   n.param<std::string>("frame_id", frame_id, "laser_frame");  
 
   ROS_INFO_STREAM(" Testing output... " );
@@ -182,6 +183,10 @@ int main(int argc, char **argv)
     ROS_INFO_STREAM("Commanding continuous measurements.");
     laser.scanContinous(1);
 
+	int zero_cnt = 0;
+	float tmp_zero_bnd = 0.0;
+	int rec_flag = 0;
+
     while (ros::ok())
     {
       ros::Time start = ros::Time::now();
@@ -197,6 +202,38 @@ int main(int argc, char **argv)
         {
           scan_msg.ranges[i] = data.dist1[i] * 0.001;
 		  //scan_msg.ranges[data.dist_len1-1-i] = data.dist1[i] * 0.001;  //built for lms1xxinv_node for cartographer 
+
+		  if(data.dist1[i] * 0.001 > 0.05)	//if scan < 0.05 we believe that is wrong or interference
+		  {
+			  if(0 == zero_cnt)
+			  {
+				  scan_msg.ranges[i] = data.dist1[i] * 0.001;	//built for lms1xxinv_node for cartographer 
+			  }
+			  else
+			  {
+				  float tmp_scan = data.dist1[i] * 0.001;
+				  float min_bnd_scan = MIN(tmp_scan,tmp_zero_bnd);
+				  for(int j = 0; j <= zero_cnt; j++)
+				  {
+					  scan_msg.ranges[i-j] = min_bnd_scan;  //care for the over bound
+				  }
+				  zero_cnt = 0;
+				  rec_flag = 0; 				  
+			  }
+		  
+		  }
+		  else
+		  {
+			  zero_cnt++;
+			  if(0 == rec_flag)
+			  {
+				  tmp_zero_bnd = data.dist1[i-1] * 0.001;
+				  rec_flag = 1;
+			  }
+			  scan_msg.ranges[i] = data.dist1[i] * 0.001; 
+		  }
+
+		  
         }
 
         for (int i = 0; i < data.rssi_len1; i++)
