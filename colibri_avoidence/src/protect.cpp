@@ -66,7 +66,7 @@ void protector::CalcMinDis4LaserScan(float* laser_vec)
 	}
 	else if(tmp_range <= LASER_SAFE_MAX)
 	{
-		laser_unsafe_prob = (LASER_SAFE_MAX - tmp_range) / (LASER_SAFE_MAX - LASER_SAFE_MIN);
+		laser_unsafe_prob = (LASER_SAFE_MAX - tmp_range) / LASER_SAFE_MAX;
 	}
 	else
 	{
@@ -103,7 +103,7 @@ void protector::CalcMinDis4Ultrosonic(float* ultra_vec)
 	}
 	else if(tmp_range <= ULTRA_SAFE_MAX)
 	{
-		ultra_unsafe_prob = (ULTRA_SAFE_MAX - tmp_range) / (ULTRA_SAFE_MAX - ULTRA_SAFE_MIN);
+		ultra_unsafe_prob = (ULTRA_SAFE_MAX - tmp_range) / ULTRA_SAFE_MAX;
 	}
 	else
 	{
