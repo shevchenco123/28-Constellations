@@ -27,7 +27,10 @@
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
 
+#include <cmath>
+
 #define DEG2RAD M_PI/180.0
+#define MIN(x,y) x<=y?x:y
 
 int main(int argc, char **argv)
 {
@@ -190,12 +193,47 @@ int main(int argc, char **argv)
       ++scan_msg.header.seq;
 
       scanData data;
+	  int zero_cnt = 0;
+	  float tmp_zero_bnd = 0.0;
+	  int rec_flag = 0;
       ROS_DEBUG("Reading scan data.");
       if (laser.getScanData(&data))
       {
         for (int i = 0; i < data.dist_len1; i++)
         {
-		  scan_msg.ranges[data.dist_len1-1-i] = data.dist1[i] * 0.001;  //built for lms1xxinv_node for cartographer 
+			if(data.dist1[i] * 0.001 > 0.05)
+			{
+				if(0 == zero_cnt)
+				{
+					scan_msg.ranges[data.dist_len1-1-i] = data.dist1[i] * 0.001;  //built for lms1xxinv_node for cartographer 
+				}
+				else
+				{
+					float tmp_scan = data.dist1[i] * 0.001;
+					float min_bnd_scan = MIN(tmp_scan,tmp_zero_bnd);
+					for(int j = 0; j <= zero_cnt; j++)
+					{
+						scan_msg.ranges[data.dist_len1-1-i+j] = data.dist1[i] * 0.001;	//care for the over bound
+					}
+					zero_cnt = 0;
+					rec_flag = 0;					
+				}
+			
+			}
+			else
+			{
+				zero_cnt++;
+				if(0 == rec_flag)
+				{
+					tmp_zero_bnd = data.dist1[i-1] * 0.001;
+					rec_flag = 1;
+				}
+				scan_msg.ranges[data.dist_len1-1-i] = data.dist1[i] * 0.001; 
+			}
+		
+			//scan_msg.ranges[data.dist_len1-1-i] = data.dist1[i] * 0.001; 
+
+		  
         }
 
         for (int i = 0; i < data.rssi_len1; i++)

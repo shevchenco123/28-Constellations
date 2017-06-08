@@ -49,11 +49,15 @@ void scan_ca::ScanCallBack(const sensor_msgs::LaserScan::ConstPtr& scan_ca)
 	for(int i = 0; i < NUM_RAY4CA; i++)
 	{
 		scan4ca[i] = scan_ca->ranges[j];
-		if(scan4ca[i] < 0.1)
+/*		if(scan4ca[i] < 0.1)
 		{
 			scan4ca[i] = (scan_ca->ranges[j-2]+scan_ca->ranges[j+2]+scan_ca->ranges[j-5]+scan_ca->ranges[j+5]) / 4 + LASER_EDGE_MIN;
 		}
-		
+*/
+		if(scan4ca[i] < 0.05)
+		{
+			scan4ca[i] = scan4ca[i-1];
+		}
 		j = j + 2; 
 	
 	}

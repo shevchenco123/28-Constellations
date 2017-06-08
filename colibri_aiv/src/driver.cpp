@@ -360,8 +360,8 @@ void AIV_Driver::ReadInfoProc(unsigned char buf[], boost::system::error_code ec,
 			break;
 			
 		case REQ_ULTRASONIC:
-			if((AIV_Driver::req_ultra_start_finish == true) || (AIV_Driver::req_ultra_stop_finish == true))
-			{	
+			//if((AIV_Driver::req_ultra_start_finish == true) || (AIV_Driver::req_ultra_stop_finish == true))
+			//{	
 				if(recv_data[VALID_DATA_LEN_INDX] != 0x10)
 				{
 					cout<<"The data count byte of the respones of the request_ultrasonic cmd shoud be 0x0c,but returned is: "<<recv_data[VALID_DATA_LEN_INDX]<<endl;
@@ -391,12 +391,12 @@ void AIV_Driver::ReadInfoProc(unsigned char buf[], boost::system::error_code ec,
 						AIV_Driver::req_ultra_stop_finish = false;
 					}
 				}
-			}
-			else
-			{
-				cout<<"ROS does not send request_ultra but recv a response cmd"<<endl;
-				return;
-			}
+	//		}
+	//		else
+	//		{
+	//			cout<<"ROS does not send request_ultra but recv a response cmd"<<endl;
+	//			return;
+	//		}
 
 			break;
 			
