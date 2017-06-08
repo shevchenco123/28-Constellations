@@ -28,6 +28,7 @@ int main(int argc, char* argv[])
 		if(delay_cnt >= DELAY_CNT_MAX)
 		{
 			protectObj.CalcMinDis4LaserScan(protectObj.scan4safty);
+			protectObj.CalcMinDis4Ultrosonic(protectObj.ultra_vec);
 			
 			cout<<"protectObj.min_scan: "<< protectObj.min_scan << endl;
 			cout<<"protectObj.min_index_scan: "<< protectObj.min_index_scan<< endl;

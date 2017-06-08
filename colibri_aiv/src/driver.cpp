@@ -384,7 +384,7 @@ void AIV_Driver::ReadInfoProc(unsigned char buf[], boost::system::error_code ec,
 						ultra.ultrasonic8 = (recv_data[VALID_DATA_START_INDX + 14] * 256 + recv_data[VALID_DATA_START_INDX + 15]) & 0xffff;						
 						ultrasonic_pub.publish(ultra);
 						AIV_Driver::req_ultra_start_finish = false;
-						cout<<"request_ultrasonic cmd is executed successfully !"<<endl;
+						//cout<<"request_ultrasonic cmd is executed successfully !"<<endl;
 					}
 					else if(recv_data[CMD_CTRL_INDX] == FRAME_CMD_STOP)
 					{

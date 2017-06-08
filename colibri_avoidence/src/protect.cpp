@@ -16,8 +16,8 @@ protector::protector()
 	laser_unsafe_prob = 0.0;
 	ultra_unsafe_prob = 0.0;
 	
-	min_scan = 1.0;
-	min_ultra = 1.0;
+	min_scan = 20.0;
+	min_ultra = 6.5;
 
 	min_index_scan = 0;
 	min_scan_angle = 90;
@@ -95,7 +95,7 @@ void protector::CalcMinDis4Ultrosonic(float* ultra_vec)
 	}
 	
 	min_ultra = tmp_range;
-	min_index_ultra = index_mindis;
+	min_index_ultra = index_mindis + 1;		// +1 for vec from 0 but ultra start from 1 for phiscically
 
 	if(tmp_range <= ULTRA_SAFE_MIN)
 	{
@@ -275,15 +275,15 @@ void protector::ScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4sa
 
 void protector::UltraSafeCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra4safe)
 {
-	ultra_vec[0] = ultra4safe->ultrasonic1; //for front ultra
-	ultra_vec[1] = ultra4safe->ultrasonic2;
-	ultra_vec[2] = ultra4safe->ultrasonic3;
-	ultra_vec[3] = ultra4safe->ultrasonic4;
+	ultra_vec[0] = (ultra4safe->ultrasonic1) / 100.0; //for front ultra unit cm to m
+	ultra_vec[1] = (ultra4safe->ultrasonic2) / 100.0;
+	ultra_vec[2] = (ultra4safe->ultrasonic3) / 100.0;
+	ultra_vec[3] = (ultra4safe->ultrasonic4) / 100.0;
 
-	ultra_vec[4] = ultra4safe->ultrasonic5;	// for rear ultra
-	ultra_vec[5] = ultra4safe->ultrasonic6;
-	ultra_vec[6] = ultra4safe->ultrasonic7;
-	ultra_vec[7] = ultra4safe->ultrasonic8;
+	ultra_vec[4] = (ultra4safe->ultrasonic5) / 100.0;	// for rear ultra
+	ultra_vec[5] = (ultra4safe->ultrasonic6) / 100.0;
+	ultra_vec[6] = (ultra4safe->ultrasonic7) / 100.0;
+	ultra_vec[7] = (ultra4safe->ultrasonic8) / 100.0;
 }
 
 void protector::BumperSafeCallBack(const colibri_aiv::Bumper::ConstPtr& bumper4safe)
