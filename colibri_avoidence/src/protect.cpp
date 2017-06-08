@@ -85,7 +85,7 @@ void protector::CalcMinDis4Ultrosonic(float* ultra_vec)
 	float tmp_range = *ultra_vec;
 	unsigned int index_mindis = 0;
 	
-	for(int i = 0; i < ULTRA_NUM; i++)
+	for(int i = 0; i < ULTRA_NUM/2; i++)		// for ca the front 4 ultra should be concerned
 	{
 		if(*(ultra_vec + i) <= tmp_range)
 		{
@@ -275,10 +275,15 @@ void protector::ScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4sa
 
 void protector::UltraSafeCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra4safe)
 {
-	ultra_vec[0] = ultra4safe->ultrasonic1;
+	ultra_vec[0] = ultra4safe->ultrasonic1; //for front ultra
 	ultra_vec[1] = ultra4safe->ultrasonic2;
 	ultra_vec[2] = ultra4safe->ultrasonic3;
 	ultra_vec[3] = ultra4safe->ultrasonic4;
+
+	ultra_vec[4] = ultra4safe->ultrasonic5;	// for rear ultra
+	ultra_vec[5] = ultra4safe->ultrasonic6;
+	ultra_vec[6] = ultra4safe->ultrasonic7;
+	ultra_vec[7] = ultra4safe->ultrasonic8;
 }
 
 void protector::BumperSafeCallBack(const colibri_aiv::Bumper::ConstPtr& bumper4safe)

@@ -28,7 +28,7 @@
 #define LASER_SAFE_MIN	0.15	//static safe limit
 #define LASER_SAFE_MAX	4.0
 
-#define ULTRA_NUM	  4		//front 4 ultrasonic, ignore the back 4 ultrasonic
+#define ULTRA_NUM	  8		//front 4 ultrasonic, ignore the back 4 ultrasonic
 #define ULTRA_SAFE_MIN	0.10
 #define ULTRA_SAFE_MAX	4.0
 
