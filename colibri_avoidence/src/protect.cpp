@@ -147,7 +147,7 @@ float protector::IntegrateMultiInfo4Safety(enum_act4safe* advise_action)
 			}
 			else
 			{
-				if(min_index_ultra<= ULTRA_NUM / 2)
+				if(min_index_ultra<= ULTRA_NUM / 4)	// for front collision safty ,shoule be 4/2 ->8/4 ,right hand law for order
 				{
 					obs_dir = RIGHT;
 				}
