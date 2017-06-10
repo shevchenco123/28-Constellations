@@ -50,7 +50,7 @@ using namespace std;
 #define	DEG2RAD_PARAM(deg)	PI * deg / 180.0
 #define	RAD2DEG_PARAM(rad)	180.0 * rad / PI
 
-#define DELAY_CNT_MAX 	10
+#define DELAY_CNT_MAX 	5
 
 class scan_ca
 {

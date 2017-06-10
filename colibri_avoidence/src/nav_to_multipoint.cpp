@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 	ROS_INFO("Srv move_base/make_plan prepared OK...");
 
 	// Inital path plan calling  and gravaton calc
-	finish_plan = plannerObj.ExecMonoPlanAndGravaton(plannerObj,&local4navObj.cur_robot_state[0],&local4navObj.goal_state[0], search_start,index4gravaton);
+	finish_plan = plannerObj.ExecMonoPlanAndGravaton(plannerObj,&local4navObj.cur_robot_state[0], &local4navObj.goal_state[0], search_start, index4gravaton);
 
 	// Set path plan timer
 	planner_timer = nh_pp.createTimer(ros::Duration(PLAN_INTERVAL), boost::bind(&PlannerCallback, &plannerObj, &local4navObj.amcl_cur_state[0],&taskObj.cur_goal[0], timer_finish));
