@@ -29,7 +29,7 @@ scan_ca::scan_ca()
 	
 	angle_adj = 0.0;
 	vel_adj = 0.0;
-	colision_alarm = 0;
+	apf_alarm = 0;
 
 	wander = 0;
 	
@@ -169,11 +169,11 @@ void scan_ca::CalcCollisionInAPF(void)
 {
 	if(max_passfcn_val <= PASSFCN_THD_RATIO * D_M)
 	{
-		colision_alarm = 1;
+		apf_alarm = 1;
 	}
 	else
 	{
-		colision_alarm = 0;
+		apf_alarm = 0;
 	}	
 }
 

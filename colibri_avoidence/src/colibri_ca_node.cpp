@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
 			cout<<"passfcn_max_bwdbound: "<< scan4caObj.maxfcn_bwdbnd <<endl;
 			cout<<"adj_angle: "<< scan4caObj.angle_adj <<endl;
 			cout<<"passfcn_max_value: "<< scan4caObj.max_passfcn_val <<endl;
-			cout<<"colision_alarm: "<< scan4caObj.colision_alarm <<endl;
+			cout<<"apf_alarm: "<< scan4caObj.apf_alarm <<endl;
 
 			scan4caObj.ResetMaxPassValCnt();
 			

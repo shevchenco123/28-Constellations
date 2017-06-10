@@ -82,7 +82,7 @@ class scan_ca
 		
 		float angle_adj;
 		float vel_adj;
-		unsigned int colision_alarm;
+		unsigned int apf_alarm;
 		unsigned int wander;
 		
 		ros::NodeHandle nh_ca;

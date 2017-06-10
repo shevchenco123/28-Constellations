@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 			
 			cout<<"adj_angle: "<< scan4caObj.angle_adj <<endl;
 			cout<<"passfcn_max_value: "<< scan4caObj.max_passfcn_val <<endl;
-			cout<<"colision_alarm: "<< scan4caObj.colision_alarm <<endl;
+			cout<<"apf_alarm: "<< scan4caObj.apf_alarm <<endl;
 
 			cout<<"tmp_delta_dis: "<<tmp_delta_dis<<endl;
 			cout<<"tmp_robot2goal_yaw: "<<tmp_robot2goal_yaw<<endl;
