@@ -165,7 +165,7 @@ void scan_ca::CalcPassFcnAndBwdBnd(unsigned int flag, float* max_passfcn_val, fl
 
 }
 
-void scan_ca::CalcCollisionInAPF(void)
+void scan_ca::CalcAlarmInAPF(void)
 {
 	if(max_passfcn_val <= PASSFCN_THD_RATIO * D_M)
 	{

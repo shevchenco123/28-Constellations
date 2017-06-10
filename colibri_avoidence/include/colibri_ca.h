@@ -100,7 +100,7 @@ class scan_ca
 		void CalcPassFcnAndBwdBnd(unsigned int flag, float* max_passfcn_val, float* ptrK_pg);
 		float CalcAdjDir(float* ptrPass_fcn_vector, float max_passfcn_val, int* fwd_bound, int* bwd_bound);
 		void CalcCorrectedKrf(void);
-		void CalcCollisionInAPF(void);
+		void CalcAlarmInAPF(void);
 		void CalcPhiParam(float vel_center, float& dir_goal_inlaser);
 		void ResetMaxPassValCnt(void);
 		void LimitAngle(float& delta_ang);

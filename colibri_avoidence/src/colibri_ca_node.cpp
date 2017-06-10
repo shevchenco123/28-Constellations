@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 			file2.close();
 			file3.close();
 
-			scan4caObj.CalcCollisionInAPF();
+			scan4caObj.CalcAlarmInAPF();
 
 			cout<<"fwd_maxpass_cnt: "<<scan4caObj.fwd_maxpass_cnt<<endl;
 			cout<<"bwd_maxpass_cnt: "<<scan4caObj.bwd_maxpass_cnt<<endl;

@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
 
 			scan4caObj.angle_adj = scan4caObj.CalcAdjDir(scan4caObj.passfcn_vec,scan4caObj.max_passfcn_val, &scan4caObj.maxfcn_fwdbnd,&scan4caObj.maxfcn_bwdbnd);
 				
-			scan4caObj.CalcCollisionInAPF();
+			scan4caObj.CalcAlarmInAPF();
 
 			cout<<"current_robot_state[0]"<<local4navObj.cur_robot_state[0]<<endl;
 			cout<<"current_robot_state[1]"<<local4navObj.cur_robot_state[1]<<endl;
