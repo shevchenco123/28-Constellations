@@ -42,14 +42,14 @@
 #define VTH_EXCPT_VAL 0.785	// 45 deg/sec
 
 #define LINEAR_SAFE_MAX 	0.25
-#define ANGULAR_SAFE_MAX 	0.16
+#define ANGULAR_SAFE_MAX 	0.2
 #define LINEAR_STOP 		0.0
 #define ANGULAR_STOP 		0.0
 
 #define LASER_SAFE_DIS1		1.0
-#define LASER_SAFE_ANG1		50
+#define LASER_SAFE_ANG1		25
 #define LASER_SAFE_DIS2		0.4
-#define LASER_SAFE_ANG2		90
+#define LASER_SAFE_ANG2		45
 
 #define ULTRA_SAFE_DIS1		0.7
 #define ULTRA_SAFE_DIS2		0.3

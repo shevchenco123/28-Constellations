@@ -132,13 +132,13 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, float* l
 		{
 			if(min_scan_ang > 90)
 			{
-				*angular_safe = -ANGULAR_SAFE_MAX;
-				*linear_safe = LINEAR_SAFE_MAX/2.0;
+				*angular_safe = -THETA_V_MAX;
+				*linear_safe = V_MAX;
 			}
 			else if(min_scan_ang < 90)
 			{
-				*angular_safe = ANGULAR_SAFE_MAX;
-				*linear_safe = LINEAR_SAFE_MAX/2.0;
+				*angular_safe = THETA_V_MAX;
+				*linear_safe = V_MAX;
 			}
 			else
 			{
@@ -163,11 +163,11 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, float* l
 		{
 			if(min_scan_ang > 90)
 			{
-				*angular_safe = -ANGULAR_SAFE_MAX/2.0;
+				*angular_safe = -ANGULAR_SAFE_MAX;
 			}
 			else if(min_scan_ang < 90)
 			{
-				*angular_safe = ANGULAR_SAFE_MAX/2.0;
+				*angular_safe = ANGULAR_SAFE_MAX;
 			}
 			else
 			{
@@ -198,20 +198,20 @@ bool protector::CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_in
 		if((min_ultra_index == 2)||(min_ultra_index == 3)) //limit the vel in the angle 50 scope
 		{
 			*linear_safe = LINEAR_STOP;
-			*angular_safe = ANGULAR_SAFE_MAX;
+			*angular_safe = THETA_V_MAX;
 		}
 		else
 		{
 			if(min_ultra_index == 1)
 			{
 				*angular_safe = ANGULAR_SAFE_MAX;
-				*linear_safe = LINEAR_SAFE_MAX/2;
+				*linear_safe = LINEAR_SAFE_MAX;
 			}
 			
 			if(min_ultra_index == 4)
 			{
 				*angular_safe = -ANGULAR_SAFE_MAX;
-				*linear_safe = LINEAR_SAFE_MAX/2;
+				*linear_safe = LINEAR_SAFE_MAX;
 			}
 			
 		}

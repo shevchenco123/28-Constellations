@@ -45,6 +45,13 @@ int main(int argc, char* argv[])
 			coli_prob = protectObj.IntegrateMultiInfo4Safety(&protectObj.advise_action);
 			cout<<"coli_prob: "<< coli_prob<< endl;
 
+			float linear_vel_safe = 0.0;
+			float angular_vel_safe = 0.0;
+			protectObj.CalcLaserSafeVelThd(protectObj.min_scan , protectObj.min_scan_angle, &linear_vel_safe, &angular_vel_safe);
+			cout<<"linear_vel_safe: "<< linear_vel_safe<< endl;
+			cout<<"angular_vel_safe: "<< angular_vel_safe<< endl;
+
+
 			protectObj.Intg4EnvSecure();	
 			protectObj.security_pub4env.publish(protectObj.env_secure);
 
