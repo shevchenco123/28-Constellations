@@ -197,11 +197,14 @@ int main(int argc, char* argv[])
 
 			local4navObj.apf_cmd_vel.linear.x = *ptr_action_cmd_t;
 			local4navObj.apf_cmd_vel.angular.z = *(ptr_action_cmd_t + 1);
+
+			cout<<"tmp_delta_dis: " << tmp_delta_dis <<endl;
 			
 			if(local4navObj.position_OK_flag == true)
 			{
 				local4navObj.apf_cmd_vel.linear.x = 0.0;
 				local4navObj.apf_cmd_vel.angular.z = 0.0;
+				cout<<"tmp_delta_dis: " << tmp_delta_dis <<endl;
 			}
 
 			if(node_shutdown == true)

@@ -112,6 +112,81 @@ void protector::CalcMinDis4Ultrosonic(float* ultra_vec)
 
 }
 
+bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, float* linear_safe, float* angular_safe)
+{
+	if(min_scan > LASER_SAFE_DIS1)
+	{
+		*linear_safe = V_MAX;
+		*angular_safe = THETA_V_MAX;
+		return false;
+	}
+	else if(min_scan > LASER_SAFE_DIS2)
+	{
+
+		if(abs(min_scan_ang - 90) <= LASER_SAFE_ANG1) //limit the vel in the angle 50 scope
+		{
+			*linear_safe = LINEAR_SAFE_MAX;
+			*angular_safe = THETA_V_MAX;
+		}
+		else
+		{
+			if(min_scan_ang > 90)
+			{
+				*angular_safe = -ANGULAR_SAFE_MAX;
+				*linear_safe = LINEAR_SAFE_MAX/2.0;
+			}
+			else if(min_scan_ang < 90)
+			{
+				*angular_safe = ANGULAR_SAFE_MAX;
+				*linear_safe = LINEAR_SAFE_MAX/2.0;
+			}
+			else
+			{
+				cout<<"min scan angle is not in the designed scope !!!"<<endl
+				*angular_safe = ANGULAR_STOP;
+				*linear_safe = LINEAR_STOP;
+				
+			}
+			
+		}
+
+	}
+	else
+	{	
+		*linear_safe = LINEAR_STOP;
+
+		if(abs(min_scan_ang - 90) <= LASER_SAFE_ANG2)
+		{
+			*angular_safe = ANGULAR_STOP;
+		}
+		else
+		{
+			if(min_scan_ang > 90)
+			{
+				*angular_safe = -ANGULAR_SAFE_MAX/2.0;
+			}
+			else if(min_scan_ang < 90)
+			{
+				*angular_safe = ANGULAR_SAFE_MAX/2.0;
+			}
+			else
+			{
+				cout<<"min scan angle is not in the designed scope !!!"<<endl
+			}
+			
+		}		
+		
+	}
+
+	return true;	
+		
+}
+
+bool protector::CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_index, float* linear_safe, float* angular_safe)
+{
+
+}
+
 /*	
 *   float IntegrateMultiInfo4Safety(enum_act4safe* advise_action)
 *   Description: Using MultiInfo: laser prob, ultra prob and bumper to obtain comprehensive colision prob and remmend action

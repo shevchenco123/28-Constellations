@@ -20,6 +20,7 @@
 #include "colibri_aiv/Ultrasonic.h"
 #include "colibri_aiv/Bumper.h"
 #include "colibri_msgs/EnvSecurity.h"
+#include "colibri_avoidence/colibri_ca.h"
 
 // 3 layers for running safty : laser / ultrosonic  /bumper
 
@@ -39,6 +40,22 @@
 
 #define V_EXCPT_VAL   1.25
 #define VTH_EXCPT_VAL 0.785	// 45 deg/sec
+
+#define LINEAR_SAFE_MAX 	0.25
+#define ANGULAR_SAFE_MAX 	0.16
+#define LINEAR_STOP 		0.0
+#define ANGULAR_STOP 		0.0
+
+#define LASER_SAFE_DIS1		1.0
+#define LASER_SAFE_ANG1		50
+#define LASER_SAFE_DIS2		0.4
+#define LASER_SAFE_ANG2		90
+
+#define ULTRA_SAFE_DIS1		0.6
+#define ULTRA_SAFE_DIS2		0.3
+
+
+
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
@@ -116,6 +133,8 @@ class protector
 		bool Detect4ExceptHighVel(float* v, float* vth);
 		bool StopMovingInForce(void);
 		void Intg4EnvSecure(void);
+		bool CalcLaserSafeVelThd(float  &min_scan, int &min_scan_ang, float *linear_safe, float* angular_safe);
+		bool CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_index, float* linear_safe, float* angular_safe);
 	
 	private:
 		
