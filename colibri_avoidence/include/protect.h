@@ -20,7 +20,7 @@
 #include "colibri_aiv/Ultrasonic.h"
 #include "colibri_aiv/Bumper.h"
 #include "colibri_msgs/EnvSecurity.h"
-#include "colibri_avoidence/colibri_ca.h"
+#include "colibri_ca.h"
 
 // 3 layers for running safty : laser / ultrosonic  /bumper
 
@@ -51,7 +51,7 @@
 #define LASER_SAFE_DIS2		0.4
 #define LASER_SAFE_ANG2		90
 
-#define ULTRA_SAFE_DIS1		0.6
+#define ULTRA_SAFE_DIS1		0.7
 #define ULTRA_SAFE_DIS2		0.3
 
 

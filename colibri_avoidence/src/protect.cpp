@@ -142,7 +142,7 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, float* l
 			}
 			else
 			{
-				cout<<"min scan angle is not in the designed scope !!!"<<endl
+				cout<<"min scan angle is not in the designed scope !!!"<<endl;
 				*angular_safe = ANGULAR_STOP;
 				*linear_safe = LINEAR_STOP;
 				
@@ -171,7 +171,9 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, float* l
 			}
 			else
 			{
-				cout<<"min scan angle is not in the designed scope !!!"<<endl
+				cout<<"min scan angle is not in the designed scope !!!"<<endl;
+				*angular_safe = ANGULAR_STOP;
+				*linear_safe = LINEAR_STOP;
 			}
 			
 		}		
@@ -184,6 +186,45 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, float* l
 
 bool protector::CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_index, float* linear_safe, float* angular_safe)
 {
+	if(min_ultra > ULTRA_SAFE_DIS1)
+	{
+		*linear_safe = V_MAX;
+		*angular_safe = THETA_V_MAX;
+		return false;
+	}
+	else if(min_ultra > ULTRA_SAFE_DIS2)
+	{
+
+		if((min_ultra_index == 2)||(min_ultra_index == 3)) //limit the vel in the angle 50 scope
+		{
+			*linear_safe = LINEAR_STOP;
+			*angular_safe = ANGULAR_SAFE_MAX;
+		}
+		else
+		{
+			if(min_ultra_index == 1)
+			{
+				*angular_safe = ANGULAR_SAFE_MAX;
+				*linear_safe = LINEAR_SAFE_MAX/2;
+			}
+			
+			if(min_ultra_index == 4)
+			{
+				*angular_safe = -ANGULAR_SAFE_MAX;
+				*linear_safe = LINEAR_SAFE_MAX/2;
+			}
+			
+		}
+
+	}
+	else // ultra dis < 0.3 must stop
+	{	
+		*angular_safe = ANGULAR_STOP;
+		*linear_safe = LINEAR_STOP;		
+		
+	}
+
+	return true;	
 
 }
 
