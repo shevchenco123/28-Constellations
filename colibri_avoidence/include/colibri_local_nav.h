@@ -71,7 +71,6 @@ class local_nav
 
 		bool ReachApprochingAreaOK(float* delta_dis);
     
-		bool CalcGoalDirOfLaserView(float* dir_laser2goal, float* dir_laser, float* dir_goal_in_laser, float* self_rot_angle);
 		bool CalcGoalDirOfLaserViewNew(float* dir_laser2goal, float* dir_laser, float* dir_goal_in_laser, float* self_rot_angle);
 
 		void CalcEuclidDistance(float * pos_start, float * pos_end, float &dis);

@@ -148,46 +148,6 @@ void local_nav::RobotPos2LaserPos(float* robot_pos, float* laser_x, float* laser
 
 }
 
-bool local_nav::CalcGoalDirOfLaserView(float* dir_laser2goal, float* dir_laser, float* dir_goal_in_laser, float* self_rot_angle)
-{
-
-	float tmp_goal_in_laser = 0.0;
-	tmp_goal_in_laser = (*dir_laser2goal) - (*dir_laser) + 90.0;	// goal in laser using  the scan 0 degree at robot right side and 180 degree as the robot left side
-
-	if(tmp_goal_in_laser > 360.0)
-	{
-		*dir_goal_in_laser = tmp_goal_in_laser - 360.0;           
-		
-	}
-	else 
-	{	
-		/*
-		if(*dir_laser2goal < 0 && *dir_laser > 0)
-		{
-			*dir_goal_in_laser = tmp_goal_in_laser + 360.0;g    
-
-		}
-		else
-		{
-			*dir_goal_in_laser = tmp_goal_in_laser;
-		}
-		*/
-		*dir_goal_in_laser = tmp_goal_in_laser;
-	}
-		
-	if((*dir_goal_in_laser >= 180.0)||(*dir_goal_in_laser <= 0.0))
-	{
-		*self_rot_angle = *dir_goal_in_laser - 90.0;
-		return false;
-	}
-	else
-	{
-		*self_rot_angle = 0.0;
-		return true;
-	}
-	
-}
-
 bool local_nav::CalcGoalDirOfLaserViewNew(float* dir_laser2goal, float* dir_laser, float* dir_goal_in_laser, float* self_rot_angle)
 {
 	float tmp_goal_in_laser = 0.0;

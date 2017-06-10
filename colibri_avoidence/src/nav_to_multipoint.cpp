@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
 				if((at_gravaton_flag == true && local4navObj.approaching_flag == false)||(replan_flag == true))
 				{
 					plannerObj.CalcPath2RobotDeltaDis(plannerObj.path_array, local4navObj.amcl_cur_state);
-					index4gravaton = plannerObj.CalcGravatonFromPath(plannerObj.path_array, plannerObj.path2robot_array, index4gravaton, plannerObj.gravaton,exist_gravaton_flag);
+					index4gravaton = plannerObj.CalcGravatonFromPath(plannerObj.path_array, plannerObj.path2robot_array, index4gravaton, plannerObj.gravaton, exist_gravaton_flag);
 					at_gravaton_flag = false;
 					replan_flag = false;
 				}
