@@ -148,7 +148,7 @@ void local_nav::RobotPos2LaserPos(float* robot_pos, float* laser_x, float* laser
 
 }
 
-bool local_nav::CalcGoalDirOfLaserViewNew(float* dir_laser2goal, float* dir_laser, float* dir_goal_in_laser, float* self_rot_angle)
+bool local_nav::CalcGoalDirOfLaserView(float* dir_laser2goal, float* dir_laser, float* dir_goal_in_laser, float* self_rot_angle)
 {
 	float tmp_goal_in_laser = 0.0;
 	float tmp_laser_dir = 0.0;
