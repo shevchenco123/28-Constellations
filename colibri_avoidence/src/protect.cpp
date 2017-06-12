@@ -184,6 +184,34 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, float* l
 		
 }
 
+bool protector::CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_vel)
+{
+	if(0 == linear_thd)
+	{
+		*safe_vel = 0.0;
+	}
+	else
+	{
+		if(ctrl_vel > linear_thd)
+		{
+			*safe_vel = linear_thd;
+		}
+		else
+		{
+			*safe_vel = ctrl_vel;
+			return false;
+		}
+			
+	}
+	
+	return true;
+}
+
+bool protector::CalcSafeAngularVel(float &ctrl_vel, float &angular_thd, float* safe_vel)
+{
+
+}
+
 bool protector::CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_index, float* linear_safe, float* angular_safe)
 {
 	if(min_ultra > ULTRA_SAFE_DIS1)
