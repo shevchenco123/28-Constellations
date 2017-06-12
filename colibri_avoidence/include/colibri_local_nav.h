@@ -82,6 +82,9 @@ class local_nav
 		void SatuateCmdVel(float* cmd_linear_vel, float* cmd_angular_vel);
 		bool EmergencyStop(float* cmd_vel);
 
+		bool CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_linear_vel);
+		bool CalcSafeAngularVel(float &ctrl_vel, float &angular_thd, float* safe_angular_vel);
+
 	private:
 		
 		void CartoOdomCallBack(const nav_msgs::Odometry::ConstPtr& carto_odom);
