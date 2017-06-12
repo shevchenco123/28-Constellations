@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 
   ros::Publisher constvel_pub = nh.advertise<geometry_msgs::Twist>("/t_cmd_vel", 1);
 
-  ros::Rate loop_rate(5);
+  ros::Rate loop_rate(10);
 
 
 
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     loop_rate.sleep();
     ++count;
 	
-	if(count == 100)
+	if(count == 50)
 	{
 		constvel_pub.publish(geometry_msgs::Twist());
 		ROS_INFO("Pub const for 5 sec Over!!!");
