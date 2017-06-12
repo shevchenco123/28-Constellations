@@ -51,6 +51,8 @@
 #define LASER_SAFE_ANG1		25
 #define LASER_SAFE_DIS2		0.4
 #define LASER_SAFE_ANG2		45
+#define LASER_SAFE_DIS3		0.25 //must stop
+
 
 #define ULTRA_SAFE_DIS1		0.7
 #define ULTRA_SAFE_DIS2		0.3
@@ -143,7 +145,6 @@ class protector
 		bool CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_linear_vel);
 		bool CalcSafeAngularVel(float &ctrl_vel, float &angular_thd, float* safe_angular_vel);
 
-	
 	private:
 		
 		void ScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4safe);

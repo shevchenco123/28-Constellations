@@ -42,6 +42,7 @@ using namespace std;
 
 #define PASSFCN_THD_RATIO 	0.2
 #define MAX_PASSFCN_SCOPE	0.1
+#define PASSVAL_TOLLERENCE  0.05
 
 #define RAD2DEG 	57.2958
 #define DEG2RAD 	0.01745

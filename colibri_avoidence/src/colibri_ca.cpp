@@ -184,7 +184,7 @@ float scan_ca::CalcAdjDir(float* ptrPassfcn_vector, float max_passfcn_val, int* 
 	
 	for(int m = 0; m <= mid_num; m++)  //backward directrion(CW 180->0) search using forward bound
 	{
-		if(abs(*(ptrPassfcn_vector + *(fwd_bound) - m) - max_passfcn_val) < MAX_PASSFCN_SCOPE)
+		if(abs(*(ptrPassfcn_vector + *(fwd_bound) - m) - max_passfcn_val) < (PASSVAL_TOLLERENCE * max_passfcn_val))
 		{
 			fwd_maxpass_cnt++;
 		}else
@@ -194,7 +194,7 @@ float scan_ca::CalcAdjDir(float* ptrPassfcn_vector, float max_passfcn_val, int* 
 	}
 	for(int n = 0; n <= mid_num; n++)	// forward direction(CCW 0->180) search using backward bound
 	{
-		if(abs(*(ptrPassfcn_vector + *(bwd_bound) + n) - max_passfcn_val) < MAX_PASSFCN_SCOPE)
+		if(abs(*(ptrPassfcn_vector + *(bwd_bound) + n) - max_passfcn_val) < (PASSVAL_TOLLERENCE * max_passfcn_val))
 		{
 			bwd_maxpass_cnt++;
 		}else

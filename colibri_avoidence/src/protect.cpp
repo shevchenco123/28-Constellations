@@ -136,13 +136,13 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, int &ste
 			if(min_scan_ang > 90)
 			{
 				*angular_safe = -THETA_V_MAX;
-				*linear_safe = V_MAX;
+				*linear_safe = LINEAR_SAFE_MAX;
 				steer = -1;	
 			}
 			else if(min_scan_ang < 90)
 			{
 				*angular_safe = THETA_V_MAX;
-				*linear_safe = V_MAX;
+				*linear_safe = LINEAR_SAFE_MAX;
 				steer = 1;	
 			}
 			else
@@ -157,9 +157,9 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, int &ste
 		}
 
 	}
-	else
+	else if(min_scan > LASER_SAFE_DIS3)
 	{	
-		*linear_safe = LINEAR_STOP;
+		*linear_safe = LINEAR_SAFE_MAX/2;
 
 		if(abs(min_scan_ang - 90) <= LASER_SAFE_ANG2)
 		{
@@ -188,6 +188,12 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, int &ste
 			
 		}		
 		
+	}
+	else
+	{
+		*angular_safe = ANGULAR_STOP;
+		*linear_safe = LINEAR_STOP;
+		steer = 0;	
 	}
 
 	return true;	
