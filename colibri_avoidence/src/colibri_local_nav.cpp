@@ -117,8 +117,6 @@ void local_nav::CalcOffsetOfGoalAndRobot(float* cur_robot_state, float* goal_sta
 	tmp_delta_x = *(goal_state) - tmp_laser_x;
 	tmp_delta_y = *(goal_state + 1) - tmp_laser_y;
 
-	cout << "tmp_delta_x:" << tmp_delta_x << endl;
-	cout << "tmp_delta_y:" << tmp_delta_y << endl;
 	*delta_laser2goal_yaw = atan2(tmp_delta_y, tmp_delta_x) * RAD2DEG;	//corrected by goal in laser frame x dir in degree
 
 	// vector: robot->goal  in the original map frame  bias angle in x dir : -pi ~ + pi
