@@ -5,8 +5,6 @@
 #include "global_planner.h"
 #include "task_mgr.h"
 
-#include "protect.h"
-
 #include <boost/bind.hpp>
 
 #include "geometry_msgs/PoseStamped.h"
@@ -70,6 +68,7 @@ int main(int argc, char* argv[])
 	ros::Rate loop_rate(10);		// Set control  freq at 10 hz
 	unsigned int delay_cnt = 0;		// Init delay conter for scanObj 
 
+	
 	signal(SIGINT, MySigintHandler);
 
 	while(taskObj.obtain_goal_flag == false)
@@ -201,6 +200,7 @@ int main(int argc, char* argv[])
 			local4navObj.apf_cmd_vel.angular.z = *(ptr_action_cmd_t + 1);
 			
 			cout<<"tmp_delta_dis: " << tmp_delta_dis <<endl;
+			cout<<"local4navObj.safe_velocity.steer:"<< local4navObj.safe_velocity.steer<< endl;
 			
 			if(local4navObj.position_OK_flag == true)
 			{

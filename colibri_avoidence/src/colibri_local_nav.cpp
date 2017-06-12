@@ -34,7 +34,8 @@ local_nav::local_nav()
 		pub_apf_twist = nh_nav.advertise<geometry_msgs::Twist>("/t_cmd_vel", 1);
 
 		sub_amcl_pose = nh_nav.subscribe<geometry_msgs::PoseWithCovarianceStamped>("/amcl_pose", 1, &local_nav::AmclPoseCallBack, this);
-		
+
+		safe_vel_sub = nh_nav.subscribe<colibri_msgs::SafeVel>("/safe_vel", 1, &local_nav::SafeVelCallBack, this);
 }
 
 local_nav::~local_nav()
@@ -283,6 +284,21 @@ int local_nav::SgnOfData(float* input)
 		return 0;
 	}
 		
+}
+
+void local_nav::SafeVelCallBack(const colibri_msgs::SafeVel::ConstPtr& safe_vel)
+{
+	safe_velocity.header.stamp = safe_vel->header.stamp;
+	safe_velocity.header.frame_id = safe_vel->header.frame_id;
+	safe_velocity.header.seq = safe_vel->header.seq;
+
+	safe_velocity.stop.data = safe_vel->stop.data;		
+	safe_velocity.linear_safe_thd = safe_vel->linear_safe_thd;
+	safe_velocity.linear_safe_vel = safe_vel->linear_safe_vel;
+	safe_velocity.steer = safe_vel->steer;
+	safe_velocity.angular_safe_thd = safe_vel->angular_safe_thd;
+	safe_velocity.angular_safe_vel = safe_vel->angular_safe_vel;
+
 }
 
 

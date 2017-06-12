@@ -3,6 +3,7 @@
 #include "geometry_msgs/Twist.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 
+#include "colibri_msgs/SafeVel.h"
 
 
 #ifndef _COLIBRI_LOCAL_NAV_H_
@@ -58,7 +59,10 @@ class local_nav
 		bool position_OK_flag;
 		bool orintation_OK_flag;
 		bool approaching_flag;
-
+		
+		colibri_msgs::SafeVel safe_velocity;
+		ros::Subscriber safe_vel_sub;
+		
 		local_nav();
 		~local_nav();
 
@@ -84,6 +88,7 @@ class local_nav
 		void AmclPoseCallBack(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& amcl_pose);
 		void RobotPos2LaserPos(float* robot_pos, float* laser_x, float* laser_y);
 		int	SgnOfData(float* input);
+		void SafeVelCallBack(const colibri_msgs::SafeVel::ConstPtr& safe_vel);
 
 
 };
