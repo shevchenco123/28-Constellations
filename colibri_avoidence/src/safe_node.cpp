@@ -58,8 +58,16 @@ int main(int argc, char* argv[])
 
 			protectObj.safe_vel.header.stamp = ros::Time::now();
 			protectObj.safe_vel.header.frame_id = "robot";
-			
-			protectObj.safe_vel.stop.data = true;
+
+			if((linear_vel_safe == LINEAR_STOP) && (angular_vel_safe == ANGULAR_STOP) && (steer == 0))
+			{
+				protectObj.safe_vel.stop.data = true;
+			}
+			else
+			{
+				protectObj.safe_vel.stop.data = false;
+			}
+					
 			protectObj.safe_vel.linear_safe_thd = linear_vel_safe;
 			protectObj.safe_vel.linear_safe_vel = 0.0;
 			protectObj.safe_vel.steer = steer;
