@@ -10,9 +10,6 @@ int main(int argc, char* argv[])
 	
 	int delay_cnt = 0;
 	float coli_prob = 0.0;
-	
-	ofstream  file1; 
-	file1.open ("laser.txt"); 
 
 	ROS_INFO("Start to detect the safety...");
 	
@@ -35,13 +32,6 @@ int main(int argc, char* argv[])
 			cout<<"protectObj.min_scan_angle: "<< protectObj.min_scan_angle<< endl;
 			cout<<"protectObj.laser_prob: "<< protectObj.laser_unsafe_prob<< endl;
 			
-			for(int j = 1; j <= SCAN4SAFE_NUM; j++)
-			{
-				file1<< fixed << setprecision(4) << protectObj.scan4safty[j];
-				file1 << '\t';
-			}
-
-			file1.close();
 			coli_prob = protectObj.IntegrateMultiInfo4Safety(&protectObj.advise_action);
 			cout<<"coli_prob: "<< coli_prob<< endl;
 
