@@ -19,7 +19,7 @@ protector::protector()
 	min_scan = 20.0;
 	min_ultra = 6.5;
 
-	min_index_scan = 0;
+	min_index_scan = 105;
 	min_scan_angle = 90;
 	min_index_ultra = 0;	
 	
