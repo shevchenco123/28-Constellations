@@ -36,6 +36,7 @@ find_package(catkin REQUIRED COMPONENTS
    AngPotnEngy.msg
    EnvSecurity.msg
    RobotState.msg
+   SafeVel.msg
  )
 
 ## Generate services in the 'srv' folder
