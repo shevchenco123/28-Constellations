@@ -30,6 +30,7 @@ protector::protector()
 	odom_sub4safe = nh_safety.subscribe<nav_msgs::Odometry>("/odom", 1, &protector::OdomSafeCallBack, this);
 
 	security_pub4env = nh_safety.advertise<colibri_msgs::EnvSecurity>("/env_secure", 1);
+	security_pub4nav = nh_safety.advertise<colibri_msgs::SafeVel>("/safe_vel", 1);
 
 }
 protector::~protector()

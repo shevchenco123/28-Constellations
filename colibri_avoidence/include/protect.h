@@ -20,6 +20,7 @@
 #include "colibri_aiv/Ultrasonic.h"
 #include "colibri_aiv/Bumper.h"
 #include "colibri_msgs/EnvSecurity.h"
+#include "colibri_msgs/SafeVel.h"
 #include "colibri_ca.h"
 
 // 3 layers for running safty : laser / ultrosonic  /bumper
@@ -120,6 +121,9 @@ class protector
   
 		ros::Publisher security_pub4env;
 		colibri_msgs::EnvSecurity env_secure;
+
+		ros::Publisher security_pub4nav;
+		colibri_msgs::SafeVel safe_vel;
 
 
 		protector();

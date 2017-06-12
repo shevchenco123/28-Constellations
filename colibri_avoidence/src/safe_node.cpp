@@ -55,6 +55,18 @@ int main(int argc, char* argv[])
 			protectObj.Intg4EnvSecure();	
 			protectObj.security_pub4env.publish(protectObj.env_secure);
 
+			protectObj.safe_vel.header.stamp = ros::Time::now();
+			protectObj.safe_vel.header.frame_id = "robot";
+			
+			protectObj.safe_vel.stop.data = true;
+			protectObj.safe_vel.linear_safe_thd = linear_vel_safe;
+			protectObj.safe_vel.linear_safe_vel = 0.0;
+			protectObj.safe_vel.steer = 0;
+			protectObj.safe_vel.angular_safe_thd = angular_vel_safe;
+			protectObj.safe_vel.angular_safe_vel = 0.0;
+			protectObj.security_pub4nav.publish(protectObj.safe_vel);
+
+
 			ros::spinOnce();
 			loop_rate.sleep();
 			ROS_INFO("end ...");
