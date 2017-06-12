@@ -184,21 +184,21 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, float* l
 		
 }
 
-bool protector::CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_vel)
+bool protector::CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_linear_vel)
 {
 	if(0 == linear_thd)
 	{
-		*safe_vel = 0.0;
+		*safe_linear_vel = 0.0;
 	}
 	else
 	{
 		if(ctrl_vel > linear_thd)
 		{
-			*safe_vel = linear_thd;
+			*safe_linear_vel = linear_thd;
 		}
 		else
 		{
-			*safe_vel = ctrl_vel;
+			*safe_linear_vel = ctrl_vel;
 			return false;
 		}
 			
@@ -207,8 +207,48 @@ bool protector::CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* saf
 	return true;
 }
 
-bool protector::CalcSafeAngularVel(float &ctrl_vel, float &angular_thd, float* safe_vel)
+bool protector::CalcSafeAngularVel(float &ctrl_vel, float &angular_thd, float* safe_angular_vel)
 {
+	if(angular_thd > 0.0)
+	{
+		if(ctrl_vel > angular_thd)
+		{
+			*safe_angular_vel = angular_thd;
+		}
+		else if(ctrl_vel < 0.0)
+		{
+			*safe_angular_vel = 0.0;
+		}
+		else
+		{
+			*safe_angular_vel = ctrl_vel;
+			return false;
+		}
+
+	}
+	else if(angular_thd < 0.0)
+	{
+		if(ctrl_vel < angular_thd)
+		{
+			*safe_angular_vel = angular_thd;
+		}
+		else if(ctrl_vel > 0.0)
+		{
+			*safe_angular_vel = 0.0;
+		}
+		else
+		{
+			*safe_angular_vel = ctrl_vel;
+			return false;
+		}
+			
+	}
+	else
+	{
+		*safe_angular_vel = 0.0;
+	}
+	
+	return true;
 
 }
 

@@ -134,10 +134,11 @@ class protector
 		bool StopMovingInForce(void);
 		void Intg4EnvSecure(void);
 		bool CalcLaserSafeVelThd(float  &min_scan, int &min_scan_ang, float *linear_safe, float* angular_safe);
-		bool CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_index, float* linear_safe, float* angular_safe);i
+		bool CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_index, float* linear_safe, float* angular_safe);
 
-		bool CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_vel);
-		bool CalcSafeAngularVel(float &ctrl_vel, float &angular_thd, float* safe_vel);
+		bool CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_linear_vel);
+		bool CalcSafeAngularVel(float &ctrl_vel, float &angular_thd, float* safe_angular_vel);
+
 	
 	private:
 		
