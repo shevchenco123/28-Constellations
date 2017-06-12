@@ -113,12 +113,13 @@ void protector::CalcMinDis4Ultrosonic(float* ultra_vec)
 
 }
 
-bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, float* linear_safe, float* angular_safe)
+bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, int &steer, float* linear_safe, float* angular_safe)
 {
 	if(min_scan > LASER_SAFE_DIS1)
 	{
 		*linear_safe = V_MAX;
 		*angular_safe = THETA_V_MAX;
+		steer = 0;	//0 means to steer any dir
 		return false;
 	}
 	else if(min_scan > LASER_SAFE_DIS2)
@@ -128,6 +129,7 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, float* l
 		{
 			*linear_safe = LINEAR_SAFE_MAX;
 			*angular_safe = THETA_V_MAX;
+			steer = 0;	
 		}
 		else
 		{
@@ -135,17 +137,20 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, float* l
 			{
 				*angular_safe = -THETA_V_MAX;
 				*linear_safe = V_MAX;
+				steer = -1;	
 			}
 			else if(min_scan_ang < 90)
 			{
 				*angular_safe = THETA_V_MAX;
 				*linear_safe = V_MAX;
+				steer = 1;	
 			}
 			else
 			{
 				cout<<"min scan angle is not in the designed scope !!!"<<endl;
 				*angular_safe = ANGULAR_STOP;
 				*linear_safe = LINEAR_STOP;
+				steer = 0;	
 				
 			}
 			
@@ -159,22 +164,26 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, float* l
 		if(abs(min_scan_ang - 90) <= LASER_SAFE_ANG2)
 		{
 			*angular_safe = ANGULAR_STOP;
+			steer = 0;	
 		}
 		else
 		{
 			if(min_scan_ang > 90)
 			{
 				*angular_safe = -ANGULAR_SAFE_MAX;
+				steer = -1;	
 			}
 			else if(min_scan_ang < 90)
 			{
 				*angular_safe = ANGULAR_SAFE_MAX;
+				steer = 1;	
 			}
 			else
 			{
 				cout<<"min scan angle is not in the designed scope !!!"<<endl;
 				*angular_safe = ANGULAR_STOP;
 				*linear_safe = LINEAR_STOP;
+				steer = 0;	
 			}
 			
 		}		

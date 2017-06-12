@@ -47,7 +47,8 @@ int main(int argc, char* argv[])
 
 			float linear_vel_safe = 0.0;
 			float angular_vel_safe = 0.0;
-			protectObj.CalcLaserSafeVelThd(protectObj.min_scan , protectObj.min_scan_angle, &linear_vel_safe, &angular_vel_safe);
+			int steer = 0;
+			protectObj.CalcLaserSafeVelThd(protectObj.min_scan , protectObj.min_scan_angle, steer, &linear_vel_safe, &angular_vel_safe);
 			cout<<"linear_vel_safe: "<< linear_vel_safe<< endl;
 			cout<<"angular_vel_safe: "<< angular_vel_safe<< endl;
 
@@ -61,7 +62,7 @@ int main(int argc, char* argv[])
 			protectObj.safe_vel.stop.data = true;
 			protectObj.safe_vel.linear_safe_thd = linear_vel_safe;
 			protectObj.safe_vel.linear_safe_vel = 0.0;
-			protectObj.safe_vel.steer = 0;
+			protectObj.safe_vel.steer = steer;
 			protectObj.safe_vel.angular_safe_thd = angular_vel_safe;
 			protectObj.safe_vel.angular_safe_vel = 0.0;
 			protectObj.security_pub4nav.publish(protectObj.safe_vel);
