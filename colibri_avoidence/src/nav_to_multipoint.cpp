@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
 			if(goal_inlaser_flag == true)
 			{
 				ori_apf_linear = (V_MAX - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
-				ori_apf_angular = scan4caObj.angle_adj / 100.0;
+				ori_apf_angular = scan4caObj.angle_adj / 200.0;
 
 				local4navObj.apf_ctrl_output[0] = local4navObj.LinearVelFilter(&ori_apf_linear, &local4navObj.cur_robot_vel[0]);
 				local4navObj.apf_ctrl_output[1] = local4navObj.AngularVelFilter(&ori_apf_angular, &local4navObj.cur_robot_vel[1]);

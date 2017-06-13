@@ -42,16 +42,16 @@
 #define V_EXCPT_VAL   1.25
 #define VTH_EXCPT_VAL 0.785	// 45 deg/sec
 
-#define LINEAR_SAFE_MAX 	0.25
+#define LINEAR_SAFE_MAX 	0.15
 #define ANGULAR_SAFE_MAX 	0.2
 #define LINEAR_STOP 		0.0
 #define ANGULAR_STOP 		0.0
 
 #define LASER_SAFE_DIS1		1.0
-#define LASER_SAFE_ANG1		24	//asin(0.4/1)
-#define LASER_SAFE_DIS2		0.4
-#define LASER_SAFE_ANG2		49  //asin(0.3/0.4) which 0.3 means half width of aiv
-#define LASER_SAFE_DIS3		0.25 //must stop
+#define LASER_SAFE_ANG1		30	//asin(0.5/1)
+#define LASER_SAFE_DIS2		0.5
+#define LASER_SAFE_ANG2		37  //asin(0.3/0.4) which 0.3 means half width of aiv
+#define LASER_SAFE_DIS3		0.3 //must stop
 
 
 #define ULTRA_SAFE_DIS1		0.7

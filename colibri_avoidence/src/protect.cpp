@@ -126,7 +126,6 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, int &ste
 	{
 		steer = 0;
 
-
 		if(abs(min_scan_ang - 90) <= LASER_SAFE_ANG1) //limit the vel in the angle 50 scope
 		{
 			*linear_safe = LINEAR_SAFE_MAX;
