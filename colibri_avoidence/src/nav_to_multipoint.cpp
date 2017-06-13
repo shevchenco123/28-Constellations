@@ -68,7 +68,6 @@ int main(int argc, char* argv[])
 	ros::Rate loop_rate(10);		// Set control  freq at 10 hz
 	unsigned int delay_cnt = 0;		// Init delay conter for scanObj 
 
-	
 	signal(SIGINT, MySigintHandler);
 
 	while(taskObj.obtain_goal_flag == false)
@@ -145,7 +144,7 @@ int main(int argc, char* argv[])
 			scan4caObj.CalcPhiParam(local4navObj.cur_robot_vel[0], dir_goal_in_laser);
 
 			scan4caObj.CalcKrfTheta(scan4caObj.kp_phi_vec, scan4caObj.phi_start_vec, scan4caObj.phi_end_vec);
-			scan4caObj.CalcCorrectedKrf();
+			//scan4caObj.CalcCorrectedKrf();
 			scan4caObj.CalcPassFcnAndFwdBnd(scan4caObj.wander, &scan4caObj.max_passfcn_val, scan4caObj.passfcn_vec);
 			scan4caObj.CalcPassFcnAndBwdBnd(scan4caObj.wander, &scan4caObj.max_passfcn_val, scan4caObj.passfcn_vec);
 
@@ -202,6 +201,7 @@ int main(int argc, char* argv[])
 			cout<<"tmp_delta_dis: " << tmp_delta_dis <<endl;
 			
 			cout<<"local4navObj.safe_velocity.steer:"<< local4navObj.safe_velocity.steer<< endl;
+			cout<<"rt_r2g_dis: " << rt_r2g_dis <<endl;
 
 			float tmp_linear = local4navObj.apf_cmd_vel.linear.x;
 			float tmp_angluar = local4navObj.apf_cmd_vel.angular.z;

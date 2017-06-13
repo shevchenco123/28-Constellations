@@ -25,7 +25,7 @@ using namespace std;
 #define LASER_EDGE_MIN 			0.06
 #define RAY_RESOL4CA			1.0		//laser ray resolution for colision avoidence
 
-#define K_SF 	1.2		//adj factor for latitude dir in polar frame
+#define K_SF 	1.5		//adj factor for latitude dir in polar frame
 #define WIDTH 	0.56
 #define D_SF	0.336	//0.5*K_SF*WIDTH  lateral safe dis
 
@@ -42,7 +42,7 @@ using namespace std;
 
 #define PASSFCN_THD_RATIO 	0.2
 #define MAX_PASSFCN_SCOPE	0.1
-#define PASSVAL_TOLLERENCE  0.05
+#define PASSVAL_TOLLERENCE  0.1
 
 #define RAD2DEG 	57.2958
 #define DEG2RAD 	0.01745
@@ -50,6 +50,10 @@ using namespace std;
 
 #define	DEG2RAD_PARAM(deg)	PI * deg / 180.0
 #define	RAD2DEG_PARAM(rad)	180.0 * rad / PI
+
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+
 
 #define DELAY_CNT_MAX 	5
 
