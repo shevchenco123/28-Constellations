@@ -68,6 +68,8 @@ int main(int argc, char* argv[])
 	ros::Rate loop_rate(10);		// Set control  freq at 10 hz
 	unsigned int delay_cnt = 0;		// Init delay conter for scanObj 
 
+	float ori_apf_linear = 0.0;
+	float ori_apf_angular = 0.0;
 	signal(SIGINT, MySigintHandler);
 
 	while(taskObj.obtain_goal_flag == false)
@@ -154,8 +156,11 @@ int main(int argc, char* argv[])
 			
 			if(goal_inlaser_flag == true)
 			{
-				local4navObj.apf_ctrl_output[0] = (V_MAX - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
-				local4navObj.apf_ctrl_output[1] = scan4caObj.angle_adj / 200.0;	
+				ori_apf_linear = (V_MAX - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
+				ori_apf_angular = scan4caObj.angle_adj / 100.0;
+
+				local4navObj.apf_ctrl_output[0] = local4navObj.LinearVelFilter(&ori_apf_linear, &local4navObj.cur_robot_vel[0]);
+				local4navObj.apf_ctrl_output[1] = local4navObj.AngularVelFilter(&ori_apf_angular, &local4navObj.cur_robot_vel[1]);
 			}
 			else	//if gravaton is not in front of  laser , should exec the still rot 
 			{
@@ -210,8 +215,8 @@ int main(int argc, char* argv[])
 			float safe_angular_vel = 0.0;
 			local4navObj.CalcSafeLinearVel(tmp_linear, local4navObj.safe_velocity.linear_safe_thd, &safe_linear_vel);
 			local4navObj.CalcSafeAngularVel(tmp_angluar, local4navObj.safe_velocity.angular_safe_thd, &safe_angular_vel);
-			//local4navObj.apf_cmd_vel.linear.x = safe_linear_vel;
-			//local4navObj.apf_cmd_vel.angular.z = safe_angular_vel;
+			local4navObj.apf_cmd_vel.linear.x = safe_linear_vel;
+			local4navObj.apf_cmd_vel.angular.z = safe_angular_vel;
 
 			
 			if((local4navObj.position_OK_flag == true))

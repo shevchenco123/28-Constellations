@@ -25,7 +25,7 @@ using namespace std;
 #define LASER_EDGE_MIN 			0.06
 #define RAY_RESOL4CA			1.0		//laser ray resolution for colision avoidence
 
-#define K_SF 	1.5		//adj factor for latitude dir in polar frame
+#define K_SF 	1.25		//adj factor for latitude dir in polar frame
 #define WIDTH 	0.56
 #define D_SF	0.336	//0.5*K_SF*WIDTH  lateral safe dis
 

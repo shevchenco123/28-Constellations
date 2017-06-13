@@ -135,15 +135,15 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, int &ste
 		{
 			if(min_scan_ang > 90)
 			{
-				*angular_safe = -THETA_V_MAX;
+				*angular_safe = THETA_V_MAX;
 				*linear_safe = LINEAR_SAFE_MAX;
-				steer = -1;	
+				steer = 0;	
 			}
 			else if(min_scan_ang < 90)
 			{
 				*angular_safe = THETA_V_MAX;
 				*linear_safe = LINEAR_SAFE_MAX;
-				steer = 1;	
+				steer = 0;	
 			}
 			else
 			{
