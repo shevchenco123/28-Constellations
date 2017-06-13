@@ -226,50 +226,76 @@ bool local_nav::CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* saf
 	return true;
 }
 
-bool local_nav::CalcSafeAngularVel(float &ctrl_vel, float &angular_thd, float* safe_angular_vel)
+bool local_nav::CalcSafeAngularVel(float &ctrl_vel, int &steer, float &angular_thd, float* safe_angular_vel)
 {
-	if(angular_thd > 0.0)
+	if(steer == 0)
 	{
-		if(ctrl_vel > angular_thd)
-		{
-			*safe_angular_vel = angular_thd;
-		}
-		else if(ctrl_vel < 0.0)
-		{
-			*safe_angular_vel = 0.0;
-		}
-		else
+		if(abs(ctrl_vel) <= abs(angular_thd))
 		{
 			*safe_angular_vel = ctrl_vel;
 			return false;
 		}
+		else if(ctrl_vel > abs(angular_thd))
+		{
+			*safe_angular_vel = abs(angular_thd);
+		}
+		else if(ctrl_vel < (-1.0 * abs(angular_thd)))
+		{
+			*safe_angular_vel = -1.0 * abs(angular_thd);
 
-	}
-	else if(angular_thd < 0.0)
-	{
-		if(ctrl_vel < angular_thd)
-		{
-			*safe_angular_vel = angular_thd;
-		}
-		else if(ctrl_vel > 0.0)
-		{
-			*safe_angular_vel = 0.0;
 		}
 		else
 		{
-			*safe_angular_vel = ctrl_vel;
-			return false;
+			*safe_angular_vel = 0.0;
 		}
-			
 	}
 	else
 	{
-		*safe_angular_vel = 0.0;
+		if(angular_thd > 0.0)
+		{
+			if(ctrl_vel > angular_thd)
+			{
+				*safe_angular_vel = angular_thd;
+			}
+			else if(ctrl_vel < 0.0)
+			{
+				*safe_angular_vel = 0.0;
+			}
+			else
+			{
+				*safe_angular_vel = ctrl_vel;
+				return false;
+			}
+		
+		}
+		else if(angular_thd < 0.0)
+		{
+			if(ctrl_vel < angular_thd)
+			{
+				*safe_angular_vel = angular_thd;
+			}
+			else if(ctrl_vel > 0.0)
+			{
+				*safe_angular_vel = 0.0;
+			}
+			else
+			{
+				*safe_angular_vel = ctrl_vel;
+				return false;
+			}
+				
+		}
+		else
+		{
+			*safe_angular_vel = 0.0;
+		}
+
 	}
 	
 	return true;
 
 }
+
 
 bool local_nav::ReachGoalPositionOK(float* delta_dis)
 {

@@ -83,7 +83,7 @@ class local_nav
 		bool EmergencyStop(float* cmd_vel);
 
 		bool CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_linear_vel);
-		bool CalcSafeAngularVel(float &ctrl_vel, float &angular_thd, float* safe_angular_vel);
+		bool CalcSafeAngularVel(float &ctrl_vel, int &steer, float &angular_thd, float* safe_angular_vel);
 
 	private:
 		

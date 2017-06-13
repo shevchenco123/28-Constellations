@@ -124,12 +124,13 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, int &ste
 	}
 	else if(min_scan > LASER_SAFE_DIS2)
 	{
+		steer = 0;
+
 
 		if(abs(min_scan_ang - 90) <= LASER_SAFE_ANG1) //limit the vel in the angle 50 scope
 		{
 			*linear_safe = LINEAR_SAFE_MAX;
-			*angular_safe = THETA_V_MAX;
-			steer = 0;	
+			*angular_safe = THETA_V_MAX;			
 		}
 		else
 		{
@@ -137,20 +138,17 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, int &ste
 			{
 				*angular_safe = THETA_V_MAX;
 				*linear_safe = LINEAR_SAFE_MAX;
-				steer = 0;	
 			}
 			else if(min_scan_ang < 90)
 			{
 				*angular_safe = THETA_V_MAX;
 				*linear_safe = LINEAR_SAFE_MAX;
-				steer = 0;	
 			}
 			else
 			{
 				cout<<"min scan angle is not in the designed scope !!!"<<endl;
 				*angular_safe = ANGULAR_STOP;
 				*linear_safe = LINEAR_STOP;
-				steer = 0;	
 				
 			}
 			
@@ -223,45 +221,70 @@ bool protector::CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* saf
 	return true;
 }
 
-bool protector::CalcSafeAngularVel(float &ctrl_vel, float &angular_thd, float* safe_angular_vel)
+bool protector::CalcSafeAngularVel(float &ctrl_vel, int &steer, float &angular_thd, float* safe_angular_vel)
 {
-	if(angular_thd > 0.0)
+	if(steer == 0)
 	{
-		if(ctrl_vel > angular_thd)
-		{
-			*safe_angular_vel = angular_thd;
-		}
-		else if(ctrl_vel < 0.0)
-		{
-			*safe_angular_vel = 0.0;
-		}
-		else
+		if(abs(ctrl_vel) <= abs(angular_thd))
 		{
 			*safe_angular_vel = ctrl_vel;
 			return false;
 		}
+		else if(ctrl_vel > abs(angular_thd))
+		{
+			*safe_angular_vel = abs(angular_thd);
+		}
+		else if(ctrl_vel < (-1.0 * abs(angular_thd)))
+		{
+			*safe_angular_vel = -1.0 * abs(angular_thd);
 
-	}
-	else if(angular_thd < 0.0)
-	{
-		if(ctrl_vel < angular_thd)
-		{
-			*safe_angular_vel = angular_thd;
-		}
-		else if(ctrl_vel > 0.0)
-		{
-			*safe_angular_vel = 0.0;
 		}
 		else
 		{
-			*safe_angular_vel = ctrl_vel;
-			return false;
+			*safe_angular_vel = 0.0;
 		}
-			
 	}
 	else
 	{
-		*safe_angular_vel = 0.0;
+		if(angular_thd > 0.0)
+		{
+			if(ctrl_vel > angular_thd)
+			{
+				*safe_angular_vel = angular_thd;
+			}
+			else if(ctrl_vel < 0.0)
+			{
+				*safe_angular_vel = 0.0;
+			}
+			else
+			{
+				*safe_angular_vel = ctrl_vel;
+				return false;
+			}
+		
+		}
+		else if(angular_thd < 0.0)
+		{
+			if(ctrl_vel < angular_thd)
+			{
+				*safe_angular_vel = angular_thd;
+			}
+			else if(ctrl_vel > 0.0)
+			{
+				*safe_angular_vel = 0.0;
+			}
+			else
+			{
+				*safe_angular_vel = ctrl_vel;
+				return false;
+			}
+				
+		}
+		else
+		{
+			*safe_angular_vel = 0.0;
+		}
+
 	}
 	
 	return true;

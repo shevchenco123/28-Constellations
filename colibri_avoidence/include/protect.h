@@ -48,9 +48,9 @@
 #define ANGULAR_STOP 		0.0
 
 #define LASER_SAFE_DIS1		1.0
-#define LASER_SAFE_ANG1		25
+#define LASER_SAFE_ANG1		24	//asin(0.4/1)
 #define LASER_SAFE_DIS2		0.4
-#define LASER_SAFE_ANG2		45
+#define LASER_SAFE_ANG2		49  //asin(0.3/0.4) which 0.3 means half width of aiv
 #define LASER_SAFE_DIS3		0.25 //must stop
 
 
@@ -143,7 +143,7 @@ class protector
 		bool CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_index, float* linear_safe, float* angular_safe);
 
 		bool CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_linear_vel);
-		bool CalcSafeAngularVel(float &ctrl_vel, float &angular_thd, float* safe_angular_vel);
+		bool CalcSafeAngularVel(float &ctrl_vel, int &steer, float &angular_thd, float* safe_angular_vel);
 
 	private:
 		

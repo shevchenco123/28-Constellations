@@ -213,8 +213,9 @@ int main(int argc, char* argv[])
 
 			float safe_linear_vel = 0.0;
 			float safe_angular_vel = 0.0;
+			int steer = local4navObj.safe_velocity.steer;
 			local4navObj.CalcSafeLinearVel(tmp_linear, local4navObj.safe_velocity.linear_safe_thd, &safe_linear_vel);
-			local4navObj.CalcSafeAngularVel(tmp_angluar, local4navObj.safe_velocity.angular_safe_thd, &safe_angular_vel);
+			local4navObj.CalcSafeAngularVel(tmp_angluar, steer, local4navObj.safe_velocity.angular_safe_thd, &safe_angular_vel);
 			local4navObj.apf_cmd_vel.linear.x = safe_linear_vel;
 			local4navObj.apf_cmd_vel.angular.z = safe_angular_vel;
 
