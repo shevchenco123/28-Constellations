@@ -182,7 +182,7 @@ float scan_ca::CalcAdjDir(float* ptrPassfcn_vector, float max_passfcn_val, int* 
 	int mid_num = 90;
 	float adj_dir = 0.0;
 
-	float tmp_scope = MAX(PASSVAL_TOLLERENCE * max_passfcn_val, MAX_PASSFCN_SCOPE);
+	float tmp_scope = MIN(PASSVAL_TOLLERENCE * max_passfcn_val, MAX_PASSFCN_SCOPE);
 	
 	for(int m = 0; m <= mid_num; m++)  //backward directrion(CW 180->0) search using forward bound
 	{
