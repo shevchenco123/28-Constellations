@@ -459,7 +459,7 @@ void AIV_Driver::ReadInfoProc(unsigned char buf[], boost::system::error_code ec,
 
 					ParseWheelRpm(&recv_data[VALID_DATA_START_INDX]);
 
-					cout<<"left_rot_rate:"<<left_rot_rate<<"   right_rot_rate:"<<right_rot_rate<<endl;
+					//cout<<"left_rot_rate:"<<left_rot_rate<<"   right_rot_rate:"<<right_rot_rate<<endl;
 
 					current_time = ros::Time::now();
 					time_period = (current_time - last_time).toSec();
@@ -546,7 +546,7 @@ void AIV_Driver::ReadFromCom(void *args)
 
 		ComCallHandle();	
 		recv_cnt ++;
-		cout <<"recv times: "<<recv_cnt<<endl;
+		//cout <<"recv times: "<<recv_cnt<<endl;
 	}
 
 }
