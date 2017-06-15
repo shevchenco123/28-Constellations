@@ -60,8 +60,11 @@ class local_nav
 		bool orintation_OK_flag;
 		bool approaching_flag;
 		
-		colibri_msgs::SafeVel safe_velocity;
-		ros::Subscriber safe_vel_sub;
+		colibri_msgs::SafeVel laser_safe_velocity;
+		ros::Subscriber safe_vel_sub4laser;
+
+		colibri_msgs::SafeVel ultra_safe_velocity;
+		ros::Subscriber safe_vel_sub4ultra;
 		
 		local_nav();
 		~local_nav();
@@ -91,7 +94,8 @@ class local_nav
 		void AmclPoseCallBack(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& amcl_pose);
 		void RobotPos2LaserPos(float* robot_pos, float* laser_x, float* laser_y);
 		int	SgnOfData(float* input);
-		void SafeVelCallBack(const colibri_msgs::SafeVel::ConstPtr& safe_vel);
+		void LaserSafeVelCallBack(const colibri_msgs::SafeVel::ConstPtr& safe_vel);
+		void UltraSafeVelCallBack(const colibri_msgs::SafeVel::ConstPtr& safe_vel);
 
 
 };

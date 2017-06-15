@@ -205,22 +205,28 @@ int main(int argc, char* argv[])
 			
 			cout<<"tmp_delta_dis: " << tmp_delta_dis <<endl;
 			
-			cout<<"local4navObj.safe_velocity.steer:"<< local4navObj.safe_velocity.steer<< endl;
+			cout<<"local4navObj.laser_safe_velocity.steer:"<< local4navObj.laser_safe_velocity.steer<< endl;
 			cout<<"rt_r2g_dis: " << rt_r2g_dis <<endl;
 
 			float tmp_linear = local4navObj.apf_cmd_vel.linear.x;
 			float tmp_angluar = local4navObj.apf_cmd_vel.angular.z;
 
-			float safe_linear_vel = 0.0;
-			float safe_angular_vel = 0.0;
-			int steer = local4navObj.safe_velocity.steer;
-			local4navObj.CalcSafeLinearVel(tmp_linear, local4navObj.safe_velocity.linear_safe_thd, &safe_linear_vel);
-			local4navObj.CalcSafeAngularVel(tmp_angluar, steer, local4navObj.safe_velocity.angular_safe_thd, &safe_angular_vel);
-			local4navObj.apf_cmd_vel.linear.x = safe_linear_vel;
-			local4navObj.apf_cmd_vel.angular.z = safe_angular_vel;
+			float ultra_safe_linear_vel = 0.0;
+			float ultra_safe_angular_vel = 0.0;
+			int ultra_steer = local4navObj.ultra_safe_velocity.steer;
+			local4navObj.CalcSafeLinearVel(tmp_linear, local4navObj.ultra_safe_velocity.linear_safe_thd, &ultra_safe_linear_vel);
+			local4navObj.CalcSafeAngularVel(tmp_angluar, ultra_steer, local4navObj.ultra_safe_velocity.angular_safe_thd, &ultra_safe_angular_vel);
+
+			float laser_safe_linear_vel = 0.0;
+			float laser_safe_angular_vel = 0.0;
+			int laser_steer = local4navObj.ultra_safe_velocity.steer;
+			local4navObj.CalcSafeLinearVel(tmp_linear, local4navObj.ultra_safe_velocity.linear_safe_thd, &laser_safe_linear_vel);
+			local4navObj.CalcSafeAngularVel(tmp_angluar, laser_steer, local4navObj.ultra_safe_velocity.angular_safe_thd, &laser_safe_angular_vel);
+			local4navObj.apf_cmd_vel.linear.x = MIN(laser_safe_linear_vel, ultra_safe_linear_vel);
+			local4navObj.apf_cmd_vel.angular.z = MIN(laser_safe_angular_vel, ultra_safe_angular_vel);
 
 			
-			if((local4navObj.position_OK_flag == true))
+			if((local4navObj.position_OK_flag == true)||(local4navObj.ultra_safe_velocity.stop.data == true))
 			{
 				local4navObj.apf_cmd_vel.linear.x = 0.0;
 				local4navObj.apf_cmd_vel.angular.z = 0.0;
@@ -241,8 +247,10 @@ int main(int argc, char* argv[])
 			
 			cout<<"pub_linear_x: " << local4navObj.apf_cmd_vel.linear.x <<endl;
 			cout<<"pub_angular_z: " << local4navObj.apf_cmd_vel.angular.z <<endl;
-			cout<<"safe_linear_vel: " << safe_linear_vel <<endl;
-			cout<<"safe_angular_vel: " << safe_angular_vel <<endl;			
+			cout<<"laser_safe_linear_vel: " << laser_safe_linear_vel <<endl;
+			cout<<"laser_safe_angular_vel: " << laser_safe_angular_vel <<endl;			
+			cout<<"ultra_safe_linear_vel: " << ultra_safe_linear_vel <<endl;
+			cout<<"ultra_safe_angular_vel: " << ultra_safe_angular_vel <<endl;	
 
 			scan4caObj.ResetMaxPassValCnt();
 

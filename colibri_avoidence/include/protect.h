@@ -53,9 +53,8 @@
 #define LASER_SAFE_ANG2		37  //asin(0.3/0.4) which 0.3 means half width of aiv
 #define LASER_SAFE_DIS3		0.3 //must stop
 
-
-#define ULTRA_SAFE_DIS1		0.7
-#define ULTRA_SAFE_DIS2		0.3
+#define ULTRA_SAFE_DIS1		0.8
+#define ULTRA_SAFE_DIS2		0.4
 
 
 
@@ -124,8 +123,10 @@ class protector
 		ros::Publisher security_pub4env;
 		colibri_msgs::EnvSecurity env_secure;
 
-		ros::Publisher security_pub4nav;
-		colibri_msgs::SafeVel safe_vel;
+		ros::Publisher security_pub4laser;
+		ros::Publisher security_pub4ultra;
+		colibri_msgs::SafeVel laser_safe_vel;
+		colibri_msgs::SafeVel ultra_safe_vel;
 
 
 		protector();
@@ -140,7 +141,7 @@ class protector
 		bool StopMovingInForce(void);
 		void Intg4EnvSecure(void);
 		bool CalcLaserSafeVelThd(float  &min_scan, int &min_scan_ang, int &steer, float *linear_safe, float* angular_safe);
-		bool CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_index, float* linear_safe, float* angular_safe);
+		bool CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_index, int &steer, float* linear_safe, float* angular_safe);
 
 		bool CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_linear_vel);
 		bool CalcSafeAngularVel(float &ctrl_vel, int &steer, float &angular_thd, float* safe_angular_vel);

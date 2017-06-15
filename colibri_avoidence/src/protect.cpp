@@ -30,7 +30,8 @@ protector::protector()
 	odom_sub4safe = nh_safety.subscribe<nav_msgs::Odometry>("/odom", 1, &protector::OdomSafeCallBack, this);
 
 	security_pub4env = nh_safety.advertise<colibri_msgs::EnvSecurity>("/env_secure", 1);
-	security_pub4nav = nh_safety.advertise<colibri_msgs::SafeVel>("/safe_vel", 1);
+	security_pub4laser = nh_safety.advertise<colibri_msgs::SafeVel>("/laser_safe_vel", 1);
+	security_pub4ultra = nh_safety.advertise<colibri_msgs::SafeVel>("/ultra_safe_vel", 1);
 
 }
 protector::~protector()
@@ -290,44 +291,40 @@ bool protector::CalcSafeAngularVel(float &ctrl_vel, int &steer, float &angular_t
 
 }
 
-bool protector::CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_index, float* linear_safe, float* angular_safe)
+bool protector::CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_index, int &steer, float* linear_safe, float* angular_safe)
 {
 	if(min_ultra > ULTRA_SAFE_DIS1)
 	{
 		*linear_safe = V_MAX;
 		*angular_safe = THETA_V_MAX;
+		steer = 0;
 		return false;
 	}
 	else if(min_ultra > ULTRA_SAFE_DIS2)
 	{
-
-		if((min_ultra_index == 2)||(min_ultra_index == 3)) //limit the vel in the angle 50 scope
+		*linear_safe = LINEAR_SAFE_MAX * (min_ultra - ULTRA_SAFE_DIS2) / (ULTRA_SAFE_DIS1 - ULTRA_SAFE_DIS2);
+		if(min_ultra_index == 4)
 		{
-			*linear_safe = LINEAR_STOP;
-			*angular_safe = THETA_V_MAX;
+			*angular_safe = -THETA_V_MAX;
+			steer = -1;
+		}
+		else if(min_ultra_index == 1)
+		{
+			*angular_safe = THETA_V_MAX;	
+			steer = 1;
 		}
 		else
 		{
-			if(min_ultra_index == 1)
-			{
-				*angular_safe = ANGULAR_SAFE_MAX;
-				*linear_safe = LINEAR_SAFE_MAX;
-			}
-			
-			if(min_ultra_index == 4)
-			{
-				*angular_safe = -ANGULAR_SAFE_MAX;
-				*linear_safe = LINEAR_SAFE_MAX;
-			}
-			
-		}
+			*angular_safe = THETA_V_MAX;	
+			steer = 0;
+		}	
 
 	}
-	else // ultra dis < 0.3 must stop
+	else // ultra dis < 0.4 must stop
 	{	
 		*angular_safe = ANGULAR_STOP;
-		*linear_safe = LINEAR_STOP;		
-		
+		*linear_safe = LINEAR_STOP;
+		steer = 0;
 	}
 
 	return true;	

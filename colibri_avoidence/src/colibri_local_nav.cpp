@@ -35,7 +35,9 @@ local_nav::local_nav()
 
 		sub_amcl_pose = nh_nav.subscribe<geometry_msgs::PoseWithCovarianceStamped>("/amcl_pose", 1, &local_nav::AmclPoseCallBack, this);
 
-		safe_vel_sub = nh_nav.subscribe<colibri_msgs::SafeVel>("/safe_vel", 1, &local_nav::SafeVelCallBack, this);
+		safe_vel_sub4laser = nh_nav.subscribe<colibri_msgs::SafeVel>("/laser_safe_vel", 1, &local_nav::LaserSafeVelCallBack, this);
+		safe_vel_sub4ultra = nh_nav.subscribe<colibri_msgs::SafeVel>("/ultra_safe_vel", 1, &local_nav::UltraSafeVelCallBack, this);
+
 }
 
 local_nav::~local_nav()
@@ -378,18 +380,33 @@ int local_nav::SgnOfData(float* input)
 		
 }
 
-void local_nav::SafeVelCallBack(const colibri_msgs::SafeVel::ConstPtr& safe_vel)
+void local_nav::LaserSafeVelCallBack(const colibri_msgs::SafeVel::ConstPtr& safe_vel)
 {
-	safe_velocity.header.stamp = safe_vel->header.stamp;
-	safe_velocity.header.frame_id = safe_vel->header.frame_id;
-	safe_velocity.header.seq = safe_vel->header.seq;
+	laser_safe_velocity.header.stamp = safe_vel->header.stamp;
+	laser_safe_velocity.header.frame_id = safe_vel->header.frame_id;
+	laser_safe_velocity.header.seq = safe_vel->header.seq;
 
-	safe_velocity.stop.data = safe_vel->stop.data;		
-	safe_velocity.linear_safe_thd = safe_vel->linear_safe_thd;
-	safe_velocity.linear_safe_vel = safe_vel->linear_safe_vel;
-	safe_velocity.steer = safe_vel->steer;
-	safe_velocity.angular_safe_thd = safe_vel->angular_safe_thd;
-	safe_velocity.angular_safe_vel = safe_vel->angular_safe_vel;
+	laser_safe_velocity.stop.data = safe_vel->stop.data;		
+	laser_safe_velocity.linear_safe_thd = safe_vel->linear_safe_thd;
+	laser_safe_velocity.linear_safe_vel = safe_vel->linear_safe_vel;
+	laser_safe_velocity.steer = safe_vel->steer;
+	laser_safe_velocity.angular_safe_thd = safe_vel->angular_safe_thd;
+	laser_safe_velocity.angular_safe_vel = safe_vel->angular_safe_vel;
+
+}
+
+void local_nav::UltraSafeVelCallBack(const colibri_msgs::SafeVel::ConstPtr& safe_vel)
+{
+	ultra_safe_velocity.header.stamp = safe_vel->header.stamp;
+	ultra_safe_velocity.header.frame_id = safe_vel->header.frame_id;
+	ultra_safe_velocity.header.seq = safe_vel->header.seq;
+
+	ultra_safe_velocity.stop.data = safe_vel->stop.data;		
+	ultra_safe_velocity.linear_safe_thd = safe_vel->linear_safe_thd;
+	ultra_safe_velocity.linear_safe_vel = safe_vel->linear_safe_vel;
+	ultra_safe_velocity.steer = safe_vel->steer;
+	ultra_safe_velocity.angular_safe_thd = safe_vel->angular_safe_thd;
+	ultra_safe_velocity.angular_safe_vel = safe_vel->angular_safe_vel;
 
 }
 

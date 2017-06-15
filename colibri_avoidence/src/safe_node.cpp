@@ -12,6 +12,19 @@ int main(int argc, char* argv[])
 	float coli_prob = 0.0;
 
 	ROS_INFO("Start to detect the safety...");
+
+	float laser_linear_vel_safe = 0.0;
+	float laser_angular_vel_safe = 0.0;
+	int laser_steer = 0;
+
+	float ultra_linear_vel_safe = 0.0;
+	float ultra_angular_vel_safe = 0.0;
+	int ultra_steer = 0;
+
+	//ofstream  file1; 
+	//file1.open ("ultra.txt");
+	//int rec_max = 1800;
+	//int cnt = 0;
 	
 	while (ros::ok())
 	{	
@@ -24,47 +37,87 @@ int main(int argc, char* argv[])
 		
 		if(delay_cnt >= DELAY_CNT_MAX)
 		{
-			protectObj.CalcMinDis4LaserScan(protectObj.scan4safty);
-			protectObj.CalcMinDis4Ultrosonic(protectObj.ultra_vec);
-			
+			protectObj.CalcMinDis4LaserScan(protectObj.scan4safty);	
 			cout<<"protectObj.min_scan: "<< protectObj.min_scan << endl;
-			cout<<"protectObj.min_index_scan: "<< protectObj.min_index_scan<< endl;
 			cout<<"protectObj.min_scan_angle: "<< protectObj.min_scan_angle<< endl;
 			cout<<"protectObj.laser_prob: "<< protectObj.laser_unsafe_prob<< endl;
 			
+			protectObj.CalcMinDis4Ultrosonic(protectObj.ultra_vec);
+			cout<<"protectObj.min_ultra: "<< protectObj.min_ultra<< endl;
+			cout<<"protectObj.min_index_ultra: "<< protectObj.min_index_ultra<< endl;
+			cout<<"protectObj.ultra_unsafe_prob: "<< protectObj.ultra_unsafe_prob<< endl;
+			
 			coli_prob = protectObj.IntegrateMultiInfo4Safety(&protectObj.advise_action);
-			cout<<"coli_prob: "<< coli_prob<< endl;
-
-			float linear_vel_safe = 0.0;
-			float angular_vel_safe = 0.0;
-			int steer = 0;
-			protectObj.CalcLaserSafeVelThd(protectObj.min_scan , protectObj.min_scan_angle, steer, &linear_vel_safe, &angular_vel_safe);
-			cout<<"linear_vel_safe: "<< linear_vel_safe<< endl;
-			cout<<"angular_vel_safe: "<< angular_vel_safe<< endl;
-
+			cout<<"Intg coli_prob: "<< coli_prob<< endl;
 
 			protectObj.Intg4EnvSecure();	
 			protectObj.security_pub4env.publish(protectObj.env_secure);
 
-			protectObj.safe_vel.header.stamp = ros::Time::now();
-			protectObj.safe_vel.header.frame_id = "robot";
+			protectObj.CalcLaserSafeVelThd(protectObj.min_scan , protectObj.min_scan_angle, laser_steer, &laser_linear_vel_safe, &laser_angular_vel_safe);
+			cout<<"laser_linear_vel_safe: "<< laser_linear_vel_safe<< endl;
+			cout<<"laser_angular_vel_safe: "<< laser_angular_vel_safe<< endl;
+			cout<<"laser_steer: "<< laser_steer<< endl;
 
-			if((linear_vel_safe == LINEAR_STOP) && (angular_vel_safe == ANGULAR_STOP) && (steer == 0))
+			protectObj.CalcUltraSafeVelThd(protectObj.min_ultra, protectObj.min_index_ultra, ultra_steer, &ultra_linear_vel_safe, &ultra_angular_vel_safe);
+			cout<<"ultra_linear_vel_safe: "<< ultra_linear_vel_safe << endl;
+			cout<<"ultra_angular_vel_safe: "<< ultra_angular_vel_safe << endl;
+			cout<<"ultra_steer: "<< ultra_steer << endl;
+
+/*
+			file1 << fixed << setprecision(4) << protectObj.ultra_vec[0];
+			file1 << '\t';
+			file1 << fixed << setprecision(4) << protectObj.ultra_vec[1];
+			file1 << '\t';	
+			file1 << fixed << setprecision(4) << protectObj.ultra_vec[2];
+			file1 << '\t';
+			file1 << fixed << setprecision(4) << protectObj.ultra_vec[3];
+			file1 << '\n';
+
+			cnt ++;
+			if(cnt == rec_max)
 			{
-				protectObj.safe_vel.stop.data = true;
+				file1.close();	//record laser dis completed
+			}
+*/
+			// publish the laser module safe vel
+			protectObj.laser_safe_vel.header.stamp = ros::Time::now();
+			protectObj.laser_safe_vel.header.frame_id = "laser";
+
+			if((laser_linear_vel_safe == LINEAR_STOP) && (laser_angular_vel_safe == ANGULAR_STOP) && (laser_steer == 0))
+			{
+				protectObj.laser_safe_vel.stop.data = true;
 			}
 			else
 			{
-				protectObj.safe_vel.stop.data = false;
-			}
-					
-			protectObj.safe_vel.linear_safe_thd = linear_vel_safe;
-			protectObj.safe_vel.linear_safe_vel = 0.0;
-			protectObj.safe_vel.steer = steer;
-			protectObj.safe_vel.angular_safe_thd = angular_vel_safe;
-			protectObj.safe_vel.angular_safe_vel = 0.0;
-			protectObj.security_pub4nav.publish(protectObj.safe_vel);
+				protectObj.laser_safe_vel.stop.data = false;
+			}				
+			protectObj.laser_safe_vel.linear_safe_thd = laser_linear_vel_safe;
+			protectObj.laser_safe_vel.linear_safe_vel = 0.0;
+			protectObj.laser_safe_vel.steer = laser_steer;
+			protectObj.laser_safe_vel.angular_safe_thd = laser_angular_vel_safe;
+			protectObj.laser_safe_vel.angular_safe_vel = 0.0;
+			
+			protectObj.security_pub4laser.publish(protectObj.laser_safe_vel);
 
+			// publish the ultra module safe vel
+			protectObj.ultra_safe_vel.header.stamp = ros::Time::now();
+			protectObj.ultra_safe_vel.header.frame_id = "ultra";
+
+			if((ultra_linear_vel_safe == LINEAR_STOP) && (ultra_angular_vel_safe == ANGULAR_STOP) && (ultra_steer == 0))
+			{
+				protectObj.ultra_safe_vel.stop.data = true;
+			}
+			else
+			{
+				protectObj.ultra_safe_vel.stop.data = false;
+			}				
+			protectObj.ultra_safe_vel.linear_safe_thd = ultra_linear_vel_safe;
+			protectObj.ultra_safe_vel.linear_safe_vel = 0.0;
+			protectObj.ultra_safe_vel.steer = ultra_steer;
+			protectObj.ultra_safe_vel.angular_safe_thd = ultra_angular_vel_safe;
+			protectObj.ultra_safe_vel.angular_safe_vel = 0.0;
+			
+			protectObj.security_pub4ultra.publish(protectObj.ultra_safe_vel);
 
 			ros::spinOnce();
 			loop_rate.sleep();
