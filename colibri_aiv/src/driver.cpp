@@ -78,8 +78,7 @@ AIV_Driver::AIV_Driver()
 	GenerateCmd(req_bumper_stop, REQ_BUMPER, RSVD_VAL, FRAME_CMD_STOP, cmd_data);
 	GenerateCmd(req_vel_stop, REQ_VELOCITY, RSVD_VAL, FRAME_CMD_STOP, cmd_data);
 		
-	//cout<<"enable_motor:"<<endl;
-	DisplayFrame(req_ultra_start);
+	//DisplayFrame(req_ultra_start);
 	
 	cartodom_x = -OFFSET_LASER_X;
 	cartodom_y = 0.0;
