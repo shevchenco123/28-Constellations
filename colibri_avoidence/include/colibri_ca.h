@@ -54,7 +54,6 @@ using namespace std;
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-
 #define DELAY_CNT_MAX 	10
 
 class scan_ca

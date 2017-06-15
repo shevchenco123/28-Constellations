@@ -5,7 +5,6 @@
 
 #include "colibri_msgs/SafeVel.h"
 
-
 #ifndef _COLIBRI_LOCAL_NAV_H_
 #define _COLIBRI_LOCAL_NAV_H_
 
