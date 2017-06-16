@@ -233,6 +233,14 @@ include_directories(
  target_link_libraries(mult_rvizgoal
    ${catkin_LIBRARIES}
  )
+
+        add_executable(pub_auxinfo src/colibri_aux.cpp)
+
+
+## Specify libraries to link a library or executable target against
+ target_link_libraries(pub_auxinfo
+   ${catkin_LIBRARIES}
+ )
 #############
 ## Install ##
 #############
