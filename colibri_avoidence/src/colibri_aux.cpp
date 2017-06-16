@@ -4,6 +4,19 @@
 #include "colibri_msgs/AuxInfo.h"
 #include "cartodom/Cartodom.h"
 
+#define LIGHT_OFF 0
+#define LIGHT_ON 255
+#define LIGHT_SLOW_BLINKING 16	//0x0f 1s flash
+#define LIGHT_FAST_BLINKING 240	//0xf0 0.5s flash 
+
+#define HORN_OFF 0
+#define HORN_ON 255		// normal music
+#define HORN_ALARM 240	// fault music
+
+#define ULTRA_OFF 0
+#define ULTRA_ON 255
+#define ROS_OK 0
+#define ROS_SYS_FATAL 255
 
 geometry_msgs::Twist aux_twist;
 colibri_msgs::EnvSecurity aux_envsec;
@@ -41,15 +54,15 @@ int main(int argc, char* argv[])
 		aux_info.header.stamp = ros::Time::now();
 		aux_info.header.frame_id = "robot";
 		
-		aux_info.lf_light = 0;
-		aux_info.lr_light = 0;
-		aux_info.rf_light = 0;
-		aux_info.rr_light = 0;
-		aux_info.horn = 0;
-		aux_info.laser_mindis = 0;
+		aux_info.lf_light = LIGHT_ON;
+		aux_info.lr_light = LIGHT_ON;
+		aux_info.rf_light = LIGHT_ON;
+		aux_info.rr_light = LIGHT_ON;
+		aux_info.horn = HORN_ON;
+		aux_info.laser_mindis = 20;
 		aux_info.laser_mindir = 0;
-		aux_info.ultra_switch = 0;
-		aux_info.ros_fault = 0;
+		aux_info.ultra_switch = ULTRA_ON;
+		aux_info.ros_fault = ROS_OK;
 
 		aux_pub.publish(aux_info);
 		
