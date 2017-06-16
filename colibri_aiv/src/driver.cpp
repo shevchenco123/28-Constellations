@@ -65,6 +65,7 @@ AIV_Driver::AIV_Driver()
 	GenerateCmd(disable_motor, ENABLE_DISABLE_MOTOR, 0x01, RSVD_VAL, cmd_data);
 	
 	GenerateCmd(send_twist, SEND_TWIST, 0x04,RSVD_VAL, cmd_data);
+	GenerateCmd(send_aux_info, SEND_AUX_INFO, 0x10,RSVD_VAL, cmd_data);
 
 	GenerateCmd(req_encoder_start, REQ_ENCODER, RSVD_VAL, FRAME_CMD_START, cmd_data);
 	GenerateCmd(req_imu_start, REQ_IMU, RSVD_VAL, FRAME_CMD_START, cmd_data);

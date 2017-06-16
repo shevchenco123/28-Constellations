@@ -42,6 +42,7 @@ using namespace boost::asio;
 #define REQ_ULTRASONIC          	 0x04
 #define REQ_BUMPER            	 	 0x05
 #define REQ_VELOCITY             	 0x06
+#define SEND_AUX_INFO				 0X07
 
 #define ENABLE_MOTOR		0xff
 #define DISABLE_MOTOR		0x55
@@ -89,6 +90,7 @@ class AIV_Driver
 		unsigned char enable_motor[CONST_PROTOCOL_LEN];
 		unsigned char disable_motor[CONST_PROTOCOL_LEN];
 		unsigned char send_twist[CONST_PROTOCOL_LEN];
+		unsigned char send_aux_info[CONST_PROTOCOL_LEN];
 		
 		unsigned char req_encoder_start[CONST_PROTOCOL_LEN];
 		unsigned char req_imu_start[CONST_PROTOCOL_LEN];
