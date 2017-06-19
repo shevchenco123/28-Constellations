@@ -18,6 +18,8 @@
 
 using namespace std;
 
+#define CA_FUSION
+
 #define NUM_RAY4CA 				181		//every degree for front semi-cirle
 #define ANGLE4CA_START 			0
 #define ANGLE4CA_START_INDEX 	61		// 61=(0-(-30))/0.5+1

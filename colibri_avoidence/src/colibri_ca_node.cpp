@@ -23,6 +23,8 @@ int main(int argc, char* argv[])
 	file2.open ("cppkrf_vector.txt"); 
 	file3.open ("cpppassfcn_vector.txt"); 
 	int delay_cnt = 0;
+
+	float min_multi_range = 20.0;
 	
 	while (ros::ok())
 	{	
@@ -57,7 +59,14 @@ int main(int argc, char* argv[])
 			
 			for(int i = 0; i < NUM_RAY4CA; i++)
 			{
+
+#ifdef CA_FUSION
+				min_multi_range = MIN(*(scan4caObj.ptrScan4ca + i),scan4caObj.ultra4ca[i]);
+				scan4caObj.delta_phi_vec[i] = asin(D_SF / min_multi_range) * RAD2DEG; //calc the phi ang obs influence range
+#else
 				scan4caObj.delta_phi_vec[i] = asin(D_SF / (*(scan4caObj.ptrScan4ca + i))) * RAD2DEG; //calc the phi ang obs influence range
+#endif
+				
 				scan4caObj.kp_phi_vec[i] = scan4caObj.CalcKpPhi(v_0, *(scan4caObj.ptrScan4ca + i)); //from right to left in 181 laser points  and should be positive
 				range_num = floor(scan4caObj.delta_phi_vec[i] / RAY_RESOL4CA); //range_num must be positive
 				
