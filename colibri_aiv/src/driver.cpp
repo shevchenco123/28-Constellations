@@ -613,13 +613,13 @@ bool AIV_Driver::InitSubandPub()
 	cartodom_sub= global_nh.subscribe<cartodom::Cartodom>("cartodom", 1, boost::bind(&AIV_Driver::CartodomCallback, this, _1));
 	
 	ros::NodeHandle nh_odom;
-	odom_pub = nh_odom.advertise<nav_msgs::Odometry>("odom", 50);
+	odom_pub = nh_odom.advertise<nav_msgs::Odometry>("odom", 10);
 
 	ros::NodeHandle nh_ultrasonic;
-	ultrasonic_pub = nh_ultrasonic.advertise<colibri_aiv::Ultrasonic>("ultrasonic", 50);
+	ultrasonic_pub = nh_ultrasonic.advertise<colibri_aiv::Ultrasonic>("ultrasonic", 10);
 	
 	ros::NodeHandle nh_bumper;
-	bumper_pub = nh_bumper.advertise<colibri_aiv::Bumper>("bumper", 50);
+	bumper_pub = nh_bumper.advertise<colibri_aiv::Bumper>("bumper", 10);
 	
 }
 

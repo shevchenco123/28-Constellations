@@ -43,7 +43,7 @@ using namespace boost::asio;
 #define REQ_ULTRASONIC          	 0x04
 #define REQ_BUMPER            	 	 0x05
 #define REQ_VELOCITY             	 0x06
-#define SEND_AUX				 0X07
+#define SEND_AUX				 	 0X07
 
 #define ENABLE_MOTOR		0xff
 #define DISABLE_MOTOR		0x55
