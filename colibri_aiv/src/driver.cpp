@@ -66,7 +66,7 @@ AIV_Driver::AIV_Driver()
 	GenerateCmd(disable_motor, ENABLE_DISABLE_MOTOR, 0x01, RSVD_VAL, cmd_data);
 	
 	GenerateCmd(send_twist, SEND_TWIST, 0x04,RSVD_VAL, cmd_data);
-	GenerateCmd(send_aux_info, SEND_AUX_INFO, 0x10,RSVD_VAL, cmd_data);
+	GenerateCmd(send_aux_info, SEND_AUX, 0x0B,RSVD_VAL, cmd_data);
 
 	GenerateCmd(req_encoder_start, REQ_ENCODER, RSVD_VAL, FRAME_CMD_START, cmd_data);
 	GenerateCmd(req_imu_start, REQ_IMU, RSVD_VAL, FRAME_CMD_START, cmd_data);
@@ -528,6 +528,39 @@ void AIV_Driver::ReadInfoProc(unsigned char buf[], boost::system::error_code ec,
 				} 
 			
 			break;
+
+		case SEND_AUX:
+			if(AIV_Driver::send_aux_finish == true)
+			{
+				if(recv_data[VALID_DATA_LEN_INDX] != 0x0B)
+				{
+					cout<<"The data count byte of the respones of the send_aux cmd shoud be 0x0B,but returned is: "<<recv_data[VALID_DATA_LEN_INDX]<<endl;
+					return;
+				}
+
+				if( recv_data[VALID_DATA_START_INDX + 0] != AIV_Driver::send_cache[VALID_DATA_START_INDX + 0]
+					|| recv_data[VALID_DATA_START_INDX + 1] != AIV_Driver::send_cache[VALID_DATA_START_INDX + 1]
+					|| recv_data[VALID_DATA_START_INDX + 2] != AIV_Driver::send_cache[VALID_DATA_START_INDX + 2]
+					|| recv_data[VALID_DATA_START_INDX + 3] != AIV_Driver::send_cache[VALID_DATA_START_INDX + 3] )
+				{
+					cout<<"The received data bytes is not same with the send data byte"<<endl;
+					return;
+				}
+				else
+				{
+					AIV_Driver::send_aux_finish = false;
+
+					//cout<<"send_aux cmd is executed successfully !"<<endl;
+				}
+			
+			}
+			else
+			{
+				cout<<"ROS does not send send_aux cmd,but recv a response cmd !"<<endl;
+				return;
+			}
+			
+			break;
 			
 		default :
 
@@ -713,6 +746,9 @@ void AIV_Driver::SendCmd(const unsigned char *cmd ,volatile bool &send_flag)
 
 				case REQ_VELOCITY:
 					cout<<"TRIO respones the request_vel cmd timeout !"<<endl;
+					break;
+				case SEND_AUX:
+					cout<<"TRIO respones the send_aux cmd timeout !"<<endl;
 					break;
 
 				default :
