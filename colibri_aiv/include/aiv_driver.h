@@ -109,6 +109,7 @@ class AIV_Driver
 		static volatile bool enable_motor_finish;
 		static volatile bool disable_motor_finish;
 		static volatile bool send_twist_finish;
+		static volatile bool send_aux_finish;
 		static volatile bool req_encoder_start_finish;
 		static volatile bool req_imu_start_finish;
 		static volatile bool req_ultra_start_finish;
@@ -192,6 +193,7 @@ class AIV_Driver
 		ros::Publisher ultrasonic_pub;
 		ros::Publisher bumper_pub;
 		ros::Subscriber cartodom_sub;
+		ros::Subscriber aux_sub;
 
 		tf::TransformBroadcaster odom_broadcaster;
 

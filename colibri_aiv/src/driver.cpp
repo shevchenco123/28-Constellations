@@ -8,6 +8,7 @@ static boost::system::error_code ec;
 volatile bool AIV_Driver::enable_motor_finish = false;
 volatile bool AIV_Driver::disable_motor_finish = false;
 volatile bool AIV_Driver::send_twist_finish = false;
+volatile bool AIV_Driver::send_aux_finish = false;
 volatile bool AIV_Driver::req_encoder_start_finish = false;
 volatile bool AIV_Driver::req_imu_start_finish = false;
 volatile bool AIV_Driver::req_ultra_start_finish = false;
@@ -573,6 +574,7 @@ bool AIV_Driver::InitSubandPub()
 
 	ros::NodeHandle global_nh;	
 	twist_sub= global_nh.subscribe<geometry_msgs::Twist>("t_cmd_vel", 1, boost::bind(&AIV_Driver::TwistCallback, this, _1));
+	aux_sub= global_nh.subscribe<colibri_msgs::AuxInfo>("aux_info", 1, boost::bind(&AIV_Driver::AuxInfoCallback, this, _1));
 
 	ros::NodeHandle nh_cartodom;
 	cartodom_sub= global_nh.subscribe<cartodom::Cartodom>("cartodom", 1, boost::bind(&AIV_Driver::CartodomCallback, this, _1));
@@ -622,7 +624,31 @@ void AIV_Driver::TwistCallback(const geometry_msgs::Twist::ConstPtr & twist)
 
 void AIV_Driver::AuxInfoCallback(const colibri_msgs::AuxInfo::ConstPtr & aux_info)
 {
- 
+
+	send_aux_info[VALID_DATA_START_INDX + 0] = aux_info->lf_light;
+	send_aux_info[VALID_DATA_START_INDX + 1] = aux_info->lr_light;
+	send_aux_info[VALID_DATA_START_INDX + 2] = aux_info->rf_light;
+	send_aux_info[VALID_DATA_START_INDX + 3] = aux_info->rr_light;
+	send_aux_info[VALID_DATA_START_INDX + 4] = aux_info->horn;
+	send_aux_info[VALID_DATA_START_INDX + 5] = (int (aux_info->laser_mindis * 100))/256;
+	send_aux_info[VALID_DATA_START_INDX + 6] = (int (aux_info->laser_mindis * 100))%256;
+	if(aux_info->laser_mindir < 0)
+	{
+		send_aux_info[VALID_DATA_START_INDX + 7] = NEG_SIGN;
+	}
+	else
+	{
+		send_aux_info[VALID_DATA_START_INDX + 7] = POS_SIGN;
+	}
+	send_aux_info[VALID_DATA_START_INDX + 8] = int (aux_info->laser_mindir);
+	send_aux_info[VALID_DATA_START_INDX + 9] = aux_info->ultra_switch;
+	send_aux_info[VALID_DATA_START_INDX + 10] = aux_info->ros_fault;
+
+	send_cache = send_aux_info;
+	SendCmd(send_aux_info, send_aux_finish);
+	
+	send_cnt++;
+	cout <<"send times: "<<send_cnt<<endl; 
 }
 
 
