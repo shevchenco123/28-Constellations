@@ -5,6 +5,9 @@ scan_ca::scan_ca()
 	goal_dir = 60;	//goal direction
 	memset(scan4ca, 0.2, NUM_RAY4CA);
 	ptrScan4ca = scan4ca;
+
+	memset(ultra4ca, 20.0, NUM_RAY4CA);
+	memset(ultra_dis, 20.0, ULTRA4CA_NUM);
 	
 	memset(delta_phi_vec, 0, NUM_RAY4CA);
 	memset(kp_phi_vec, 0, NUM_RAY4CA);
@@ -62,6 +65,63 @@ void scan_ca::ScanCallBack(const sensor_msgs::LaserScan::ConstPtr& scan_ca)
 	
 	}
 	
+}
+
+void scan_ca::UltraSonicCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra_ca)
+{
+		float tmp_min = 6.5;
+		ultra_dis[0] = (ultra_ca->ultrasonic1) / 100.0; //for front ultra unit cm to m
+		ultra_dis[1] = (ultra_ca->ultrasonic2) / 100.0;
+		ultra_dis[2] = (ultra_ca->ultrasonic3) / 100.0;
+		ultra_dis[3] = (ultra_ca->ultrasonic4) / 100.0;
+
+		if(ultra_dis[0] < D_M)
+		{
+			memset(ultra4ca+ULTRA1_RIGHT_BND, ultra_dis[0], (ULTRA1_LEFT_BND-ULTRA1_RIGHT_BND));
+		}
+		else
+		{
+			memset(ultra4ca+ULTRA1_RIGHT_BND, 20.0, (ULTRA1_LEFT_BND-ULTRA1_RIGHT_BND));
+		}
+
+		if(ultra_dis[1] < D_M)
+		{
+			memset(ultra4ca+ULTRA2_RIGHT_BND, ultra_dis[0], (ULTRA2_LEFT_BND-ULTRA2_RIGHT_BND));
+		}
+		else
+		{
+			memset(ultra4ca+ULTRA2_RIGHT_BND, 20.0, (ULTRA2_LEFT_BND-ULTRA2_RIGHT_BND));
+		}
+
+		if(ultra_dis[1] < D_M && ultra_dis[2] < D_M && abs(ultra_dis[1] - ultra_dis[2]) < 0.5)
+		{
+			tmp_min = MIN(ultra_dis[1], ultra_dis[2]);
+			memset(ultra4ca+ULTRA_RIGHT_BND, tmp_min, (ULTRA_LEFT_BND-ULTRA_RIGHT_BND));
+		}
+		else
+		{
+			memset(ultra4ca+ULTRA_RIGHT_BND, 20.0, (ULTRA_LEFT_BND-ULTRA_RIGHT_BND));
+		}
+
+		if(ultra_dis[2] < D_M)
+		{
+			memset(ultra4ca+ULTRA3_RIGHT_BND, ultra_dis[2],(ULTRA3_LEFT_BND-ULTRA3_RIGHT_BND));
+		}
+		else
+		{
+			memset(ultra4ca+ULTRA3_RIGHT_BND, 20.0, (ULTRA3_LEFT_BND-ULTRA3_RIGHT_BND));
+		}
+
+		if(ultra_dis[3] < D_M)
+		{
+			memset(ultra4ca+ULTRA4_RIGHT_BND, ultra_dis[3], (ULTRA4_LEFT_BND-ULTRA4_RIGHT_BND));
+		}
+		else
+		{
+			memset(ultra4ca+ULTRA4_RIGHT_BND, 20.0, (ULTRA4_LEFT_BND-ULTRA4_RIGHT_BND));
+		}
+		
+
 }
 
 void scan_ca::CalcKrfTheta(float* ptrKp_phi_vector, int* ptrPhi_range_start, int* ptrPhi_range_end)

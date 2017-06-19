@@ -11,6 +11,7 @@
 #include <tf/transform_broadcaster.h>
 #include <sensor_msgs/LaserScan.h>
 #include "colibri_msgs/AngPotnEngy.h"
+#include "colibri_aiv/Ultrasonic.h"
 
 #ifndef _COLIBRI_CA_H_
 #define _COLIBRI_CA_H_
@@ -24,6 +25,23 @@ using namespace std;
 #define ANGLE4CA_END_INDEX 		421		// 421=(180-(-30))/0.5+1
 #define LASER_EDGE_MIN 			0.06
 #define RAY_RESOL4CA			1.0		//laser ray resolution for colision avoidence
+
+#define ULTRA1_RIGHT_BND 	30
+#define ULTRA1_LEFT_BND 	35
+
+#define ULTRA2_RIGHT_BND 	45
+#define ULTRA2_LEFT_BND 	55
+
+#define ULTRA_RIGHT_BND	75
+#define ULTRA_LEFT_BND  105
+
+#define ULTRA3_RIGHT_BND 	125
+#define ULTRA3_LEFT_BND 	135
+
+#define ULTRA4_RIGHT_BND 	145
+#define ULTRA4_LEFT_BND 	150
+
+#define ULTRA4CA_NUM 	4
 
 #define K_SF 	1.25		//adj factor for latitude dir in polar frame
 #define WIDTH 	0.56
@@ -62,6 +80,8 @@ class scan_ca
 		
 		float *ptrScan4ca;
 		float scan4ca[NUM_RAY4CA];
+		float ultra4ca[NUM_RAY4CA];
+		float ultra_dis[ULTRA4CA_NUM];
 		
 		float delta_phi_vec[NUM_RAY4CA];
 		float kp_phi_vec[NUM_RAY4CA];
@@ -112,6 +132,7 @@ class scan_ca
 	private:
 
 		void ScanCallBack(const sensor_msgs::LaserScan::ConstPtr& scan_ca);
+		void UltraSonicCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra_ca);
 
 		float CalcDsrVc(float vel_center);
 		float CalcKrfCorrectFactor(int index);
