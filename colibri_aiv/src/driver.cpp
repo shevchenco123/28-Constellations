@@ -620,6 +620,12 @@ void AIV_Driver::TwistCallback(const geometry_msgs::Twist::ConstPtr & twist)
 	cout <<"send times: "<<send_cnt<<endl;
 }
 
+void AIV_Driver::AuxInfoCallback(const colibri_msgs::AuxInfo::ConstPtr & aux_info)
+{
+ 
+}
+
+
 void AIV_Driver::CartodomCallback(const cartodom::Cartodom::ConstPtr & carto_odom)
 {
 	cartodom_x = carto_odom->x;

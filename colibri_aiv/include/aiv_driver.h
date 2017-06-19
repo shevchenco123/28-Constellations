@@ -11,6 +11,7 @@
 #include "colibri_aiv/Ultrasonic.h"
 #include "colibri_aiv/Bumper.h"
 #include "cartodom/Cartodom.h"
+#include "colibri_msgs/AuxInfo.h"
 
 #ifndef _AIV_DRIVER_H_
 #define _AIV_DRIVER_H_
@@ -81,6 +82,7 @@ class AIV_Driver
 	private:
 		void GenerateCmd(unsigned char *cmd_name,unsigned char cmd,unsigned char valid_data_len,unsigned char control,unsigned char *data);
 		void TwistCallback(const geometry_msgs::Twist::ConstPtr & twist);
+		void AuxInfoCallback(const colibri_msgs::AuxInfo::ConstPtr & aux_info);
 		void DisplayFrame(unsigned char *cmd_list);
 	public:
 		unsigned int send_cnt;
