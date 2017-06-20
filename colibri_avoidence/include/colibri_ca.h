@@ -28,22 +28,16 @@ using namespace std;
 #define LASER_EDGE_MIN 			0.06
 #define RAY_RESOL4CA			1.0		//laser ray resolution for colision avoidence
 
-#define ULTRA1_RIGHT_BND 	30
-#define ULTRA1_LEFT_BND 	35
-
-#define ULTRA2_RIGHT_BND 	45
-#define ULTRA2_LEFT_BND 	55
-
-#define ULTRA_RIGHT_BND	75
-#define ULTRA_LEFT_BND  105
-
-#define ULTRA3_RIGHT_BND 	125
-#define ULTRA3_LEFT_BND 	135
-
-#define ULTRA4_RIGHT_BND 	145
-#define ULTRA4_LEFT_BND 	150
+#define STGY1_RIGHT_BND	60
+#define STGY1_LEFT_BND  85
+#define STGY2_RIGHT_BND	60
+#define STGY2_LEFT_BND  105
+#define STGY3_RIGHT_BND	60
+#define STGY3_LEFT_BND  130
 
 #define ULTRA4CA_NUM 	4
+#define ULTRA4CA_ACT_DIS 1.2
+#define ULTRA_CLS_THD 5.0
 
 #define K_SF 	1.25		//adj factor for latitude dir in polar frame
 #define WIDTH 	0.56
@@ -84,6 +78,7 @@ class scan_ca
 		float scan4ca[NUM_RAY4CA];
 		float ultra4ca[NUM_RAY4CA];
 		float ultra_dis[ULTRA4CA_NUM];
+		float min_ultra;
 		
 		float delta_phi_vec[NUM_RAY4CA];
 		float kp_phi_vec[NUM_RAY4CA];
@@ -113,6 +108,7 @@ class scan_ca
 		
 		ros::NodeHandle nh_ca;
 		ros::Subscriber scan_sub4ca;
+		ros::Subscriber ultra_sub4ca;
 		ros::Publisher apf_pub4mntr;
 		ros::Publisher rf_pub4mntr;
 		
@@ -130,7 +126,11 @@ class scan_ca
 		void CalcPhiParam(float vel_center, float& dir_goal_inlaser);
 		void ResetMaxPassValCnt(void);
 		void LimitAngle(float& delta_ang);
-		
+		int UltraCollisionFreeDeal(int & obs_coder);
+		int CalcUltraObsCoder(float & min_dis);
+		float CalcMinUltraRange(void);
+		void TrimUltraRange4CA(int & strategy, float & min_dis);
+			
 	private:
 
 		void ScanCallBack(const sensor_msgs::LaserScan::ConstPtr& scan_ca);

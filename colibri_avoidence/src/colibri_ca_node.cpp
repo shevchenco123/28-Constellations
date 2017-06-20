@@ -25,6 +25,9 @@ int main(int argc, char* argv[])
 	int delay_cnt = 0;
 
 	float min_multi_range = 20.0;
+	int ultra_obs_coder = 0;
+	int ultra_strategy = 0;
+	float min_ultra_dis = 6.5;
 	
 	while (ros::ok())
 	{	
@@ -56,11 +59,22 @@ int main(int argc, char* argv[])
 			float rf_vec_mntr[NUM_RAY4CA];
 			float apf_vec_mntr[NUM_RAY4CA];
 
+			min_ultra_dis = scan4caObj.CalcMinUltraRange();	
+			ultra_obs_coder = scan4caObj.CalcUltraObsCoder(min_ultra_dis);
+			ultra_strategy = scan4caObj.UltraCollisionFreeDeal(ultra_obs_coder);
+
+			cout<<"ultra_obs_coder: "<<ultra_obs_coder<<endl;
+			cout<<"ultra_strategy: "<<ultra_strategy<<endl;
+			cout<<"min_ultra_dis: "<<min_ultra_dis<<endl;
+
+			scan4caObj.TrimUltraRange4CA(ultra_strategy, min_ultra_dis);
+
 			
 			for(int i = 0; i < NUM_RAY4CA; i++)
 			{
 
 #ifdef CA_FUSION
+				
 				min_multi_range = MIN(*(scan4caObj.ptrScan4ca + i),scan4caObj.ultra4ca[i]);
 				scan4caObj.delta_phi_vec[i] = asin(D_SF / min_multi_range) * RAD2DEG; //calc the phi ang obs influence range
 #else
@@ -106,7 +120,8 @@ int main(int argc, char* argv[])
 
 			for(int i = 0; i < NUM_RAY4CA; i++)
 			{
-				apf_vec_mntr[i] =  scan4caObj.passfcn_vec[i];
+//		apf_vec_mntr[i] =  scan4caObj.passfcn_vec[i];
+				apf_vec_mntr[i] =  scan4caObj.ultra4ca[i];
 				rf_vec_mntr[i] = 1 / scan4caObj.krf_vec[i];
 			}
 

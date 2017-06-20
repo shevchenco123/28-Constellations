@@ -21,6 +21,8 @@ scan_ca::scan_ca()
 	memset(passfcn_vec, 0, NUM_RAY4CA);
 	max_passfcn_val = 0.0;
 
+	min_ultra = 6.5;
+
 	fwd_maxpass_cnt = 0;
 	bwd_maxpass_cnt = 0;
 
@@ -37,8 +39,9 @@ scan_ca::scan_ca()
 	wander = 0;
 	
 	scan_sub4ca = nh_ca.subscribe<sensor_msgs::LaserScan>("/scan", 1, &scan_ca::ScanCallBack, this);
+	ultra_sub4ca = nh_ca.subscribe<colibri_aiv::Ultrasonic>("/ultrasonic", 1, &scan_ca::UltraSonicCallBack,this);
 	apf_pub4mntr = nh_ca.advertise<colibri_msgs::AngPotnEngy>("/apf", 5);
-	rf_pub4mntr = nh_ca.advertise<colibri_msgs::AngPotnEngy>("/rf", 5);
+	rf_pub4mntr = nh_ca.advertise<colibri_msgs::AngPotnEngy>("/rf", 5); 
 }
 
 scan_ca::~scan_ca()
@@ -67,6 +70,158 @@ void scan_ca::ScanCallBack(const sensor_msgs::LaserScan::ConstPtr& scan_ca)
 	
 }
 
+float scan_ca::CalcMinUltraRange(void)
+{
+	float min_ultra_dis = 6.5;
+	for(int i = 0; i < ULTRA4CA_NUM; i++)
+	{
+		if(min_ultra_dis > ultra_dis[i])
+		{
+			min_ultra_dis = ultra_dis[i];
+			if(min_ultra_dis < 0.01)
+			{
+				cout << "min ultra dis is exception, check topic /ultrasonic:"<< min_ultra << endl;
+				min_ultra_dis = 0.001;	// for divide
+			}
+		}
+	}
+
+	return min_ultra_dis;
+}
+
+int scan_ca::CalcUltraObsCoder(float & min_dis)
+{
+	int obs_coder = 0;
+	float tmp_unit_sqr[ULTRA4CA_NUM] = {1.0, 1.0, 1.0, 1.0};
+	if(min_dis < ULTRA4CA_ACT_DIS)
+	{
+		for(int j = 0; j < ULTRA4CA_NUM; j++)
+		{
+			tmp_unit_sqr[j] = (ultra_dis[j]/min_dis) * (ultra_dis[j]/min_dis);
+			if(tmp_unit_sqr[j] < ULTRA_CLS_THD)
+			{
+				obs_coder += pow(2, j);
+			}
+		}
+
+	}
+	else
+	{
+	
+	}
+
+	return obs_coder;
+
+} 
+
+int scan_ca::UltraCollisionFreeDeal(int & obs_coder)
+{
+	int strategy = 0;
+	switch(obs_coder)
+	{
+		case 0:
+			strategy = 0; // omni_move  for no obs
+			break;
+		case 1:
+			strategy = 1; // micro turn left 
+			break;
+		case 2:
+		case 3:
+			strategy = 2; // turn left  midestly
+			break;
+		case 4:
+		case 12:
+			strategy = -2;	// turn right  midestly
+			break;
+		case 5:
+		case 6:				// not try to escape, for no contineous space
+		case 10:
+		case 11:
+		case 13:	
+			strategy = 10;
+			break;
+		case 7:
+			strategy = 3; //turn left greatly 
+			break;
+		case 8:
+			strategy = -1; // micro turn right
+			break;
+		case 9:
+			strategy = 0; //straight go ignore the side obs
+			break;
+		case 14:
+			strategy = -3; //turn right greatly 
+			break;
+		case 15:
+			strategy = 0; //stop for no ways
+			break;
+
+		default:
+			strategy = 0; //stop for no ways
+			break;		
+			
+	}
+
+	return strategy;
+	
+}
+
+void scan_ca::TrimUltraRange4CA(int & strategy, float & min_dis)
+{
+	switch(strategy)
+	{
+		case 0:
+
+			break;
+		case 1:
+			for(int j = STGY1_RIGHT_BND; j < STGY1_LEFT_BND; j++)
+			{
+				ultra4ca[j] = min_dis;
+			}
+			break;
+			
+		case 2:
+			for(int j = STGY2_RIGHT_BND; j < STGY2_LEFT_BND; j++)
+			{
+				ultra4ca[j] = min_dis;
+			}
+			break;
+			
+		case 3:
+			for(int j = STGY3_RIGHT_BND; j < STGY3_LEFT_BND; j++)
+			{
+				ultra4ca[j] = min_dis;
+			}
+			break;
+			
+		case -1:
+			for(int j = 180-STGY1_LEFT_BND; j < (180-STGY1_RIGHT_BND); j++)
+			{
+				ultra4ca[j] = min_dis;
+			}
+			break;
+			
+		case -2:
+			for(int j = 180-STGY2_LEFT_BND; j < (180-STGY2_RIGHT_BND); j++)
+			{
+				ultra4ca[j] = min_dis;
+			}
+			break;
+			
+		case -3:
+			for(int j = 180-STGY3_LEFT_BND; j < (180-STGY3_RIGHT_BND); j++)
+			{
+				ultra4ca[j] = min_dis;
+			}
+			break;
+
+		default:
+			break;
+
+	}
+	
+}
+
 void scan_ca::UltraSonicCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra_ca)
 {
 		float tmp_min = 6.5;
@@ -75,52 +230,10 @@ void scan_ca::UltraSonicCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra_
 		ultra_dis[2] = (ultra_ca->ultrasonic3) / 100.0;
 		ultra_dis[3] = (ultra_ca->ultrasonic4) / 100.0;
 
-		if(ultra_dis[0] < D_M)
-		{
-			memset(ultra4ca+ULTRA1_RIGHT_BND, ultra_dis[0], (ULTRA1_LEFT_BND-ULTRA1_RIGHT_BND));
+		for(int i = 0; i < NUM_RAY4CA; i++)
+		{		
+			ultra4ca[i] = 20.0;
 		}
-		else
-		{
-			memset(ultra4ca+ULTRA1_RIGHT_BND, 20.0, (ULTRA1_LEFT_BND-ULTRA1_RIGHT_BND));
-		}
-
-		if(ultra_dis[1] < D_M)
-		{
-			memset(ultra4ca+ULTRA2_RIGHT_BND, ultra_dis[0], (ULTRA2_LEFT_BND-ULTRA2_RIGHT_BND));
-		}
-		else
-		{
-			memset(ultra4ca+ULTRA2_RIGHT_BND, 20.0, (ULTRA2_LEFT_BND-ULTRA2_RIGHT_BND));
-		}
-
-		if(ultra_dis[1] < D_M && ultra_dis[2] < D_M && abs(ultra_dis[1] - ultra_dis[2]) < 0.5)
-		{
-			tmp_min = MIN(ultra_dis[1], ultra_dis[2]);
-			memset(ultra4ca+ULTRA_RIGHT_BND, tmp_min, (ULTRA_LEFT_BND-ULTRA_RIGHT_BND));
-		}
-		else
-		{
-			memset(ultra4ca+ULTRA_RIGHT_BND, 20.0, (ULTRA_LEFT_BND-ULTRA_RIGHT_BND));
-		}
-
-		if(ultra_dis[2] < D_M)
-		{
-			memset(ultra4ca+ULTRA3_RIGHT_BND, ultra_dis[2],(ULTRA3_LEFT_BND-ULTRA3_RIGHT_BND));
-		}
-		else
-		{
-			memset(ultra4ca+ULTRA3_RIGHT_BND, 20.0, (ULTRA3_LEFT_BND-ULTRA3_RIGHT_BND));
-		}
-
-		if(ultra_dis[3] < D_M)
-		{
-			memset(ultra4ca+ULTRA4_RIGHT_BND, ultra_dis[3], (ULTRA4_LEFT_BND-ULTRA4_RIGHT_BND));
-		}
-		else
-		{
-			memset(ultra4ca+ULTRA4_RIGHT_BND, 20.0, (ULTRA4_LEFT_BND-ULTRA4_RIGHT_BND));
-		}
-		
 
 }
 

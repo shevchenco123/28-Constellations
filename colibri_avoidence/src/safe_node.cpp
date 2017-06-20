@@ -21,6 +21,8 @@ int main(int argc, char* argv[])
 	float ultra_angular_vel_safe = 0.0;
 	int ultra_steer = 0;
 
+	float ultra_unit[4] = {0,0,0,0};
+
 	//ofstream  file1; 
 	//file1.open ("ultra.txt");
 	//int rec_max = 1800;
@@ -46,6 +48,20 @@ int main(int argc, char* argv[])
 			cout<<"protectObj.min_ultra: "<< protectObj.min_ultra<< endl;
 			cout<<"protectObj.min_index_ultra: "<< protectObj.min_index_ultra<< endl;
 			cout<<"protectObj.ultra_unsafe_prob: "<< protectObj.ultra_unsafe_prob<< endl;
+
+			for(int j = 0; j < 4; j++)
+			{
+				if(protectObj.min_ultra <= 1.5)
+				{
+					ultra_unit[j] = (protectObj.ultra_vec[j]/protectObj.min_ultra) *(protectObj.ultra_vec[j]/protectObj.min_ultra);
+				}
+				else
+				{
+					ultra_unit[j] = 100;
+				}
+				cout<<"ultra sqr:" << ultra_unit[j]<< endl;
+			}
+ 			 
 			
 			coli_prob = protectObj.IntegrateMultiInfo4Safety(&protectObj.advise_action);
 			cout<<"Intg coli_prob: "<< coli_prob<< endl;
