@@ -232,7 +232,7 @@ void scan_ca::UltraSonicCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra_
 
 		for(int i = 0; i < NUM_RAY4CA; i++)
 		{		
-			ultra4ca[i] = 20.0;
+			ultra4ca[i] = 10.0;
 		}
 
 }
@@ -479,8 +479,29 @@ void scan_ca::CalcPhiParam(float vel_center, float& dir_goal_inlaser)
 	//float tmp_theta_laseray = 0.0;	//obstacle 's theta angle
 	float tmp_delta = 0.0;
 
+#ifdef CA_FUSION	
+	float min_ultra_dis = 6.5;
+	int ultra_obs_coder = 0;
+	int ultra_strategy = 0;
+	float min_multi_range = 0.0;
+	min_ultra_dis = CalcMinUltraRange(); 
+	ultra_obs_coder = CalcUltraObsCoder(min_ultra_dis);
+	ultra_strategy = UltraCollisionFreeDeal(ultra_obs_coder);
+	TrimUltraRange4CA(ultra_strategy, min_ultra_dis);
+	
+#endif
+
 	for(int i = 0; i < NUM_RAY4CA; i++)
 	{
+
+#ifdef CA_FUSION
+		min_multi_range = MIN(*(ptrScan4ca + i), ultra4ca[i]);
+		delta_phi_vec[i] = asin(D_SF / min_multi_range) * RAD2DEG; //calc the phi ang obs influence range
+#else
+		delta_phi_vec[i] = asin(D_SF / (*(ptrScan4ca + i))) * RAD2DEG;
+
+#endif
+
 		delta_phi_vec[i] = asin(D_SF / (*(ptrScan4ca + i))) * RAD2DEG;
 		range_num = floor(delta_phi_vec[i] / RAY_RESOL4CA);
 		CalcPhiRange(i, range_num, &phi_start_vec[i], &phi_end_vec[i]);	
