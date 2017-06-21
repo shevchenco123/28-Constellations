@@ -28,11 +28,11 @@
 
 #define SCAN4SAFE_NUM 211	//obtain the  210 degree laser scan for resolution at 1 degree  from  (-15~195) degree
 #define LASER_SAFE_MIN	0.05	//static safe limit
-#define LASER_SAFE_MAX	4.0
+#define LASER_SAFE_MAX	2.0
 
 #define ULTRA_NUM	  8		//front 4 ultrasonic, ignore the back 4 ultrasonic
 #define ULTRA_SAFE_MIN	0.10
-#define ULTRA_SAFE_MAX	4.0
+#define ULTRA_SAFE_MAX	2.0
 
 #define UNSAFE_PROB		0.97 // >0.97 must stop
 #define LEVEL_1_PROB 	0.95 // >0.95 advise stop
@@ -54,7 +54,7 @@
 #define LASER_SAFE_DIS3		0.3 //must stop
 
 #define ULTRA_SAFE_DIS1		0.8
-#define ULTRA_SAFE_DIS2		0.4
+#define ULTRA_SAFE_DIS2		0.36
 
 
 

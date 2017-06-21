@@ -6,7 +6,7 @@
 
 #define LIGHT_OFF 0
 #define LIGHT_ON 255
-#define LIGHT_SLOW_BLINKING 16	//0x0f 1s flash
+#define LIGHT_SLOW_BLINKING 15	//0x0f 1s flash
 #define LIGHT_FAST_BLINKING 240	//0xf0 0.5s flash 
 
 #define HORN_OFF 0
@@ -141,7 +141,9 @@ int main(int argc, char* argv[])
 		{
 			aux_info.horn = HORN_ON;
 		}
-			
+		aux_info.horn = HORN_OFF;
+
+		aux_info.lf_light = LIGHT_FAST_BLINKING;
 		aux_info.laser_mindis = aux_envsec.laser_min_dis;
 		aux_info.laser_mindir = aux_envsec.laser_min_angle;
 		aux_info.ultra_switch = ULTRA_ON;

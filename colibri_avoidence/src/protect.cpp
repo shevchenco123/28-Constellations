@@ -322,7 +322,7 @@ bool protector::CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_in
 	}
 	else // ultra dis < 0.4 must stop
 	{	
-		*angular_safe = ANGULAR_STOP;
+		*angular_safe = THETA_V_MAX;
 		*linear_safe = LINEAR_STOP;
 		steer = 0;
 	}
@@ -465,7 +465,7 @@ void protector::Intg4EnvSecure(void)
 	}
 	else
 	{
-		env_secure.bumper_min_dis = 100.0;
+		env_secure.bumper_min_dis = 1.0;
 		env_secure.bumper_prob = 0.0;
 	}
 			
