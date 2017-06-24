@@ -12,13 +12,19 @@
 #include <sensor_msgs/LaserScan.h>
 #include "colibri_msgs/AngPotnEngy.h"
 #include "colibri_aiv/Ultrasonic.h"
+#include "colibri_msgs/EnvSecurity.h"
 
 #ifndef _COLIBRI_CA_H_
 #define _COLIBRI_CA_H_
 
 using namespace std;
 
-#define CA_FUSION
+#define ULTRA_RF
+#define EXT_LASER_RF
+//#define ORI_ULTRA_FUSION
+//#define ORI_EXT_FUSION
+#define ORI_EXT_ULTRA_FUSION
+//#define NO_FUSION
 
 #define NUM_RAY4CA 				181		//every degree for front semi-cirle
 #define ANGLE4CA_START 			0
@@ -28,16 +34,20 @@ using namespace std;
 #define LASER_EDGE_MIN 			0.06
 #define RAY_RESOL4CA			1.0		//laser ray resolution for colision avoidence
 
-#define STGY1_RIGHT_BND	60
-#define STGY1_LEFT_BND  85
-#define STGY2_RIGHT_BND	60
-#define STGY2_LEFT_BND  105
-#define STGY3_RIGHT_BND	60
-#define STGY3_LEFT_BND  130
+#define STGY1_RIGHT_BND	55
+#define STGY1_LEFT_BND  75
+#define STGY2_RIGHT_BND	55
+#define STGY2_LEFT_BND  95
+#define STGY3_RIGHT_BND	55
+#define STGY3_LEFT_BND  115
 
 #define ULTRA4CA_NUM 	4
-#define ULTRA4CA_ACT_DIS 1.2
+#define ULTRA4CA_FILL_DIS 1.2
 #define ULTRA_CLS_THD 5.0
+
+#define LASER4CA_FILL_DIS 2.0
+
+#define ULTRA4CA_FACTOR 0.9
 
 #define K_SF 	1.25		//adj factor for latitude dir in polar frame
 #define WIDTH 	0.56
@@ -78,7 +88,15 @@ class scan_ca
 		float scan4ca[NUM_RAY4CA];
 		float ultra4ca[NUM_RAY4CA];
 		float ultra_dis[ULTRA4CA_NUM];
+
+		float abstract_pf[NUM_RAY4CA];
+		
 		float min_ultra;
+		int ultra_coder;
+		float min_laser;
+		int min_laser_dir;
+
+		float add_obs4ca[NUM_RAY4CA];
 		
 		float delta_phi_vec[NUM_RAY4CA];
 		float kp_phi_vec[NUM_RAY4CA];
@@ -109,8 +127,13 @@ class scan_ca
 		ros::NodeHandle nh_ca;
 		ros::Subscriber scan_sub4ca;
 		ros::Subscriber ultra_sub4ca;
+		ros::Subscriber env_sub4safe;
 		ros::Publisher apf_pub4mntr;
 		ros::Publisher rf_pub4mntr;
+		ros::Publisher pf_Pub4dbg;
+
+		colibri_msgs::AngPotnEngy pf_dbg;
+
 		
 		scan_ca();
 		~scan_ca();
@@ -130,11 +153,17 @@ class scan_ca
 		int CalcUltraObsCoder(float & min_dis);
 		float CalcMinUltraRange(void);
 		void TrimUltraRange4CA(int & strategy, float & min_dis);
+		void TrimUltraRange4CACoder(int & obs_coder, float & min_dis);
+
+		void TrimLaserRange4CA(float & compensate);
+		void PubPfInfo4Dbg(void);
+
 			
 	private:
 
 		void ScanCallBack(const sensor_msgs::LaserScan::ConstPtr& scan_ca);
 		void UltraSonicCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra_ca);
+		void EnvSecurityCallBack(const colibri_msgs::EnvSecurity::ConstPtr& env);
 
 		float CalcDsrVc(float vel_center);
 		float CalcKrfCorrectFactor(int index);

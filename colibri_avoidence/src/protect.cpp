@@ -105,7 +105,7 @@ void protector::CalcMinDis4Ultrosonic(float* ultra_vec)
 	}
 	else if(tmp_range <= ULTRA_SAFE_MAX)
 	{
-		ultra_unsafe_prob = (ULTRA_SAFE_MAX - tmp_range) / ULTRA_SAFE_MAX;
+		ultra_unsafe_prob = (ULTRA_SAFE_MAX - tmp_range) / (ULTRA_SAFE_MAX - ULTRA_SAFE_MIN);
 	}
 	else
 	{
@@ -125,31 +125,30 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, int &ste
 	}
 	else if(min_scan > LASER_SAFE_DIS2)
 	{
-		steer = 0;
-
+	
 		if(abs(min_scan_ang - 90) <= LASER_SAFE_ANG1) //limit the vel in the angle 50 scope
 		{
-			*linear_safe = LINEAR_SAFE_MAX;
-			*angular_safe = THETA_V_MAX;			
+			*angular_safe = THETA_V_MAX;
+			*linear_safe = LINEAR_SAFE_MAX + (V_MAX - LINEAR_SAFE_MAX) * (min_scan - LASER_SAFE_DIS2)/(LASER_SAFE_DIS1 - LASER_SAFE_DIS2);
+			steer = 0;
 		}
 		else
 		{
 			if(min_scan_ang > 90)
 			{
-				*angular_safe = THETA_V_MAX;
-				*linear_safe = LINEAR_SAFE_MAX;
+				*angular_safe = ANGULAR_SAFE_MAX;
+				*linear_safe = V_MAX;
+				steer = 0;
 			}
 			else if(min_scan_ang < 90)
 			{
-				*angular_safe = THETA_V_MAX;
-				*linear_safe = LINEAR_SAFE_MAX;
+				*angular_safe = ANGULAR_SAFE_MAX;
+				*linear_safe = V_MAX;
+				steer = 0;
 			}
 			else
 			{
-				cout<<"min scan angle is not in the designed scope !!!"<<endl;
-				*angular_safe = ANGULAR_STOP;
-				*linear_safe = LINEAR_STOP;
-				
+			
 			}
 			
 		}
@@ -157,45 +156,218 @@ bool protector::CalcLaserSafeVelThd(float &min_scan, int &min_scan_ang, int &ste
 	}
 	else if(min_scan > LASER_SAFE_DIS3)
 	{	
-		*linear_safe = LINEAR_SAFE_MAX/2;
 
 		if(abs(min_scan_ang - 90) <= LASER_SAFE_ANG2)
 		{
-			*angular_safe = ANGULAR_STOP;
+			*angular_safe = THETA_V_MAX;
+			*linear_safe = LINEAR_SAFE_MAX * (min_scan - LASER_SAFE_DIS3)/(LASER_SAFE_DIS2 - LASER_SAFE_DIS3);
 			steer = 0;	
 		}
 		else
 		{
 			if(min_scan_ang > 90)
 			{
-				*angular_safe = -ANGULAR_SAFE_MAX;
+				*angular_safe = -THETA_V_MAX;
+				*linear_safe = LINEAR_SAFE_MAX;
 				steer = -1;	
 			}
 			else if(min_scan_ang < 90)
 			{
-				*angular_safe = ANGULAR_SAFE_MAX;
+				*angular_safe = THETA_V_MAX;
+				*linear_safe = LINEAR_SAFE_MAX;
 				steer = 1;	
 			}
 			else
 			{
-				cout<<"min scan angle is not in the designed scope !!!"<<endl;
-				*angular_safe = ANGULAR_STOP;
-				*linear_safe = LINEAR_STOP;
-				steer = 0;	
+
 			}
 			
 		}		
 		
+	}
+	else if(min_scan > LASER_SAFE_DIS4)
+	{
+		*angular_safe = ANGULAR_SAFE_MAX;
+		*linear_safe = LINEAR_STOP;
+		steer = 0;	
 	}
 	else
 	{
 		*angular_safe = ANGULAR_STOP;
 		*linear_safe = LINEAR_STOP;
 		steer = 0;	
+
 	}
 
 	return true;	
 		
+}
+
+bool protector::CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_index, int &steer, float* linear_safe, float* angular_safe)
+{
+	if(min_ultra > ULTRA_SAFE_DIS1)
+	{
+		*linear_safe = V_MAX;
+		*angular_safe = THETA_V_MAX;
+		steer = 0;
+		return false;
+	}
+	else if(min_ultra > ULTRA_SAFE_DIS2)
+	{
+		*linear_safe = LINEAR_SAFE_MAX * (min_ultra - ULTRA_SAFE_DIS2) / (ULTRA_SAFE_DIS1 - ULTRA_SAFE_DIS2);
+		if(min_ultra_index == 4)
+		{
+			*angular_safe = -THETA_V_MAX;
+			steer = -1;
+		}
+		else if(min_ultra_index == 1)
+		{
+			*angular_safe = THETA_V_MAX;	
+			steer = 1;
+		}
+		else
+		{
+			*angular_safe = THETA_V_MAX;	
+			steer = 0;
+		}	
+
+	}
+	else // ultra dis < 0.36 must stop moving
+	{	
+		*angular_safe = THETA_V_MAX;
+		*linear_safe = LINEAR_STOP;
+		steer = 0;
+	}
+
+	return true;	
+
+}
+
+bool protector::CalcLaserCA(float	&min_scan, int &min_scan_ang, int &steer, float *linear_safe, float* angular_safe, int &area_state)
+{
+	float tmp_x = 0.0;
+	float tmp_y = 0.0;
+	bool inRecFlag = false;
+	float window_x = LASER_CA_WIDTH;
+	float window_y = LASER_CA_HEIGHT;
+	float dec_radius = sqrt(pow(LASER_CA_WIDTH/2.0, 2) + pow(LASER_CA_HEIGHT, 2));
+	Polar2Decare(min_scan, min_scan_ang, tmp_x, tmp_y);
+	inRecFlag = LocateInRecArea(window_x, window_y, tmp_x, tmp_y);
+
+	if(inRecFlag == true)
+	{
+		if(min_scan >= LASER_ROT_RADIUS)
+		{
+			*linear_safe = V_MAX * (min_scan - (LASER_ROT_RADIUS+LASER_STOP_RADIUS)/2.0)/(dec_radius - LASER_ROT_RADIUS);
+			*angular_safe = THETA_V_MAX;
+			steer = 0;
+			area_state = 1;
+		}
+		else if(min_scan > LASER_STOP_RADIUS)
+		{
+			*linear_safe = LINEAR_STOP;
+			*angular_safe = THETA_V_MAX;
+			if(min_scan_ang > 135)
+			{
+				steer = -1;
+			}
+			else if(min_scan_ang < 45)
+			{
+				steer = 1;
+			}
+			else
+			{
+				steer = 0;
+			}
+			area_state = 2;
+		}
+		else
+		{
+			*linear_safe = LINEAR_STOP;
+			*angular_safe = ANGULAR_STOP;
+			steer = 0;
+			area_state = 3;
+
+		}
+
+		return true;
+
+	}
+	else
+	{
+		*linear_safe = V_MAX;
+		*angular_safe = THETA_V_MAX;
+		steer = 0;
+		area_state = 0;
+		return false;
+	}
+	
+
+}
+bool protector::CalcUltraCA(float &min_ultra, unsigned int &min_ultra_index, int &steer, float* linear_safe, float* angular_safe, int &area_state)
+{
+	if(min_ultra > ULTRA_CA_DEC)
+	{
+		*linear_safe = V_MAX;
+		*angular_safe = THETA_V_MAX;
+		steer = 0;
+		area_state = 0;
+		return false;	
+	}
+	else if(min_ultra > ULTRA_ROT_RADIUS)
+	{
+		*linear_safe = V_MAX * (min_ultra - ULTRA_ROT_RADIUS)/(ULTRA_CA_DEC - ULTRA_ROT_RADIUS);
+		*angular_safe = THETA_V_MAX;
+		steer = 0;
+		area_state = 1;
+	}
+	else if(min_ultra > ULTRA_STOP_RADIUS)
+	{
+		*linear_safe = LINEAR_STOP;
+		*angular_safe = THETA_V_MAX;
+		if(min_ultra_index == 1)
+		{
+			steer = 1;
+		}
+		else if(min_ultra_index == 4)
+		{
+			steer = -1;
+		}
+		else
+		{
+			steer = 0;
+		}
+			
+		area_state = 2;
+	}
+	else
+	{
+		*linear_safe = LINEAR_STOP;
+		*angular_safe = ANGULAR_STOP;
+		steer = 0;
+		area_state = 3;
+
+	}
+
+
+}
+
+void protector::Polar2Decare(float  &min_scan, int &min_scan_ang,float &x, float &y)
+{
+	x = min_scan * cos(min_scan_ang * DEG2RAD);
+	y = min_scan * sin(min_scan_ang * DEG2RAD);
+}
+
+bool protector::LocateInRecArea(float &rec_width, float &rec_height, float &x, float &y)
+{
+	if((abs(x) < rec_width/2.0) && (y <= rec_height) && (y > 0.0))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool protector::CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_linear_vel)
@@ -288,46 +460,6 @@ bool protector::CalcSafeAngularVel(float &ctrl_vel, int &steer, float &angular_t
 	}
 	
 	return true;
-
-}
-
-bool protector::CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_index, int &steer, float* linear_safe, float* angular_safe)
-{
-	if(min_ultra > ULTRA_SAFE_DIS1)
-	{
-		*linear_safe = V_MAX;
-		*angular_safe = THETA_V_MAX;
-		steer = 0;
-		return false;
-	}
-	else if(min_ultra > ULTRA_SAFE_DIS2)
-	{
-		*linear_safe = LINEAR_SAFE_MAX * (min_ultra - ULTRA_SAFE_DIS2) / (ULTRA_SAFE_DIS1 - ULTRA_SAFE_DIS2);
-		if(min_ultra_index == 4)
-		{
-			*angular_safe = -THETA_V_MAX;
-			steer = -1;
-		}
-		else if(min_ultra_index == 1)
-		{
-			*angular_safe = THETA_V_MAX;	
-			steer = 1;
-		}
-		else
-		{
-			*angular_safe = THETA_V_MAX;	
-			steer = 0;
-		}	
-
-	}
-	else // ultra dis < 0.4 must stop
-	{	
-		*angular_safe = THETA_V_MAX;
-		*linear_safe = LINEAR_STOP;
-		steer = 0;
-	}
-
-	return true;	
 
 }
 

@@ -388,10 +388,10 @@ void local_nav::LaserSafeVelCallBack(const colibri_msgs::SafeVel::ConstPtr& safe
 
 	laser_safe_velocity.stop.data = safe_vel->stop.data;		
 	laser_safe_velocity.linear_safe_thd = safe_vel->linear_safe_thd;
-	laser_safe_velocity.linear_safe_vel = safe_vel->linear_safe_vel;
+	laser_safe_velocity.area_status = safe_vel->area_status;
 	laser_safe_velocity.steer = safe_vel->steer;
 	laser_safe_velocity.angular_safe_thd = safe_vel->angular_safe_thd;
-	laser_safe_velocity.angular_safe_vel = safe_vel->angular_safe_vel;
+	laser_safe_velocity.rsvd = safe_vel->rsvd;
 
 }
 
@@ -403,10 +403,10 @@ void local_nav::UltraSafeVelCallBack(const colibri_msgs::SafeVel::ConstPtr& safe
 
 	ultra_safe_velocity.stop.data = safe_vel->stop.data;		
 	ultra_safe_velocity.linear_safe_thd = safe_vel->linear_safe_thd;
-	ultra_safe_velocity.linear_safe_vel = safe_vel->linear_safe_vel;
+	ultra_safe_velocity.area_status = safe_vel->area_status;
 	ultra_safe_velocity.steer = safe_vel->steer;
 	ultra_safe_velocity.angular_safe_thd = safe_vel->angular_safe_thd;
-	ultra_safe_velocity.angular_safe_vel = safe_vel->angular_safe_vel;
+	ultra_safe_velocity.rsvd = safe_vel->rsvd;
 
 }
 

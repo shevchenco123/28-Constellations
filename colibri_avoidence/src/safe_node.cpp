@@ -27,7 +27,10 @@ int main(int argc, char* argv[])
 	//file1.open ("ultra.txt");
 	//int rec_max = 1800;
 	//int cnt = 0;
-	
+
+
+	int laser_area_sts = 0;
+	int ultra_area_sts = 0;
 	while (ros::ok())
 	{	
 		if(delay_cnt < DELAY_CNT_MAX)
@@ -57,14 +60,29 @@ int main(int argc, char* argv[])
 			protectObj.security_pub4env.publish(protectObj.env_secure);
 
 			protectObj.CalcLaserSafeVelThd(protectObj.min_scan , protectObj.min_scan_angle, laser_steer, &laser_linear_vel_safe, &laser_angular_vel_safe);
-			cout<<"laser_linear_vel_safe: "<< laser_linear_vel_safe<< endl;
-			cout<<"laser_angular_vel_safe: "<< laser_angular_vel_safe<< endl;
-			cout<<"laser_steer: "<< laser_steer<< endl;
+			cout<<"laser_linear_vel_safe_thd: "<< laser_linear_vel_safe<< endl;
+			cout<<"laser_angular_vel_safe_thd: "<< laser_angular_vel_safe<< endl;
+			cout<<"laser_steer_thd: "<< laser_steer<< endl;
 
 			protectObj.CalcUltraSafeVelThd(protectObj.min_ultra, protectObj.min_index_ultra, ultra_steer, &ultra_linear_vel_safe, &ultra_angular_vel_safe);
-			cout<<"ultra_linear_vel_safe: "<< ultra_linear_vel_safe << endl;
-			cout<<"ultra_angular_vel_safe: "<< ultra_angular_vel_safe << endl;
-			cout<<"ultra_steer: "<< ultra_steer << endl;
+			cout<<"ultra_linear_vel_safe_thd: "<< ultra_linear_vel_safe << endl;
+			cout<<"ultra_angular_vel_safe_thd: "<< ultra_angular_vel_safe << endl;
+			cout<<"ultra_steer_thd: "<< ultra_steer << endl;
+
+
+	/*		protectObj.CalcLaserCA(protectObj.min_scan , protectObj.min_scan_angle, laser_steer, &laser_linear_vel_safe, &laser_angular_vel_safe,laser_area_sts);
+			cout<<"laser_linear_vel_safe_thd: "<< laser_linear_vel_safe<< endl;
+			cout<<"laser_angular_vel_safe_thd: "<< laser_angular_vel_safe<< endl;
+			cout<<"laser_steer_thd: "<< laser_steer<< endl;
+			cout<<"laser_area_sts: "<< laser_area_sts<< endl;
+
+			protectObj.CalcUltraCA(protectObj.min_ultra, protectObj.min_index_ultra, ultra_steer, &ultra_linear_vel_safe, &ultra_angular_vel_safe,ultra_area_sts);
+			cout<<"ultra_linear_vel_safe_thd: "<< ultra_linear_vel_safe << endl;
+			cout<<"ultra_angular_vel_safe_thd: "<< ultra_angular_vel_safe << endl;
+			cout<<"ultra_steer_thd: "<< ultra_steer << endl;
+			cout<<"ultra_area_sts: "<< ultra_area_sts<< endl;
+			
+*/
 
 /*
 			file1 << fixed << setprecision(4) << protectObj.ultra_vec[0];
@@ -95,10 +113,10 @@ int main(int argc, char* argv[])
 				protectObj.laser_safe_vel.stop.data = false;
 			}				
 			protectObj.laser_safe_vel.linear_safe_thd = laser_linear_vel_safe;
-			protectObj.laser_safe_vel.linear_safe_vel = 0.0;
+			protectObj.laser_safe_vel.area_status = laser_area_sts;
 			protectObj.laser_safe_vel.steer = laser_steer;
 			protectObj.laser_safe_vel.angular_safe_thd = laser_angular_vel_safe;
-			protectObj.laser_safe_vel.angular_safe_vel = 0.0;
+			protectObj.laser_safe_vel.rsvd = 0.0;
 			
 			protectObj.security_pub4laser.publish(protectObj.laser_safe_vel);
 
@@ -115,10 +133,10 @@ int main(int argc, char* argv[])
 				protectObj.ultra_safe_vel.stop.data = false;
 			}				
 			protectObj.ultra_safe_vel.linear_safe_thd = ultra_linear_vel_safe;
-			protectObj.ultra_safe_vel.linear_safe_vel = 0.0;
+			protectObj.ultra_safe_vel.area_status = ultra_area_sts;
 			protectObj.ultra_safe_vel.steer = ultra_steer;
 			protectObj.ultra_safe_vel.angular_safe_thd = ultra_angular_vel_safe;
-			protectObj.ultra_safe_vel.angular_safe_vel = 0.0;
+			protectObj.ultra_safe_vel.rsvd = 0.0;
 			
 			protectObj.security_pub4ultra.publish(protectObj.ultra_safe_vel);
 

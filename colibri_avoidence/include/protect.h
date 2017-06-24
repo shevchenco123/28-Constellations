@@ -27,11 +27,11 @@
 
 
 #define SCAN4SAFE_NUM 211	//obtain the  210 degree laser scan for resolution at 1 degree  from  (-15~195) degree
-#define LASER_SAFE_MIN	0.05	//static safe limit
+#define LASER_SAFE_MIN	0.06	//static safe limit for laser blind area
 #define LASER_SAFE_MAX	2.0
 
 #define ULTRA_NUM	  8		//front 4 ultrasonic, ignore the back 4 ultrasonic
-#define ULTRA_SAFE_MIN	0.10
+#define ULTRA_SAFE_MIN	0.30
 #define ULTRA_SAFE_MAX	2.0
 
 #define UNSAFE_PROB		0.97 // >0.97 must stop
@@ -47,16 +47,25 @@
 #define LINEAR_STOP 		0.0
 #define ANGULAR_STOP 		0.0
 
-#define LASER_SAFE_DIS1		1.0
-#define LASER_SAFE_ANG1		30	//asin(0.5/1)
-#define LASER_SAFE_DIS2		0.5
-#define LASER_SAFE_ANG2		37  //asin(0.3/0.4) which 0.3 means half width of aiv
-#define LASER_SAFE_DIS3		0.3 //must stop
+#define LASER_SAFE_DIS1		1.2
+#define LASER_SAFE_ANG1		41	//asin(0.8/1.2)
+#define LASER_SAFE_DIS2		0.8
+#define LASER_SAFE_ANG2		30  //asin(0.4/0.8) 
+#define LASER_SAFE_DIS3		0.4 //must not moving but allow rotate
+#define LASER_SAFE_DIS4		0.3 //must stop
+
 
 #define ULTRA_SAFE_DIS1		0.8
-#define ULTRA_SAFE_DIS2		0.36
+#define ULTRA_SAFE_DIS2		0.40
 
+#define LASER_CA_WIDTH  1.0
+#define LASER_CA_HEIGHT 0.8
+#define LASER_ROT_RADIUS 0.4
+#define LASER_STOP_RADIUS 0.3
 
+#define ULTRA_CA_DEC  1.0
+#define ULTRA_ROT_RADIUS 0.4
+#define ULTRA_STOP_RADIUS 0.35
 
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
@@ -146,12 +155,21 @@ class protector
 		bool CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_linear_vel);
 		bool CalcSafeAngularVel(float &ctrl_vel, int &steer, float &angular_thd, float* safe_angular_vel);
 
+		bool CalcLaserCA(float	&min_scan, int &min_scan_ang, int &steer, float *linear_safe, float* angular_safe, int &area_state);
+		bool CalcUltraCA(float &min_ultra, unsigned int &min_ultra_index, int &steer, float* linear_safe, float* angular_safe, int &area_state);
+
+
+
+		
+
 	private:
 		
 		void ScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4safe);
 		void UltraSafeCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra4safe);
 		void BumperSafeCallBack(const colibri_aiv::Bumper::ConstPtr& bumper4safe);
 		void OdomSafeCallBack(const nav_msgs::Odometry::ConstPtr& odom4safe);
+		void Polar2Decare(float  &min_scan, int &min_scan_ang,float &x, float &y);
+		bool LocateInRecArea(float &rec_x, float &rec_y, float &x, float &y);
 
 };
 

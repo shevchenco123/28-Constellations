@@ -11,6 +11,13 @@
 
 #include<signal.h>
 
+//#define ULTRA_CA_LIMIT
+//#define LASER_CA_LIMIT
+//#define ULTRA_CA_LIMIT
+
+//#define CA_LIMIT
+#define NO_LIMIT
+
 bool node_shutdown  = false;
 int cnt_null_cmdvel = 0;
 
@@ -144,6 +151,7 @@ int main(int argc, char* argv[])
 			goal_inlaser_flag = local4navObj.CalcGoalDirOfLaserView(&tmp_laser2goal_yaw, &local4navObj.amcl_cur_state[2], &dir_goal_in_laser, &self_rotation_angle);
 
 			scan4caObj.CalcPhiParam(local4navObj.cur_robot_vel[0], dir_goal_in_laser);
+			scan4caObj.PubPfInfo4Dbg();
 
 			scan4caObj.CalcKrfTheta(scan4caObj.kp_phi_vec, scan4caObj.phi_start_vec, scan4caObj.phi_end_vec);
 			//scan4caObj.CalcCorrectedKrf();
@@ -211,22 +219,54 @@ int main(int argc, char* argv[])
 			float tmp_linear = local4navObj.apf_cmd_vel.linear.x;
 			float tmp_angluar = local4navObj.apf_cmd_vel.angular.z;
 
-			float ultra_safe_linear_vel = 0.0;
-			float ultra_safe_angular_vel = 0.0;
-			int ultra_steer = local4navObj.ultra_safe_velocity.steer;
-			local4navObj.CalcSafeLinearVel(tmp_linear, local4navObj.ultra_safe_velocity.linear_safe_thd, &ultra_safe_linear_vel);
-			local4navObj.CalcSafeAngularVel(tmp_angluar, ultra_steer, local4navObj.ultra_safe_velocity.angular_safe_thd, &ultra_safe_angular_vel);
+			cout<<"tmp_linear: " << tmp_linear <<endl;
+			cout<<"tmp_angluar: " << tmp_angluar <<endl;
+
+#ifdef LASER_CA_LIMIT
 
 			float laser_safe_linear_vel = 0.0;
 			float laser_safe_angular_vel = 0.0;
 			int laser_steer = local4navObj.laser_safe_velocity.steer;
 			local4navObj.CalcSafeLinearVel(tmp_linear, local4navObj.laser_safe_velocity.linear_safe_thd, &laser_safe_linear_vel);
 			local4navObj.CalcSafeAngularVel(tmp_angluar, laser_steer, local4navObj.laser_safe_velocity.angular_safe_thd, &laser_safe_angular_vel);
+
+			local4navObj.apf_cmd_vel.linear.x = laser_safe_linear_vel;
+			local4navObj.apf_cmd_vel.angular.z = laser_safe_angular_vel;
+#endif
+			
+#ifdef ULTRA_CA_LIMIT
+			float ultra_safe_linear_vel = 0.0;
+			float ultra_safe_angular_vel = 0.0;
+			int ultra_steer = local4navObj.ultra_safe_velocity.steer;
+			local4navObj.CalcSafeLinearVel(tmp_linear, local4navObj.ultra_safe_velocity.linear_safe_thd, &ultra_safe_linear_vel);
+			local4navObj.CalcSafeAngularVel(tmp_angluar, ultra_steer, local4navObj.ultra_safe_velocity.angular_safe_thd, &ultra_safe_angular_vel);
+
+			local4navObj.apf_cmd_vel.linear.x = ultra_safe_linear_vel;
+			local4navObj.apf_cmd_vel.angular.z = ultra_safe_angular_vel;
+#endif
+
+#ifdef CA_LIMIT
+
 			local4navObj.apf_cmd_vel.linear.x = MIN(laser_safe_linear_vel, ultra_safe_linear_vel);
 			local4navObj.apf_cmd_vel.angular.z = MIN(laser_safe_angular_vel, ultra_safe_angular_vel);
+#endif
 
-			
-			if((local4navObj.position_OK_flag == true)||(local4navObj.ultra_safe_velocity.stop.data == true)||(local4navObj.laser_safe_velocity.stop.data == true))
+#ifdef NO_LIMIT
+			if((local4navObj.position_OK_flag == true))
+#endif
+
+#ifdef LASER_CA_LIMIT
+			if((local4navObj.position_OK_flag == true)||(local4navObj.laser_safe_velocity.stop.data == true))
+#endif
+
+#ifdef ULTRA_CA_LIMIT
+			if((local4navObj.position_OK_flag == true)||(local4navObj.ultra_safe_velocity.stop.data == true))
+#endif
+
+#ifdef CA_LIMIT
+			if((local4navObj.position_OK_flag == true)||(local4navObj.laser_safe_velocity.stop.data == true)||(local4navObj.ultra_safe_velocity.stop.data == true))
+#endif
+
 			{
 				local4navObj.apf_cmd_vel.linear.x = 0.0;
 				local4navObj.apf_cmd_vel.angular.z = 0.0;

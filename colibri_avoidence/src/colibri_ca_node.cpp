@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 			for(int i = 0; i < NUM_RAY4CA; i++)
 			{
 
-#ifdef CA_FUSION
+#ifdef ORI_ULTRA_FUSION
 				
 				min_multi_range = MIN(*(scan4caObj.ptrScan4ca + i),scan4caObj.ultra4ca[i]);
 				scan4caObj.delta_phi_vec[i] = asin(D_SF / min_multi_range) * RAD2DEG; //calc the phi ang obs influence range
@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
 			for(int i = 0; i < NUM_RAY4CA; i++)
 			{
 //		apf_vec_mntr[i] =  scan4caObj.passfcn_vec[i];
-				apf_vec_mntr[i] =  scan4caObj.ultra4ca[i];
+				apf_vec_mntr[i] =  scan4caObj.passfcn_vec[i];
 				rf_vec_mntr[i] = 1 / scan4caObj.krf_vec[i];
 			}
 
@@ -130,6 +130,8 @@ int main(int argc, char* argv[])
 			
 			scan4caObj.apf_pub4mntr.publish(apf);
 			scan4caObj.rf_pub4mntr.publish(rf);
+
+			scan4caObj.PubPfInfo4Dbg();
 
 			for(int j = 0; j < NUM_RAY4CA; j++)
 			{
