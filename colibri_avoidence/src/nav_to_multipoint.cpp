@@ -12,11 +12,11 @@
 #include<signal.h>
 
 //#define ULTRA_CA_LIMIT
-//#define LASER_CA_LIMIT
+#define LASER_CA_LIMIT
 //#define ULTRA_CA_LIMIT
 
 //#define CA_LIMIT
-#define NO_LIMIT
+//#define NO_LIMIT
 
 bool node_shutdown  = false;
 int cnt_null_cmdvel = 0;

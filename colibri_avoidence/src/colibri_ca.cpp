@@ -484,13 +484,16 @@ void scan_ca::CalcPassFcnAndFwdBnd(unsigned int flag, float* max_passfcn_val, fl
 			else
 			{
 				*(ptrK_pg + j) = kaf_vec[j] / (krf_vec[j]);
+				abstract_pf[j] = 1 / (krf_vec[j]);
 			}
 		
 			if(tmp_passfcn_value <= *(ptrK_pg + j))
 			{
 				tmp_bound_forward = j;
 				tmp_passfcn_value = *(ptrK_pg + j);
-			}	
+			}
+
+			
 		}
 		
 		maxfcn_fwdbnd = tmp_bound_forward;
@@ -714,7 +717,6 @@ void scan_ca::CalcPhiParam(float vel_center, float& dir_goal_inlaser)
 		delta_phi_vec[i] = asin(D_SF / min_multi_range) * RAD2DEG; //calc the phi ang obs influence range
 #endif
 
-		abstract_pf[i] = min_multi_range;
 
 #ifdef NO_FUSION
 		delta_phi_vec[i] = asin(D_SF / (*(ptrScan4ca + i))) * RAD2DEG;

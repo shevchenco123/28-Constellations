@@ -165,13 +165,13 @@ void AIV_Driver::WriteToCom(const unsigned char * data)
 {
 	size_t len = write(pserialport, buffer(data, CONST_PROTOCOL_LEN), ec);
 	
-	cout <<"send "<<len<<" Bytes:";
+	//cout <<"send "<<len<<" Bytes:";
 	int i;
 	for(i = 0; i < CONST_PROTOCOL_LEN; i ++)
 	{
 		//printf(" %x", data[i]);	
 	}
-	cout << endl;
+	//cout << endl;
 }
 
 
@@ -652,7 +652,7 @@ void AIV_Driver::TwistCallback(const geometry_msgs::Twist::ConstPtr & twist)
 	SendCmd(send_twist, send_twist_finish);
 	
 	send_cnt++;
-	cout <<"send times: "<<send_cnt<<endl;
+	//cout <<"send times: "<<send_cnt<<endl;
 }
 
 void AIV_Driver::AuxInfoCallback(const colibri_msgs::AuxInfo::ConstPtr & aux_info)
@@ -681,7 +681,7 @@ void AIV_Driver::AuxInfoCallback(const colibri_msgs::AuxInfo::ConstPtr & aux_inf
 	SendCmd(send_aux_info, send_aux_finish);
 	
 	send_cnt++;
-	cout <<"send times: "<<send_cnt<<endl; 
+	//cout <<"send times: "<<send_cnt<<endl; 
 }
 
 

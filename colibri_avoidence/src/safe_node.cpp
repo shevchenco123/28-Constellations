@@ -59,6 +59,7 @@ int main(int argc, char* argv[])
 			protectObj.Intg4EnvSecure();	
 			protectObj.security_pub4env.publish(protectObj.env_secure);
 
+	/*		
 			protectObj.CalcLaserSafeVelThd(protectObj.min_scan , protectObj.min_scan_angle, laser_steer, &laser_linear_vel_safe, &laser_angular_vel_safe);
 			cout<<"laser_linear_vel_safe_thd: "<< laser_linear_vel_safe<< endl;
 			cout<<"laser_angular_vel_safe_thd: "<< laser_angular_vel_safe<< endl;
@@ -68,9 +69,10 @@ int main(int argc, char* argv[])
 			cout<<"ultra_linear_vel_safe_thd: "<< ultra_linear_vel_safe << endl;
 			cout<<"ultra_angular_vel_safe_thd: "<< ultra_angular_vel_safe << endl;
 			cout<<"ultra_steer_thd: "<< ultra_steer << endl;
+	*/
 
 
-	/*		protectObj.CalcLaserCA(protectObj.min_scan , protectObj.min_scan_angle, laser_steer, &laser_linear_vel_safe, &laser_angular_vel_safe,laser_area_sts);
+			protectObj.CalcLaserCA(protectObj.min_scan , protectObj.min_scan_angle, laser_steer, &laser_linear_vel_safe, &laser_angular_vel_safe,laser_area_sts);
 			cout<<"laser_linear_vel_safe_thd: "<< laser_linear_vel_safe<< endl;
 			cout<<"laser_angular_vel_safe_thd: "<< laser_angular_vel_safe<< endl;
 			cout<<"laser_steer_thd: "<< laser_steer<< endl;
@@ -82,7 +84,7 @@ int main(int argc, char* argv[])
 			cout<<"ultra_steer_thd: "<< ultra_steer << endl;
 			cout<<"ultra_area_sts: "<< ultra_area_sts<< endl;
 			
-*/
+
 
 /*
 			file1 << fixed << setprecision(4) << protectObj.ultra_vec[0];

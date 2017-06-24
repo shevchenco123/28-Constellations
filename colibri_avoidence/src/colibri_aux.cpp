@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
 		}
 		aux_info.horn = HORN_OFF;
 
-		aux_info.lf_light = LIGHT_FAST_BLINKING;
+		//aux_info.lf_light = LIGHT_FAST_BLINKING;
 		aux_info.laser_mindis = aux_envsec.laser_min_dis;
 		aux_info.laser_mindir = aux_envsec.laser_min_angle;
 		aux_info.ultra_switch = ULTRA_ON;
