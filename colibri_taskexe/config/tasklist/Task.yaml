@@ -1,9 +1,9 @@
 task_create: 6.24
 goal_num: 3
-ref_frame: base_footprint
+ref_frame: map
 delta_flag: false
-goal_0: [-0.980746999999999, -6.880747, 90, 5]
-goal_1: [-0.980746999999999, -2.680747, 90, 5]
-goal_2: [2.969253, -5.880747, 90, 5]
+goal_0: [2.5, -0.0, 90, 5]
+goal_1: [6.0, -0.5, 90, 5]
+goal_2: [-2.0, 0, 90, 5]
 goal_dict: {gindex_0: goal_0,gindex_1: goal_1,gindex_2: goal_2}
 
