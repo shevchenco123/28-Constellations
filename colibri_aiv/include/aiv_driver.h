@@ -11,6 +11,7 @@
 #include "colibri_aiv/Ultrasonic.h"
 #include "colibri_aiv/Bumper.h"
 #include "cartodom/Cartodom.h"
+#include "colibri_msgs/AuxInfo.h"
 
 #ifndef _AIV_DRIVER_H_
 #define _AIV_DRIVER_H_
@@ -42,6 +43,7 @@ using namespace boost::asio;
 #define REQ_ULTRASONIC          	 0x04
 #define REQ_BUMPER            	 	 0x05
 #define REQ_VELOCITY             	 0x06
+#define SEND_AUX				 	 0X07
 
 #define ENABLE_MOTOR		0xff
 #define DISABLE_MOTOR		0x55
@@ -80,6 +82,7 @@ class AIV_Driver
 	private:
 		void GenerateCmd(unsigned char *cmd_name,unsigned char cmd,unsigned char valid_data_len,unsigned char control,unsigned char *data);
 		void TwistCallback(const geometry_msgs::Twist::ConstPtr & twist);
+		void AuxInfoCallback(const colibri_msgs::AuxInfo::ConstPtr & aux_info);
 		void DisplayFrame(unsigned char *cmd_list);
 	public:
 		unsigned int send_cnt;
@@ -89,6 +92,7 @@ class AIV_Driver
 		unsigned char enable_motor[CONST_PROTOCOL_LEN];
 		unsigned char disable_motor[CONST_PROTOCOL_LEN];
 		unsigned char send_twist[CONST_PROTOCOL_LEN];
+		unsigned char send_aux_info[CONST_PROTOCOL_LEN];
 		
 		unsigned char req_encoder_start[CONST_PROTOCOL_LEN];
 		unsigned char req_imu_start[CONST_PROTOCOL_LEN];
@@ -105,6 +109,7 @@ class AIV_Driver
 		static volatile bool enable_motor_finish;
 		static volatile bool disable_motor_finish;
 		static volatile bool send_twist_finish;
+		static volatile bool send_aux_finish;
 		static volatile bool req_encoder_start_finish;
 		static volatile bool req_imu_start_finish;
 		static volatile bool req_ultra_start_finish;
@@ -188,6 +193,7 @@ class AIV_Driver
 		ros::Publisher ultrasonic_pub;
 		ros::Publisher bumper_pub;
 		ros::Subscriber cartodom_sub;
+		ros::Subscriber aux_sub;
 
 		tf::TransformBroadcaster odom_broadcaster;
 

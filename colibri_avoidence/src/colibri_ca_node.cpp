@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 	float v_0 = 0.0;
 	int range_num = 0;
 
-	float tmp_theta_obs = 0.0;	//obstacle 's theta angle
+	float tmp_delta_o2g = 0.0;	//obstacle 's theta angle -goal_dir
 	float tmp_passfcn_value = 0.0;
 	colibri_msgs::AngPotnEngy apf;
 	colibri_msgs::AngPotnEngy rf;
@@ -23,6 +23,11 @@ int main(int argc, char* argv[])
 	file2.open ("cppkrf_vector.txt"); 
 	file3.open ("cpppassfcn_vector.txt"); 
 	int delay_cnt = 0;
+
+	float min_multi_range = 20.0;
+	int ultra_obs_coder = 0;
+	int ultra_strategy = 0;
+	float min_ultra_dis = 6.5;
 	
 	while (ros::ok())
 	{	
@@ -54,10 +59,28 @@ int main(int argc, char* argv[])
 			float rf_vec_mntr[NUM_RAY4CA];
 			float apf_vec_mntr[NUM_RAY4CA];
 
+			min_ultra_dis = scan4caObj.CalcMinUltraRange();	
+			ultra_obs_coder = scan4caObj.CalcUltraObsCoder(min_ultra_dis);
+			ultra_strategy = scan4caObj.UltraCollisionFreeDeal(ultra_obs_coder);
+
+			cout<<"ultra_obs_coder: "<<ultra_obs_coder<<endl;
+			cout<<"ultra_strategy: "<<ultra_strategy<<endl;
+			cout<<"min_ultra_dis: "<<min_ultra_dis<<endl;
+
+			scan4caObj.TrimUltraRange4CA(ultra_strategy, min_ultra_dis);
+
 			
 			for(int i = 0; i < NUM_RAY4CA; i++)
 			{
+
+#ifdef ORI_ULTRA_FUSION
+				
+				min_multi_range = MIN(*(scan4caObj.ptrScan4ca + i),scan4caObj.ultra4ca[i]);
+				scan4caObj.delta_phi_vec[i] = asin(D_SF / min_multi_range) * RAD2DEG; //calc the phi ang obs influence range
+#else
 				scan4caObj.delta_phi_vec[i] = asin(D_SF / (*(scan4caObj.ptrScan4ca + i))) * RAD2DEG; //calc the phi ang obs influence range
+#endif
+				
 				scan4caObj.kp_phi_vec[i] = scan4caObj.CalcKpPhi(v_0, *(scan4caObj.ptrScan4ca + i)); //from right to left in 181 laser points  and should be positive
 				range_num = floor(scan4caObj.delta_phi_vec[i] / RAY_RESOL4CA); //range_num must be positive
 				
@@ -66,8 +89,9 @@ int main(int argc, char* argv[])
 				
 				scan4caObj.CalcPhiRange(i,range_num,&scan4caObj.phi_start_vec[i],&scan4caObj.phi_end_vec[i]);
 
-				tmp_theta_obs = i; // unit in degree
-				scan4caObj.kaf_vec[i] = cos((tmp_theta_obs - scan4caObj.goal_dir) * DEG2RAD);
+				tmp_delta_o2g = i - scan4caObj.goal_dir; // unit in degree
+				scan4caObj.LimitAngle(tmp_delta_o2g);
+				scan4caObj.kaf_vec[i] = cos(tmp_delta_o2g * DEG2RAD);
 				scan4caObj.krf_vec[i] = scan4caObj.kp_phi_vec[i];  //init the repulse field using kp_phi_vec
 				
 
@@ -76,7 +100,7 @@ int main(int argc, char* argv[])
 			file1.close();  //record laser dis completed
 		
 			scan4caObj.CalcKrfTheta(scan4caObj.kp_phi_vec, scan4caObj.phi_start_vec, scan4caObj.phi_end_vec);
-	
+			//scan4caObj.CalcCorrectedKrf();
 			scan4caObj.CalcPassFcnAndFwdBnd(scan4caObj.wander, &scan4caObj.max_passfcn_val , scan4caObj.passfcn_vec);
 			scan4caObj.CalcPassFcnAndBwdBnd(scan4caObj.wander, &scan4caObj.max_passfcn_val , scan4caObj.passfcn_vec);
 
@@ -96,6 +120,7 @@ int main(int argc, char* argv[])
 
 			for(int i = 0; i < NUM_RAY4CA; i++)
 			{
+//		apf_vec_mntr[i] =  scan4caObj.passfcn_vec[i];
 				apf_vec_mntr[i] =  scan4caObj.passfcn_vec[i];
 				rf_vec_mntr[i] = 1 / scan4caObj.krf_vec[i];
 			}
@@ -105,6 +130,8 @@ int main(int argc, char* argv[])
 			
 			scan4caObj.apf_pub4mntr.publish(apf);
 			scan4caObj.rf_pub4mntr.publish(rf);
+
+			scan4caObj.PubPfInfo4Dbg();
 
 			for(int j = 0; j < NUM_RAY4CA; j++)
 			{
@@ -119,7 +146,7 @@ int main(int argc, char* argv[])
 			file2.close();
 			file3.close();
 
-			scan4caObj.CalcCollisionInAPF();
+			scan4caObj.CalcAlarmInAPF();
 
 			cout<<"fwd_maxpass_cnt: "<<scan4caObj.fwd_maxpass_cnt<<endl;
 			cout<<"bwd_maxpass_cnt: "<<scan4caObj.bwd_maxpass_cnt<<endl;
@@ -128,7 +155,7 @@ int main(int argc, char* argv[])
 			cout<<"passfcn_max_bwdbound: "<< scan4caObj.maxfcn_bwdbnd <<endl;
 			cout<<"adj_angle: "<< scan4caObj.angle_adj <<endl;
 			cout<<"passfcn_max_value: "<< scan4caObj.max_passfcn_val <<endl;
-			cout<<"colision_alarm: "<< scan4caObj.colision_alarm <<endl;
+			cout<<"apf_alarm: "<< scan4caObj.apf_alarm <<endl;
 
 			scan4caObj.ResetMaxPassValCnt();
 			

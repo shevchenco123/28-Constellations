@@ -1,6 +1,6 @@
-image: 170124pm.pgm
+image: office602.pgm
 resolution: 0.050000
-origin: [-6.465976, -13.237539, 0.000000]
+origin: [-9.280747, -6.788465, 0.000000]
 negate: 0
 occupied_thresh: 0.65
 free_thresh: 0.196

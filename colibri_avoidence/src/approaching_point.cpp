@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
 			
 			local4navObj.CalcOffsetOfGoalAndRobot(local4navObj.cur_robot_state, local4navObj.goal_state, &tmp_delta_dis, &tmp_robot2goal_yaw, &tmp_laser2goal_yaw);
 
-			goal_inlaser_flag = local4navObj.CalcGoalDirOfLaserViewNew(&tmp_laser2goal_yaw, &local4navObj.cur_robot_state[2], &dir_goal_in_laser, &self_rotation_angle);
+			goal_inlaser_flag = local4navObj.CalcGoalDirOfLaserView(&tmp_laser2goal_yaw, &local4navObj.cur_robot_state[2], &dir_goal_in_laser, &self_rotation_angle);
 
 			for(int i = 0; i < NUM_RAY4CA; i++)
 			{
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 
 			scan4caObj.angle_adj = scan4caObj.CalcAdjDir(scan4caObj.passfcn_vec,scan4caObj.max_passfcn_val, &scan4caObj.maxfcn_fwdbnd,&scan4caObj.maxfcn_bwdbnd);
 				
-			scan4caObj.CalcCollisionInAPF();
+			scan4caObj.CalcAlarmInAPF();
 			
 			if(goal_inlaser_flag == true)
 			{

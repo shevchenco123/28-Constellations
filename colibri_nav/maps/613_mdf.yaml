@@ -1,6 +1,6 @@
-image: expscence1_20.pgm
+image: 613_mdf.pgm
 resolution: 0.050000
-origin: [-5.485706, -28.574800, 0.000000]
+origin: [-6.714686, -19.081911, 0.000000]
 negate: 0
 occupied_thresh: 0.65
 free_thresh: 0.196

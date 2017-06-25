@@ -15,14 +15,14 @@ int main(int argc, char **argv)
 
   geometry_msgs::Twist const_vel;
 
-  const_vel.linear.x = 0.1;
+  const_vel.linear.x = 1.25;
   const_vel.linear.y = 0.0;
   const_vel.linear.z = 0.0;
   const_vel.angular.x = 0.0;
   const_vel.angular.y = 0.0;
   const_vel.angular.z = 0.0;
 
-  ros::Publisher constvel_pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
+  ros::Publisher constvel_pub = nh.advertise<geometry_msgs::Twist>("/t_cmd_vel", 1);
 
   ros::Rate loop_rate(10);
 
@@ -41,10 +41,10 @@ int main(int argc, char **argv)
     loop_rate.sleep();
     ++count;
 	
-	if(count == 100)
+	if(count == 50)
 	{
 		constvel_pub.publish(geometry_msgs::Twist());
-		ROS_INFO("Pub const for 10 sec Over!!!");
+		ROS_INFO("Pub const for 5 sec Over!!!");
 		break;	
 	}
   }

@@ -11,6 +11,13 @@
 
 #include<signal.h>
 
+//#define ULTRA_CA_LIMIT
+#define LASER_CA_LIMIT
+//#define ULTRA_CA_LIMIT
+
+//#define CA_LIMIT
+//#define NO_LIMIT
+
 bool node_shutdown  = false;
 int cnt_null_cmdvel = 0;
 
@@ -68,6 +75,8 @@ int main(int argc, char* argv[])
 	ros::Rate loop_rate(10);		// Set control  freq at 10 hz
 	unsigned int delay_cnt = 0;		// Init delay conter for scanObj 
 
+	float ori_apf_linear = 0.0;
+	float ori_apf_angular = 0.0;
 	signal(SIGINT, MySigintHandler);
 
 	while(taskObj.obtain_goal_flag == false)
@@ -86,7 +95,7 @@ int main(int argc, char* argv[])
 	ROS_INFO("Srv move_base/make_plan prepared OK...");
 
 	// Inital path plan calling  and gravaton calc
-	finish_plan = plannerObj.ExecMonoPlanAndGravaton(plannerObj,&local4navObj.cur_robot_state[0],&local4navObj.goal_state[0], search_start,index4gravaton);
+	finish_plan = plannerObj.ExecMonoPlanAndGravaton(plannerObj,&local4navObj.cur_robot_state[0], &local4navObj.goal_state[0], search_start, index4gravaton);
 
 	// Set path plan timer
 	planner_timer = nh_pp.createTimer(ros::Duration(PLAN_INTERVAL), boost::bind(&PlannerCallback, &plannerObj, &local4navObj.amcl_cur_state[0],&taskObj.cur_goal[0], timer_finish));
@@ -118,7 +127,7 @@ int main(int argc, char* argv[])
 				if((at_gravaton_flag == true && local4navObj.approaching_flag == false)||(replan_flag == true))
 				{
 					plannerObj.CalcPath2RobotDeltaDis(plannerObj.path_array, local4navObj.amcl_cur_state);
-					index4gravaton = plannerObj.CalcGravatonFromPath(plannerObj.path_array, plannerObj.path2robot_array, index4gravaton, plannerObj.gravaton,exist_gravaton_flag);
+					index4gravaton = plannerObj.CalcGravatonFromPath(plannerObj.path_array, plannerObj.path2robot_array, index4gravaton, plannerObj.gravaton, exist_gravaton_flag);
 					at_gravaton_flag = false;
 					replan_flag = false;
 				}
@@ -139,23 +148,27 @@ int main(int argc, char* argv[])
 			
 			local4navObj.CalcOffsetOfGoalAndRobot(local4navObj.amcl_cur_state, &plannerObj.gravaton.x, &tmp_delta_dis, &tmp_robot2goal_yaw, &tmp_laser2goal_yaw);
 
-			goal_inlaser_flag = local4navObj.CalcGoalDirOfLaserViewNew(&tmp_laser2goal_yaw, &local4navObj.amcl_cur_state[2], &dir_goal_in_laser, &self_rotation_angle);
+			goal_inlaser_flag = local4navObj.CalcGoalDirOfLaserView(&tmp_laser2goal_yaw, &local4navObj.amcl_cur_state[2], &dir_goal_in_laser, &self_rotation_angle);
 
 			scan4caObj.CalcPhiParam(local4navObj.cur_robot_vel[0], dir_goal_in_laser);
+			scan4caObj.PubPfInfo4Dbg();
 
 			scan4caObj.CalcKrfTheta(scan4caObj.kp_phi_vec, scan4caObj.phi_start_vec, scan4caObj.phi_end_vec);
-			scan4caObj.CalcCorrectedKrf();
+			//scan4caObj.CalcCorrectedKrf();
 			scan4caObj.CalcPassFcnAndFwdBnd(scan4caObj.wander, &scan4caObj.max_passfcn_val, scan4caObj.passfcn_vec);
 			scan4caObj.CalcPassFcnAndBwdBnd(scan4caObj.wander, &scan4caObj.max_passfcn_val, scan4caObj.passfcn_vec);
 
 			scan4caObj.angle_adj = scan4caObj.CalcAdjDir(scan4caObj.passfcn_vec,scan4caObj.max_passfcn_val, &scan4caObj.maxfcn_fwdbnd,&scan4caObj.maxfcn_bwdbnd);
 				
-			scan4caObj.CalcCollisionInAPF();
+			scan4caObj.CalcAlarmInAPF();
 			
 			if(goal_inlaser_flag == true)
 			{
-				local4navObj.apf_ctrl_output[0] = (V_MAX - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
-				local4navObj.apf_ctrl_output[1] = scan4caObj.angle_adj / 200.0;	
+				ori_apf_linear = (V_MAX - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
+				ori_apf_angular = scan4caObj.angle_adj / 200.0;
+
+				local4navObj.apf_ctrl_output[0] = local4navObj.LinearVelFilter(&ori_apf_linear, &local4navObj.cur_robot_vel[0]);
+				local4navObj.apf_ctrl_output[1] = local4navObj.AngularVelFilter(&ori_apf_angular, &local4navObj.cur_robot_vel[1]);
 			}
 			else	//if gravaton is not in front of  laser , should exec the still rot 
 			{
@@ -198,7 +211,62 @@ int main(int argc, char* argv[])
 			local4navObj.apf_cmd_vel.linear.x = *ptr_action_cmd_t;
 			local4navObj.apf_cmd_vel.angular.z = *(ptr_action_cmd_t + 1);
 			
-			if(local4navObj.position_OK_flag == true)
+			cout<<"tmp_delta_dis: " << tmp_delta_dis <<endl;
+			
+			cout<<"local4navObj.laser_safe_velocity.steer:"<< local4navObj.laser_safe_velocity.steer<< endl;
+			cout<<"rt_r2g_dis: " << rt_r2g_dis <<endl;
+
+			float tmp_linear = local4navObj.apf_cmd_vel.linear.x;
+			float tmp_angluar = local4navObj.apf_cmd_vel.angular.z;
+
+			cout<<"tmp_linear: " << tmp_linear <<endl;
+			cout<<"tmp_angluar: " << tmp_angluar <<endl;
+
+#ifdef LASER_CA_LIMIT
+
+			float laser_safe_linear_vel = 0.0;
+			float laser_safe_angular_vel = 0.0;
+			int laser_steer = local4navObj.laser_safe_velocity.steer;
+			local4navObj.CalcSafeLinearVel(tmp_linear, local4navObj.laser_safe_velocity.linear_safe_thd, &laser_safe_linear_vel);
+			local4navObj.CalcSafeAngularVel(tmp_angluar, laser_steer, local4navObj.laser_safe_velocity.angular_safe_thd, &laser_safe_angular_vel);
+
+			local4navObj.apf_cmd_vel.linear.x = laser_safe_linear_vel;
+			local4navObj.apf_cmd_vel.angular.z = laser_safe_angular_vel;
+#endif
+			
+#ifdef ULTRA_CA_LIMIT
+			float ultra_safe_linear_vel = 0.0;
+			float ultra_safe_angular_vel = 0.0;
+			int ultra_steer = local4navObj.ultra_safe_velocity.steer;
+			local4navObj.CalcSafeLinearVel(tmp_linear, local4navObj.ultra_safe_velocity.linear_safe_thd, &ultra_safe_linear_vel);
+			local4navObj.CalcSafeAngularVel(tmp_angluar, ultra_steer, local4navObj.ultra_safe_velocity.angular_safe_thd, &ultra_safe_angular_vel);
+
+			local4navObj.apf_cmd_vel.linear.x = ultra_safe_linear_vel;
+			local4navObj.apf_cmd_vel.angular.z = ultra_safe_angular_vel;
+#endif
+
+#ifdef CA_LIMIT
+
+			local4navObj.apf_cmd_vel.linear.x = MIN(laser_safe_linear_vel, ultra_safe_linear_vel);
+			local4navObj.apf_cmd_vel.angular.z = MIN(laser_safe_angular_vel, ultra_safe_angular_vel);
+#endif
+
+#ifdef NO_LIMIT
+			if((local4navObj.position_OK_flag == true))
+#endif
+
+#ifdef LASER_CA_LIMIT
+			if((local4navObj.position_OK_flag == true)||(local4navObj.laser_safe_velocity.stop.data == true))
+#endif
+
+#ifdef ULTRA_CA_LIMIT
+			if((local4navObj.position_OK_flag == true)||(local4navObj.ultra_safe_velocity.stop.data == true))
+#endif
+
+#ifdef CA_LIMIT
+			if((local4navObj.position_OK_flag == true)||(local4navObj.laser_safe_velocity.stop.data == true)||(local4navObj.ultra_safe_velocity.stop.data == true))
+#endif
+
 			{
 				local4navObj.apf_cmd_vel.linear.x = 0.0;
 				local4navObj.apf_cmd_vel.angular.z = 0.0;

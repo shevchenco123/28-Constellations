@@ -8,6 +8,7 @@ static boost::system::error_code ec;
 volatile bool AIV_Driver::enable_motor_finish = false;
 volatile bool AIV_Driver::disable_motor_finish = false;
 volatile bool AIV_Driver::send_twist_finish = false;
+volatile bool AIV_Driver::send_aux_finish = false;
 volatile bool AIV_Driver::req_encoder_start_finish = false;
 volatile bool AIV_Driver::req_imu_start_finish = false;
 volatile bool AIV_Driver::req_ultra_start_finish = false;
@@ -65,6 +66,7 @@ AIV_Driver::AIV_Driver()
 	GenerateCmd(disable_motor, ENABLE_DISABLE_MOTOR, 0x01, RSVD_VAL, cmd_data);
 	
 	GenerateCmd(send_twist, SEND_TWIST, 0x04,RSVD_VAL, cmd_data);
+	GenerateCmd(send_aux_info, SEND_AUX, 0x0B,RSVD_VAL, cmd_data);
 
 	GenerateCmd(req_encoder_start, REQ_ENCODER, RSVD_VAL, FRAME_CMD_START, cmd_data);
 	GenerateCmd(req_imu_start, REQ_IMU, RSVD_VAL, FRAME_CMD_START, cmd_data);
@@ -78,8 +80,7 @@ AIV_Driver::AIV_Driver()
 	GenerateCmd(req_bumper_stop, REQ_BUMPER, RSVD_VAL, FRAME_CMD_STOP, cmd_data);
 	GenerateCmd(req_vel_stop, REQ_VELOCITY, RSVD_VAL, FRAME_CMD_STOP, cmd_data);
 		
-	//cout<<"enable_motor:"<<endl;
-	//DisplayFrame(enable_motor);
+	//DisplayFrame(req_ultra_start);
 	
 	cartodom_x = -OFFSET_LASER_X;
 	cartodom_y = 0.0;
@@ -164,13 +165,13 @@ void AIV_Driver::WriteToCom(const unsigned char * data)
 {
 	size_t len = write(pserialport, buffer(data, CONST_PROTOCOL_LEN), ec);
 	
-	cout <<"send "<<len<<" Bytes:";
+	//cout <<"send "<<len<<" Bytes:";
 	int i;
 	for(i = 0; i < CONST_PROTOCOL_LEN; i ++)
 	{
 		//printf(" %x", data[i]);	
 	}
-	cout << endl;
+	//cout << endl;
 }
 
 
@@ -360,8 +361,8 @@ void AIV_Driver::ReadInfoProc(unsigned char buf[], boost::system::error_code ec,
 			break;
 			
 		case REQ_ULTRASONIC:
-			if((AIV_Driver::req_ultra_start_finish == true) || (AIV_Driver::req_ultra_stop_finish == true))
-			{	
+			//if((AIV_Driver::req_ultra_start_finish == true) || (AIV_Driver::req_ultra_stop_finish == true))
+			//{	
 				if(recv_data[VALID_DATA_LEN_INDX] != 0x10)
 				{
 					cout<<"The data count byte of the respones of the request_ultrasonic cmd shoud be 0x0c,but returned is: "<<recv_data[VALID_DATA_LEN_INDX]<<endl;
@@ -381,21 +382,22 @@ void AIV_Driver::ReadInfoProc(unsigned char buf[], boost::system::error_code ec,
 						ultra.ultrasonic5 = (recv_data[VALID_DATA_START_INDX + 8] * 256 + recv_data[VALID_DATA_START_INDX + 9]) & 0xffff;
 						ultra.ultrasonic6 = (recv_data[VALID_DATA_START_INDX + 10] * 256 + recv_data[VALID_DATA_START_INDX + 11]) & 0xffff;
 						ultra.ultrasonic7 = (recv_data[VALID_DATA_START_INDX + 12] * 256 + recv_data[VALID_DATA_START_INDX + 13]) & 0xffff;
-						ultra.ultrasonic8 = (recv_data[VALID_DATA_START_INDX + 14] * 256 + recv_data[VALID_DATA_START_INDX + 15]) & 0xffff;						ultrasonic_pub.publish(ultra);
+						ultra.ultrasonic8 = (recv_data[VALID_DATA_START_INDX + 14] * 256 + recv_data[VALID_DATA_START_INDX + 15]) & 0xffff;						
+						ultrasonic_pub.publish(ultra);
 						AIV_Driver::req_ultra_start_finish = false;
-						cout<<"request_ultrasonic cmd is executed successfully !"<<endl;
+						//cout<<"request_ultrasonic cmd is executed successfully !"<<endl;
 					}
 					else if(recv_data[CMD_CTRL_INDX] == FRAME_CMD_STOP)
 					{
 						AIV_Driver::req_ultra_stop_finish = false;
 					}
 				}
-			}
-			else
-			{
-				cout<<"ROS does not send request_ultra but recv a response cmd"<<endl;
-				return;
-			}
+	//		}
+	//		else
+	//		{
+	//			cout<<"ROS does not send request_ultra but recv a response cmd"<<endl;
+	//			return;
+	//		}
 
 			break;
 			
@@ -458,7 +460,7 @@ void AIV_Driver::ReadInfoProc(unsigned char buf[], boost::system::error_code ec,
 
 					ParseWheelRpm(&recv_data[VALID_DATA_START_INDX]);
 
-					cout<<"left_rot_rate:"<<left_rot_rate<<"   right_rot_rate:"<<right_rot_rate<<endl;
+					//cout<<"left_rot_rate:"<<left_rot_rate<<"   right_rot_rate:"<<right_rot_rate<<endl;
 
 					current_time = ros::Time::now();
 					time_period = (current_time - last_time).toSec();
@@ -526,6 +528,39 @@ void AIV_Driver::ReadInfoProc(unsigned char buf[], boost::system::error_code ec,
 				} 
 			
 			break;
+
+		case SEND_AUX:
+			if(AIV_Driver::send_aux_finish == true)
+			{
+				if(recv_data[VALID_DATA_LEN_INDX] != 0x0B)
+				{
+					cout<<"The data count byte of the respones of the send_aux cmd shoud be 0x0B,but returned is: "<<recv_data[VALID_DATA_LEN_INDX]<<endl;
+					return;
+				}
+
+				if( recv_data[VALID_DATA_START_INDX + 0] != AIV_Driver::send_cache[VALID_DATA_START_INDX + 0]
+					|| recv_data[VALID_DATA_START_INDX + 1] != AIV_Driver::send_cache[VALID_DATA_START_INDX + 1]
+					|| recv_data[VALID_DATA_START_INDX + 2] != AIV_Driver::send_cache[VALID_DATA_START_INDX + 2]
+					|| recv_data[VALID_DATA_START_INDX + 3] != AIV_Driver::send_cache[VALID_DATA_START_INDX + 3] )
+				{
+					cout<<"The received data bytes is not same with the send data byte"<<endl;
+					return;
+				}
+				else
+				{
+					AIV_Driver::send_aux_finish = false;
+
+					//cout<<"send_aux cmd is executed successfully !"<<endl;
+				}
+			
+			}
+			else
+			{
+				cout<<"ROS does not send send_aux cmd,but recv a response cmd !"<<endl;
+				return;
+			}
+			
+			break;
 			
 		default :
 
@@ -545,7 +580,7 @@ void AIV_Driver::ReadFromCom(void *args)
 
 		ComCallHandle();	
 		recv_cnt ++;
-		cout <<"recv times: "<<recv_cnt<<endl;
+		//cout <<"recv times: "<<recv_cnt<<endl;
 	}
 
 }
@@ -572,18 +607,19 @@ bool AIV_Driver::InitSubandPub()
 
 	ros::NodeHandle global_nh;	
 	twist_sub= global_nh.subscribe<geometry_msgs::Twist>("t_cmd_vel", 1, boost::bind(&AIV_Driver::TwistCallback, this, _1));
+	aux_sub= global_nh.subscribe<colibri_msgs::AuxInfo>("aux_info", 1, boost::bind(&AIV_Driver::AuxInfoCallback, this, _1));
 
 	ros::NodeHandle nh_cartodom;
 	cartodom_sub= global_nh.subscribe<cartodom::Cartodom>("cartodom", 1, boost::bind(&AIV_Driver::CartodomCallback, this, _1));
 	
 	ros::NodeHandle nh_odom;
-	odom_pub = nh_odom.advertise<nav_msgs::Odometry>("odom", 50);
+	odom_pub = nh_odom.advertise<nav_msgs::Odometry>("odom", 10);
 
 	ros::NodeHandle nh_ultrasonic;
-	ultrasonic_pub = nh_ultrasonic.advertise<colibri_aiv::Ultrasonic>("ultrasonic", 50);
+	ultrasonic_pub = nh_ultrasonic.advertise<colibri_aiv::Ultrasonic>("ultrasonic", 10);
 	
 	ros::NodeHandle nh_bumper;
-	bumper_pub = nh_bumper.advertise<colibri_aiv::Bumper>("bumper", 50);
+	bumper_pub = nh_bumper.advertise<colibri_aiv::Bumper>("bumper", 10);
 	
 }
 
@@ -616,8 +652,38 @@ void AIV_Driver::TwistCallback(const geometry_msgs::Twist::ConstPtr & twist)
 	SendCmd(send_twist, send_twist_finish);
 	
 	send_cnt++;
-	cout <<"send times: "<<send_cnt<<endl;
+	//cout <<"send times: "<<send_cnt<<endl;
 }
+
+void AIV_Driver::AuxInfoCallback(const colibri_msgs::AuxInfo::ConstPtr & aux_info)
+{
+
+	send_aux_info[VALID_DATA_START_INDX + 0] = aux_info->lf_light;
+	send_aux_info[VALID_DATA_START_INDX + 1] = aux_info->lr_light;
+	send_aux_info[VALID_DATA_START_INDX + 2] = aux_info->rf_light;
+	send_aux_info[VALID_DATA_START_INDX + 3] = aux_info->rr_light;
+	send_aux_info[VALID_DATA_START_INDX + 4] = aux_info->horn;
+	send_aux_info[VALID_DATA_START_INDX + 5] = (int (aux_info->laser_mindis * 100))/256;
+	send_aux_info[VALID_DATA_START_INDX + 6] = (int (aux_info->laser_mindis * 100))%256;
+	if(aux_info->laser_mindir < 0)
+	{
+		send_aux_info[VALID_DATA_START_INDX + 7] = NEG_SIGN;
+	}
+	else
+	{
+		send_aux_info[VALID_DATA_START_INDX + 7] = POS_SIGN;
+	}
+	send_aux_info[VALID_DATA_START_INDX + 8] = int (aux_info->laser_mindir);
+	send_aux_info[VALID_DATA_START_INDX + 9] = aux_info->ultra_switch;
+	send_aux_info[VALID_DATA_START_INDX + 10] = aux_info->ros_fault;
+
+	send_cache = send_aux_info;
+	SendCmd(send_aux_info, send_aux_finish);
+	
+	send_cnt++;
+	//cout <<"send times: "<<send_cnt<<endl; 
+}
+
 
 void AIV_Driver::CartodomCallback(const cartodom::Cartodom::ConstPtr & carto_odom)
 {
@@ -680,6 +746,9 @@ void AIV_Driver::SendCmd(const unsigned char *cmd ,volatile bool &send_flag)
 
 				case REQ_VELOCITY:
 					cout<<"TRIO respones the request_vel cmd timeout !"<<endl;
+					break;
+				case SEND_AUX:
+					cout<<"TRIO respones the send_aux cmd timeout !"<<endl;
 					break;
 
 				default :

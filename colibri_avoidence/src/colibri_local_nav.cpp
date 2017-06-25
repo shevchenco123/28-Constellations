@@ -23,7 +23,7 @@ local_nav::local_nav()
 		apf_cmd_vel.linear.x = 0.0;
 		apf_cmd_vel.angular.z = 0.0;
 
-		linear_filter_aplha = 0.08;		// filter factor
+		linear_filter_aplha = 0.2;		// filter factor
 		angular_filter_aplha = 0.08;
 		
 		position_OK_flag = false;
@@ -34,7 +34,10 @@ local_nav::local_nav()
 		pub_apf_twist = nh_nav.advertise<geometry_msgs::Twist>("/t_cmd_vel", 1);
 
 		sub_amcl_pose = nh_nav.subscribe<geometry_msgs::PoseWithCovarianceStamped>("/amcl_pose", 1, &local_nav::AmclPoseCallBack, this);
-		
+
+		safe_vel_sub4laser = nh_nav.subscribe<colibri_msgs::SafeVel>("/laser_safe_vel", 1, &local_nav::LaserSafeVelCallBack, this);
+		safe_vel_sub4ultra = nh_nav.subscribe<colibri_msgs::SafeVel>("/ultra_safe_vel", 1, &local_nav::UltraSafeVelCallBack, this);
+
 }
 
 local_nav::~local_nav()
@@ -148,46 +151,6 @@ void local_nav::RobotPos2LaserPos(float* robot_pos, float* laser_x, float* laser
 
 bool local_nav::CalcGoalDirOfLaserView(float* dir_laser2goal, float* dir_laser, float* dir_goal_in_laser, float* self_rot_angle)
 {
-
-	float tmp_goal_in_laser = 0.0;
-	tmp_goal_in_laser = (*dir_laser2goal) - (*dir_laser) + 90.0;	// goal in laser using  the scan 0 degree at robot right side and 180 degree as the robot left side
-
-	if(tmp_goal_in_laser > 360.0)
-	{
-		*dir_goal_in_laser = tmp_goal_in_laser - 360.0;           
-		
-	}
-	else 
-	{	
-		/*
-		if(*dir_laser2goal < 0 && *dir_laser > 0)
-		{
-			*dir_goal_in_laser = tmp_goal_in_laser + 360.0;g    
-
-		}
-		else
-		{
-			*dir_goal_in_laser = tmp_goal_in_laser;
-		}
-		*/
-		*dir_goal_in_laser = tmp_goal_in_laser;
-	}
-		
-	if((*dir_goal_in_laser >= 180.0)||(*dir_goal_in_laser <= 0.0))
-	{
-		*self_rot_angle = *dir_goal_in_laser - 90.0;
-		return false;
-	}
-	else
-	{
-		*self_rot_angle = 0.0;
-		return true;
-	}
-	
-}
-
-bool local_nav::CalcGoalDirOfLaserViewNew(float* dir_laser2goal, float* dir_laser, float* dir_goal_in_laser, float* self_rot_angle)
-{
 	float tmp_goal_in_laser = 0.0;
 	float tmp_laser_dir = 0.0;
 	
@@ -241,6 +204,100 @@ void local_nav::CalcEuclidDistance(float * pos_start, float * pos_end, float &di
 	dis = sqrt(pow(tmp_delta_x, 2) + pow(tmp_delta_y, 2));
 
 }
+
+bool local_nav::CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_linear_vel)
+{
+	if(0 == linear_thd)
+	{
+		*safe_linear_vel = 0.0;
+	}
+	else
+	{
+		if(ctrl_vel > linear_thd)
+		{
+			*safe_linear_vel = linear_thd;
+		}
+		else
+		{
+			*safe_linear_vel = ctrl_vel;
+			return false;
+		}
+			
+	}
+	
+	return true;
+}
+
+bool local_nav::CalcSafeAngularVel(float &ctrl_vel, int &steer, float &angular_thd, float* safe_angular_vel)
+{
+	if(steer == 0)
+	{
+		if(abs(ctrl_vel) <= abs(angular_thd))
+		{
+			*safe_angular_vel = ctrl_vel;
+			return false;
+		}
+		else if(ctrl_vel > abs(angular_thd))
+		{
+			*safe_angular_vel = abs(angular_thd);
+		}
+		else if(ctrl_vel < (-1.0 * abs(angular_thd)))
+		{
+			*safe_angular_vel = -1.0 * abs(angular_thd);
+
+		}
+		else
+		{
+			*safe_angular_vel = 0.0;
+		}
+	}
+	else
+	{
+		if(angular_thd > 0.0)
+		{
+			if(ctrl_vel > angular_thd)
+			{
+				*safe_angular_vel = angular_thd;
+			}
+			else if(ctrl_vel < 0.0)
+			{
+				*safe_angular_vel = 0.0;
+			}
+			else
+			{
+				*safe_angular_vel = ctrl_vel;
+				return false;
+			}
+		
+		}
+		else if(angular_thd < 0.0)
+		{
+			if(ctrl_vel < angular_thd)
+			{
+				*safe_angular_vel = angular_thd;
+			}
+			else if(ctrl_vel > 0.0)
+			{
+				*safe_angular_vel = 0.0;
+			}
+			else
+			{
+				*safe_angular_vel = ctrl_vel;
+				return false;
+			}
+				
+		}
+		else
+		{
+			*safe_angular_vel = 0.0;
+		}
+
+	}
+	
+	return true;
+
+}
+
 
 bool local_nav::ReachGoalPositionOK(float* delta_dis)
 {
@@ -321,6 +378,36 @@ int local_nav::SgnOfData(float* input)
 		return 0;
 	}
 		
+}
+
+void local_nav::LaserSafeVelCallBack(const colibri_msgs::SafeVel::ConstPtr& safe_vel)
+{
+	laser_safe_velocity.header.stamp = safe_vel->header.stamp;
+	laser_safe_velocity.header.frame_id = safe_vel->header.frame_id;
+	laser_safe_velocity.header.seq = safe_vel->header.seq;
+
+	laser_safe_velocity.stop.data = safe_vel->stop.data;		
+	laser_safe_velocity.linear_safe_thd = safe_vel->linear_safe_thd;
+	laser_safe_velocity.area_status = safe_vel->area_status;
+	laser_safe_velocity.steer = safe_vel->steer;
+	laser_safe_velocity.angular_safe_thd = safe_vel->angular_safe_thd;
+	laser_safe_velocity.rsvd = safe_vel->rsvd;
+
+}
+
+void local_nav::UltraSafeVelCallBack(const colibri_msgs::SafeVel::ConstPtr& safe_vel)
+{
+	ultra_safe_velocity.header.stamp = safe_vel->header.stamp;
+	ultra_safe_velocity.header.frame_id = safe_vel->header.frame_id;
+	ultra_safe_velocity.header.seq = safe_vel->header.seq;
+
+	ultra_safe_velocity.stop.data = safe_vel->stop.data;		
+	ultra_safe_velocity.linear_safe_thd = safe_vel->linear_safe_thd;
+	ultra_safe_velocity.area_status = safe_vel->area_status;
+	ultra_safe_velocity.steer = safe_vel->steer;
+	ultra_safe_velocity.angular_safe_thd = safe_vel->angular_safe_thd;
+	ultra_safe_velocity.rsvd = safe_vel->rsvd;
+
 }
 
 
