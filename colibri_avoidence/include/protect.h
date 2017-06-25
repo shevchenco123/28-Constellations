@@ -128,15 +128,14 @@ class protector
 		ros::Subscriber	ultra_sub4safe;
 		ros::Subscriber	bumper_sub4safe;
 		ros::Subscriber	odom_sub4safe;
-  
+
 		ros::Publisher security_pub4env;
-		colibri_msgs::EnvSecurity env_secure;
+    colibri_msgs::EnvSecurity env_secure;
 
 		ros::Publisher security_pub4laser;
 		ros::Publisher security_pub4ultra;
 		colibri_msgs::SafeVel laser_safe_vel;
 		colibri_msgs::SafeVel ultra_safe_vel;
-
 
 		protector();
 		
@@ -148,6 +147,7 @@ class protector
 		float IntegrateMultiInfo4Safety(enum_act4safe* advise_action);	
 		bool Detect4ExceptHighVel(float* v, float* vth);
 		bool StopMovingInForce(void);
+		
 		void Intg4EnvSecure(void);
 		bool CalcLaserSafeVelThd(float  &min_scan, int &min_scan_ang, int &steer, float *linear_safe, float* angular_safe);
 		bool CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_index, int &steer, float* linear_safe, float* angular_safe);
@@ -157,10 +157,6 @@ class protector
 
 		bool CalcLaserCA(float	&min_scan, int &min_scan_ang, int &steer, float *linear_safe, float* angular_safe, int &area_state);
 		bool CalcUltraCA(float &min_ultra, unsigned int &min_ultra_index, int &steer, float* linear_safe, float* angular_safe, int &area_state);
-
-
-
-		
 
 	private:
 		
