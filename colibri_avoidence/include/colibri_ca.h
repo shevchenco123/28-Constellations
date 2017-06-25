@@ -60,7 +60,7 @@ using namespace std;
 
 #define V_MAX 		0.5
 #define V_MIN 		0.02
-#define THETA_V_MAX 0.55
+#define THETA_V_MAX 0.45
 
 #define KRF_CORRECTOR 0.1
 

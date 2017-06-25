@@ -250,7 +250,7 @@ bool protector::CalcLaserCA(float	&min_scan, int &min_scan_ang, int &steer, floa
 	bool inRecFlag = false;
 	float window_x = LASER_CA_WIDTH;
 	float window_y = LASER_CA_HEIGHT;
-	float dec_radius = sqrt(pow(LASER_CA_WIDTH/2.0, 2) + pow(LASER_CA_HEIGHT, 2));
+	float dec_radius = 0.94; //sqrt(pow(LASER_CA_WIDTH/2.0, 2) + pow(LASER_CA_HEIGHT, 2));
 	Polar2Decare(min_scan, min_scan_ang, tmp_x, tmp_y);
 	inRecFlag = LocateInRecArea(window_x, window_y, tmp_x, tmp_y);
 
