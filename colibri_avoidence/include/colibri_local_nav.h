@@ -3,7 +3,7 @@
 #include "geometry_msgs/Twist.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 
-
+#include "colibri_msgs/SafeVel.h"
 
 #ifndef _COLIBRI_LOCAL_NAV_H_
 #define _COLIBRI_LOCAL_NAV_H_
@@ -58,7 +58,13 @@ class local_nav
 		bool position_OK_flag;
 		bool orintation_OK_flag;
 		bool approaching_flag;
+		
+		colibri_msgs::SafeVel laser_safe_velocity;
+		ros::Subscriber safe_vel_sub4laser;
 
+		colibri_msgs::SafeVel ultra_safe_velocity;
+		ros::Subscriber safe_vel_sub4ultra;
+		
 		local_nav();
 		~local_nav();
 
@@ -72,12 +78,14 @@ class local_nav
 		bool ReachApprochingAreaOK(float* delta_dis);
     
 		bool CalcGoalDirOfLaserView(float* dir_laser2goal, float* dir_laser, float* dir_goal_in_laser, float* self_rot_angle);
-		bool CalcGoalDirOfLaserViewNew(float* dir_laser2goal, float* dir_laser, float* dir_goal_in_laser, float* self_rot_angle);
 
 		void CalcEuclidDistance(float * pos_start, float * pos_end, float &dis);
 
 		void SatuateCmdVel(float* cmd_linear_vel, float* cmd_angular_vel);
 		bool EmergencyStop(float* cmd_vel);
+
+		bool CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_linear_vel);
+		bool CalcSafeAngularVel(float &ctrl_vel, int &steer, float &angular_thd, float* safe_angular_vel);
 
 	private:
 		
@@ -85,6 +93,8 @@ class local_nav
 		void AmclPoseCallBack(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& amcl_pose);
 		void RobotPos2LaserPos(float* robot_pos, float* laser_x, float* laser_y);
 		int	SgnOfData(float* input);
+		void LaserSafeVelCallBack(const colibri_msgs::SafeVel::ConstPtr& safe_vel);
+		void UltraSafeVelCallBack(const colibri_msgs::SafeVel::ConstPtr& safe_vel);
 
 
 };

@@ -29,9 +29,9 @@
 
 #define GOAL_NUM	10
 #define GOAL_TOLLERANCE	0.5
-#define GRAVATON_RADIUS 0.9		// gravation in path array distance to robot 
+#define GRAVATON_RADIUS 1.1		// gravation in path array distance to robot 
 
-#define PLAN_INTERVAL 6.0	
+#define PLAN_INTERVAL 3.0	
 
 using namespace std;
 
