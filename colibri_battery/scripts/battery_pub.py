@@ -18,7 +18,7 @@ t.close()
 
 
 # LOG_FILE = '../log/bat_state.log'
-LOG_FILE = '/home/colibri/battery_ws/src/colibri_battery/log/bat_state.log'
+LOG_FILE = '/home/colibri/colibri_ws/src/colibri_battery/log/bat_state.log'
 handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=5)
 fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(name)s - %(message)s'
 formatter = logging.Formatter(fmt)
