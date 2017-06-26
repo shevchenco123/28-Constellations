@@ -18,7 +18,7 @@
  
 #include "ros/ros.h"
 #include "colibri_battery/Battery.h"
-#include "aiv_monitor/Ipc.h"
+#include "colibri_screen/Ipc.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -43,7 +43,7 @@ void battery_info_Callback(const colibri_battery::Battery::ConstPtr& msg)
   rate_battery = msg->SOC;
 }
 
-void ipc_info_Callback(const aiv_monitor::Ipc::ConstPtr& msg)
+void ipc_info_Callback(const colibri_screen::Ipc::ConstPtr& msg)
 {
   ctrl_mode = msg->ctrl_mode;
 }
