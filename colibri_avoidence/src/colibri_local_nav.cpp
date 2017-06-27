@@ -228,6 +228,41 @@ bool local_nav::CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* saf
 	return true;
 }
 
+void local_nav::LimitPubTwist(geometry_msgs::Twist & ctrl_vel)
+{
+	if(ctrl_vel.linear.x > V_MAX)
+	{
+		ctrl_vel.linear.x = V_MAX;
+
+	}
+	else if(ctrl_vel.linear.x < 0.0)
+	{
+		ctrl_vel.linear.x = 0.0;
+
+	}
+	else
+	{
+
+	}
+		
+	if(ctrl_vel.angular.z > THETA_V_MAX)
+	{
+		ctrl_vel.angular.z = THETA_V_MAX;
+
+	}
+	else if(ctrl_vel.linear.x < -THETA_V_MAX)
+	{
+		ctrl_vel.angular.z = -THETA_V_MAX;
+
+	}
+	else
+	{
+
+	}
+
+}
+
+
 bool local_nav::CalcSafeAngularVel(float &ctrl_vel, int &steer, float &angular_thd, float* safe_angular_vel)
 {
 	if(steer == 0)

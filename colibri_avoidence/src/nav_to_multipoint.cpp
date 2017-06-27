@@ -274,12 +274,13 @@ int main(int argc, char* argv[])
 				local4navObj.apf_cmd_vel.angular.z = 0.0;
 			}
 
-/*
+
 			//ring rotation area sts  should exec the rotate escape operation
 			unsigned int escape_flag = 0;
 			float rot_escape_yaw = 0;
-			if(local4navObj.laser_safe_velocity.area_status == 2 
-				&& local4navObj.apf_cmd_vel.linear.x < 0.01)
+			if((local4navObj.laser_safe_velocity.area_status == 2) 
+				&& (local4navObj.apf_cmd_vel.linear.x < 0.01)
+				&& (rot_escape_flag==0))
 			{
 				rot_escape_flag = 1;
 				rec_obs_dir = scan4caObj.min_laser_dir;
@@ -295,7 +296,7 @@ int main(int argc, char* argv[])
 				{
 					rot_escape_yaw = rec_obs_dir + 30;
 				}
-				ptr_action_cmd_t = actionObj.StillRotatingAction(&local4navObj.amcl_cur_state[2], &rot_escape_yaw, &escape_flag);
+				ptr_action_cmd_t = actionObj.CL4StillRotatingAction(&local4navObj.amcl_cur_state[2], &rot_escape_yaw, &escape_flag);
 				local4navObj.apf_cmd_vel.linear.x = *ptr_action_cmd_t;
 				local4navObj.apf_cmd_vel.angular.z = *(ptr_action_cmd_t + 1);
 				if(escape_flag == 1)
@@ -306,7 +307,7 @@ int main(int argc, char* argv[])
 				}
 				
 			}
-*/
+
 			if(node_shutdown == true)
 			{
 				local4navObj.apf_cmd_vel.linear.x = 0.0;
@@ -317,6 +318,9 @@ int main(int argc, char* argv[])
 					ros::shutdown();
 				}
 			}
+
+			local4navObj.LimitPubTwist(local4navObj.apf_cmd_vel);
+
 
 			local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel);
 			

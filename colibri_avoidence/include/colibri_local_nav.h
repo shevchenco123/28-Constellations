@@ -86,6 +86,8 @@ class local_nav
 
 		bool CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_linear_vel);
 		bool CalcSafeAngularVel(float &ctrl_vel, int &steer, float &angular_thd, float* safe_angular_vel);
+		void LimitPubTwist(geometry_msgs::Twist &ctrl_vel);
+		
 
 	private:
 		
