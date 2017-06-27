@@ -20,6 +20,7 @@ using namespace std;
 
 ros::Publisher marker_pub;
 float amcl_pos[3] = {0.0, 0.0, 0.0};
+int twist_zero_flag = 0;
 
 void shutdown(int sig)
 {
@@ -47,8 +48,6 @@ void init_markers(visualization_msgs::Marker *marker)
 
 }
 
-
-
 void AmclPoseCallBack(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& amcl_pose)
 {
 	float tmp_yaw_rad = 0.0;
@@ -56,6 +55,19 @@ void AmclPoseCallBack(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& 
 	amcl_pos[0] = amcl_pose->pose.pose.position.x;
 	amcl_pos[1] = amcl_pose->pose.pose.position.y;
 	 
+}
+
+void CmdVelCallBack(const geometry_msgs::Twist::ConstPtr& cmd_vel)
+{
+	if(cmd_vel->linear.x < 0.02 && abs(cmd_vel->angular.z) < 0.01)
+	{
+		twist_zero_flag = 1;
+	}
+	else
+	{
+		twist_zero_flag = 0;
+	}
+		 
 }
 
 
@@ -68,6 +80,8 @@ int main(int argc, char** argv)
 	pub_simple_goal = tasknh.advertise<geometry_msgs::PoseStamped>("/move_base_simple/goal",1);
 	ros::Subscriber sub_amcl_pose;
 	sub_amcl_pose = tasknh.subscribe<geometry_msgs::PoseWithCovarianceStamped>("/amcl_pose", 1, &AmclPoseCallBack);
+	ros::Subscriber sub_cmd_vel;
+	sub_cmd_vel = tasknh.subscribe<geometry_msgs::Twist>("/t_cmd_vel", 1, &CmdVelCallBack);
  
 
 	//Subscribe to the move_base action server
@@ -193,7 +207,7 @@ int main(int argc, char** argv)
  
 		 delta = sqrt(pow(delta_x, 2) + pow(delta_y, 2));
  
-		if(delta < 0.3)
+		if(delta < 0.5 && (twist_zero_flag == 1))
 		{
 			ROS_INFO("Goal succeeded!");
 			wait_cnt++;
@@ -209,7 +223,7 @@ int main(int argc, char** argv)
 		{
 			timer_cnt++;
 			ROS_INFO("AIV is running for moveing");
-			if(timer_cnt > 20) //  100 sec
+			if(timer_cnt > 100)  //00 sec
 			{
 				ROS_INFO("The moving failed for some reason");
 				ROS_INFO("robot is stopped in goal [%d]", goal_cnt+1);
