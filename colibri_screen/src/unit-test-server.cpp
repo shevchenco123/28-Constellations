@@ -39,7 +39,7 @@ int ctrl_mode = 0;
 
 void battery_info_Callback(const colibri_battery::Battery::ConstPtr& msg)
 {
-  ROS_INFO("I heard: [%d]", msg->Chg_state);
+//  ROS_INFO("I heard: [%d]", msg->Chg_state);
   rate_battery = msg->SOC;
 }
 

@@ -17,15 +17,14 @@ t = serial.Serial('/dev/battery', 9600)
 t.close()
 
 
-# LOG_FILE = '../log/bat_state.log'
-LOG_FILE = '/home/colibri/colibri_ws/src/colibri_battery/log/bat_state.log'
-handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=5)
-fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(name)s - %(message)s'
-formatter = logging.Formatter(fmt)
-handler.setFormatter(formatter)
-logger = logging.getLogger('bat_state')
-logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
+#LOG_FILE = '/home/colibri/colibri_ws/src/colibri_battery/log/bat_state.log'
+#handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=5)
+#fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(name)s - %(message)s'
+#formatter = logging.Formatter(fmt)
+#handler.setFormatter(formatter)
+#logger = logging.getLogger('bat_state')
+#logger.addHandler(handler)
+#logger.setLevel(logging.DEBUG)
 
 
 def battery_info():
@@ -70,10 +69,10 @@ def battery_info():
 		batten.SOC = B_SOC
 		batten.Voltage = B_Total_Volt * 2 / 1000.0
 		batten.Bat_alarm = B_Alarm
-		rospy.loginfo(batten)
+#		rospy.loginfo(batten)
 		pub.publish(batten)
 
-		logger.info("%s %s %2.2s %s", B_Curr_Discharge, B_SOC, B_Total_Volt * 2, B_C_stt)
+#		logger.info("%s %s %2.2s %s", B_Curr_Discharge, B_SOC, B_Total_Volt * 2, B_C_stt)
 
 if __name__ == '__main__':
 	try:
