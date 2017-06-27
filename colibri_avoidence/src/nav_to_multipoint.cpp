@@ -274,6 +274,7 @@ int main(int argc, char* argv[])
 				local4navObj.apf_cmd_vel.angular.z = 0.0;
 			}
 
+/*
 			//ring rotation area sts  should exec the rotate escape operation
 			unsigned int escape_flag = 0;
 			float rot_escape_yaw = 0;
@@ -305,7 +306,7 @@ int main(int argc, char* argv[])
 				}
 				
 			}
-
+*/
 			if(node_shutdown == true)
 			{
 				local4navObj.apf_cmd_vel.linear.x = 0.0;

@@ -189,7 +189,9 @@ float* nav_action::AdjustMovingDirAction(float* cur_yaw, float* goal_in_laser, f
 		tmp_target4adj = *robot2goal;
 		cout<<"---tmp_target4adj: "<<tmp_target4adj<<endl;
 
-		tmp_action_cmd = StillRotatingAction(cur_yaw, &tmp_target4adj, &rot4adj_finish_flag);
+		//tmp_action_cmd = StillRotatingAction(cur_yaw, &tmp_target4adj, &rot4adj_finish_flag);
+		tmp_action_cmd = CL4StillRotatingAction(cur_yaw, &tmp_target4adj, &rot4adj_finish_flag);
+
 		action4cmd_vel[0] = *tmp_action_cmd;
 		action4cmd_vel[1] = *(tmp_action_cmd + 1);
 		
