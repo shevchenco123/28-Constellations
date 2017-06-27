@@ -79,10 +79,10 @@ int main(int argc, char **argv)
     laser.login();
     cfg = laser.getScanCfg();
 	
-   ROS_INFO_STREAM("cfg.scaningFrequency =" << cfg.scaningFrequency );
-   ROS_INFO_STREAM("cfg.angleResolution=" << cfg.angleResolution);
-   ROS_INFO_STREAM("cfg.startAngle  =" << cfg.startAngle);
-   ROS_INFO_STREAM("cfg.stopAngle  =" << cfg.stopAngle);
+//   ROS_INFO_STREAM("cfg.scaningFrequency =" << cfg.scaningFrequency );
+//   ROS_INFO_STREAM("cfg.angleResolution=" << cfg.angleResolution);
+//   ROS_INFO_STREAM("cfg.startAngle  =" << cfg.startAngle);
+//   ROS_INFO_STREAM("cfg.stopAngle  =" << cfg.stopAngle);
 	  
     ROS_INFO_STREAM("Connecting to laser at " << host);	
     outputRange = laser.getScanOutputRange();
