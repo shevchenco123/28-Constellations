@@ -4,7 +4,7 @@ int main(int argc, char* argv[])
 {	
 	ros::init(argc, argv, "aiv_driver_node");
 	AIV_Driver my_port;
-	my_port.InitCom("/dev/ttyUSB0");
+	my_port.InitCom("/dev/trio_ctrl");
 	my_port.CreateThread(ReadDataThread);
 	
 	//my_port.SendCmd(my_port.enable_motor,AIV_Driver::enable_motor_finish);
