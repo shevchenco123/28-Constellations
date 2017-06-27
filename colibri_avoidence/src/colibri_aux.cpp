@@ -63,6 +63,9 @@ int main(int argc, char* argv[])
 
 	aux_pub = nh_aux.advertise<colibri_msgs::AuxInfo>("/aux_info", 1);
 
+	aux_envsec.laser_min_dis = 20.0;
+	aux_envsec.ultra_min_dis = 6.5;
+
 	while(ros::ok())
 	{
 		aux_info.header.stamp = ros::Time::now();
@@ -141,9 +144,9 @@ int main(int argc, char* argv[])
 		{
 			aux_info.horn = HORN_ON;
 		}
+
 		aux_info.horn = HORN_OFF;
 
-		//aux_info.lf_light = LIGHT_FAST_BLINKING;
 		aux_info.laser_mindis = aux_envsec.laser_min_dis;
 		aux_info.laser_mindir = aux_envsec.laser_min_angle;
 		aux_info.ultra_switch = ULTRA_ON;
@@ -155,6 +158,22 @@ int main(int argc, char* argv[])
 		loop_rate.sleep();
 
 
+	}
+
+	
+	for(int j = 5; j > 0; j--)
+	{
+		aux_info.lf_light = LIGHT_ON;
+		aux_info.lr_light = LIGHT_ON;
+		aux_info.rf_light = LIGHT_ON;
+		aux_info.rr_light = LIGHT_ON;
+		aux_info.horn = HORN_OFF;
+		aux_info.laser_mindis = 20;
+		aux_info.laser_mindir = 6.5;
+		aux_info.ultra_switch = ULTRA_ON;
+		aux_info.ros_fault = ROS_OK;
+
+		aux_pub.publish(aux_info);	
 	}
 
 	return 0;
