@@ -117,7 +117,7 @@ float* nav_action::StillRotatingAction(float* cur_yaw, float* ref_yaw, unsigned 
 	yaw_delta = (*ref_yaw - *cur_yaw);
 	yaw_delta_puv = (*ref_yaw - *cur_yaw)/180.0;
 	action4cmd_vel[0] = 0.0;
-	action4cmd_vel[1] = 1.0 * yaw_delta_puv;	
+	action4cmd_vel[1] = 1.2 * yaw_delta_puv;	
 
 	if(abs(yaw_delta) <= ROTATION_TOLERANCE)
 	{
