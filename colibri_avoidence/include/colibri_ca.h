@@ -58,7 +58,7 @@ using namespace std;
 #define D_M 	5.0		// local ca distance
 #define KP_PHI_INF 10000.0
 
-#define V_MAX 		0.5
+#define V_MAX 		0.45
 #define V_MIN 		0.02
 #define THETA_V_MAX 0.45
 

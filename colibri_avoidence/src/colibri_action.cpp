@@ -117,7 +117,7 @@ float* nav_action::StillRotatingAction(float* cur_yaw, float* ref_yaw, unsigned 
 	yaw_delta = (*ref_yaw - *cur_yaw);
 	yaw_delta_puv = (*ref_yaw - *cur_yaw)/180.0;
 	action4cmd_vel[0] = 0.0;
-	action4cmd_vel[1] = 1.6 * yaw_delta_puv;	
+	action4cmd_vel[1] = 1.0 * yaw_delta_puv;	
 
 	if(abs(yaw_delta) <= ROTATION_TOLERANCE)
 	{
@@ -189,8 +189,8 @@ float* nav_action::AdjustMovingDirAction(float* cur_yaw, float* goal_in_laser, f
 		tmp_target4adj = *robot2goal;
 		cout<<"---tmp_target4adj: "<<tmp_target4adj<<endl;
 
-		//tmp_action_cmd = StillRotatingAction(cur_yaw, &tmp_target4adj, &rot4adj_finish_flag);
-		tmp_action_cmd = CL4StillRotatingAction(cur_yaw, &tmp_target4adj, &rot4adj_finish_flag);
+		tmp_action_cmd = StillRotatingAction(cur_yaw, &tmp_target4adj, &rot4adj_finish_flag);
+		//tmp_action_cmd = CL4StillRotatingAction(cur_yaw, &tmp_target4adj, &rot4adj_finish_flag);
 
 		action4cmd_vel[0] = *tmp_action_cmd;
 		action4cmd_vel[1] = *(tmp_action_cmd + 1);

@@ -274,7 +274,7 @@ int main(int argc, char* argv[])
 				local4navObj.apf_cmd_vel.angular.z = 0.0;
 			}
 
-
+/*
 			//ring rotation area sts  should exec the rotate escape operation
 			unsigned int escape_flag = 0;
 			float rot_escape_yaw = 0;
@@ -290,13 +290,13 @@ int main(int argc, char* argv[])
 				//still rotation
 				if(rec_obs_dir > 90)
 				{
-					rot_escape_yaw = rec_obs_dir - 30;
+					rot_escape_yaw = rec_obs_dir - 20;
 				}
 				if(rec_obs_dir < 90)
 				{
-					rot_escape_yaw = rec_obs_dir + 30;
+					rot_escape_yaw = rec_obs_dir + 20;
 				}
-				ptr_action_cmd_t = actionObj.CL4StillRotatingAction(&local4navObj.amcl_cur_state[2], &rot_escape_yaw, &escape_flag);
+				ptr_action_cmd_t = actionObj.StillRotatingAction(&local4navObj.amcl_cur_state[2], &rot_escape_yaw, &escape_flag);
 				local4navObj.apf_cmd_vel.linear.x = *ptr_action_cmd_t;
 				local4navObj.apf_cmd_vel.angular.z = *(ptr_action_cmd_t + 1);
 				if(escape_flag == 1)
@@ -307,7 +307,7 @@ int main(int argc, char* argv[])
 				}
 				
 			}
-
+*/
 			if(node_shutdown == true)
 			{
 				local4navObj.apf_cmd_vel.linear.x = 0.0;
