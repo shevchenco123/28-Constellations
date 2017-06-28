@@ -13,7 +13,7 @@
 #define VEL_DIM 	2	// for AIV: linear vel and anglar vel
 
 #define TRANSLATION_TOLERANCE 	0.1		//+/- 10 cm
-#define ROTATION_TOLERANCE 		6.0		//+/-5 degree
+#define ROTATION_TOLERANCE 		8.0		//+/-5 degree
 #define ROTATION_TOLERANCE4CL	6.0		//closed loop rotate control
 
 #define OFFSET_LASER2ROBOT		0.3442	// in x dir
