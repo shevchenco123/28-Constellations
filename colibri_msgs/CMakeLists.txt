@@ -38,6 +38,8 @@ find_package(catkin REQUIRED COMPONENTS
    RobotState.msg
    SafeVel.msg
    AuxInfo.msg
+   Ipc.msg
+   NavState.msg
  )
 
 ## Generate services in the 'srv' folder

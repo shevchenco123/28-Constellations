@@ -1,6 +1,6 @@
-image: 613_mdf.pgm
+image: 626.pgm
 resolution: 0.050000
-origin: [-6.714686, -19.081911, 0.000000]
+origin: [-20.322126, -4.254655, 0.000000]
 negate: 0
 occupied_thresh: 0.65
 free_thresh: 0.196

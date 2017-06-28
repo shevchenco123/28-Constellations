@@ -6,3 +6,4 @@ cartographer_ros/
 *.[oa]
 *.jpg
 *.bmp
+*.log

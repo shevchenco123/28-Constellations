@@ -1,5 +1,5 @@
 <launch>
-   <node name="import_task_exec" pkg="colibri_taskexe" type="mult_import_move" output="screen">
-      <rosparam file="$(find colibri_taskexe)/config/tasklist/task_1.yaml" command="load" />
+   <node name="import_task_node" pkg="colibri_taskexe" type="mult_import_move" output="screen">
+      <rosparam file="$(find colibri_taskexe)/config/tasklist/Task.yaml" command="load" />
    </node>
 </launch>

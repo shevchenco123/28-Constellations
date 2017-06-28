@@ -146,6 +146,11 @@ include_directories(
    ${catkin_LIBRARIES}
  )
 
+ add_executable(import_nav src/import_nav.cpp)
+ target_link_libraries(import_nav
+   ${catkin_LIBRARIES}
+ )
+
 #############
 ## Install ##
 #############
