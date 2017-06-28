@@ -5,7 +5,7 @@
 clc;
 clear;
 close all;
-name = 'map_store/fac625';
+name = 'map_store/626';
 map_name = [name, '.pgm'];
 nav_map = imread(map_name);
 disp('Load Map Picture...');
