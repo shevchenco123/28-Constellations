@@ -8,6 +8,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+using namespace std;
 using namespace cv;
 
 static const std::string INPUT = "Input";
@@ -15,11 +16,11 @@ static const std::string OUTPUT = "Output";
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "image_publisher");
+  ros::init(argc, argv, "find_route");
   ros::NodeHandle nh;
   image_transport::ImageTransport it(nh);
-  image_transport::Publisher pub = it.advertise("camera/image", 1);
-  Mat image = imread("/home/colibri/626_mdf.pgm", CV_LOAD_IMAGE_COLOR);
+  image_transport::Publisher pub = it.advertise("maps/image", 1);
+  Mat image = imread("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/626_mdf.pgm", CV_LOAD_IMAGE_COLOR);
   namedWindow(INPUT, CV_WINDOW_AUTOSIZE); 
   imshow(INPUT, image); 
 
@@ -33,8 +34,7 @@ int main(int argc, char** argv)
                                        Size( 2*dilation_size + 1, 2*dilation_size+1 ),
                                        Point( dilation_size, dilation_size ) );
   /// Apply the dilation operation
-  erode( image, dilation_dst, element );
-  //cv::cvtColor(image, img_out, CV_RGB2GRAY);  //转换成灰度图象  
+  erode( image, dilation_dst, element );  
   imshow(OUTPUT, dilation_dst); 
 
 
