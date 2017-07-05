@@ -38,7 +38,7 @@ int main(int argc, char** argv)
   imshow(OUTPUT, dilation_dst); 
 
 
-  imwrite( "/home/colibri/Gray_Image.pgm", dilation_dst);
+  imwrite("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/Gray_Image.pgm", dilation_dst);
 
   if(image.empty()){
    printf("open error\n");
