@@ -1,7 +1,7 @@
 
 clc;
 clear;
-map_path = '/home/colibri/clbri_ws/src/colibri_pathfinding/maps/Dialate_Img.pgm';
+map_path = '/home/colibri/clbri_ws/src/colibri_pathfinding/maps/626_mdf.pgm';
 data = 254 - imread(map_path);
 logic_data = logical(data);
 map_self = robotics.BinaryOccupancyGrid(logic_data, 1);

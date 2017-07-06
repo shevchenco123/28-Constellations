@@ -79,10 +79,15 @@ int main( int argc, char *argv[] )
 	if(image.empty()){
 	 printf("open error\n");
 	 }
-	sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", dilation_dst).toImageMsg();
+	sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", gray_mat).toImageMsg();
 
 	MAP_WIDTH = msg->width;
 	MAP_HEIGHT = msg->height;
+	cout<< msg->width <<endl;
+	cout<< msg->height <<endl;
+	cout<< msg->encoding <<endl;
+	cout<< msg->is_bigendian <<endl;
+	cout<< msg->step <<endl;
 	for (int pix_index = 0; pix_index < MAP_WIDTH*MAP_HEIGHT; pix_index++)
 	{
 		world_map[pix_index] = 255 - msg->data[pix_index];
@@ -103,14 +108,14 @@ int main( int argc, char *argv[] )
 		//nodeStart.x = rand()%MAP_WIDTH;
 		//nodeStart.y = rand()%MAP_HEIGHT;
 		nodeStart.x = 390;
-		nodeStart.y = 230;
+		nodeStart.y = 150;
 
 		// Define the goal state
 		MapSearchNode nodeEnd;
 		//nodeEnd.x = rand()%MAP_WIDTH;
 		//nodeEnd.y = rand()%MAP_HEIGHT;
-		nodeEnd.x = 550;
-		nodeEnd.y = 225;
+		nodeEnd.x = 680;
+		nodeEnd.y = 207;
 		// Set Start and goal states
 
 		astarsearch.SetStartAndGoalStates( nodeStart, nodeEnd );
