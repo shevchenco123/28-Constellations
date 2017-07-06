@@ -22,7 +22,7 @@ int GetMap( int x, int y)
 		 y >= MAP_HEIGHT
 	  )
 	{
-		return 9;
+		return 254;
 	}
 
 	return world_map[(y*MAP_WIDTH)+x];

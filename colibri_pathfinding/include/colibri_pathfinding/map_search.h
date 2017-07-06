@@ -7,8 +7,6 @@ extern int world_map[];
 extern int MAP_WIDTH;
 extern int MAP_HEIGHT;
 
-
-
 int GetMap( int x, int y);
 
 class MapSearchNode
