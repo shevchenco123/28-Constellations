@@ -14,61 +14,77 @@
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
+#include <fstream>
+
+#include <ros/ros.h>
+#include <iostream>
+
+#include <cv_bridge/cv_bridge.h>
+#include <image_transport/image_transport.h>
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+using namespace std;
+using namespace cv;
+
 
 #define DEBUG_LISTS 1
 #define DEBUG_LIST_LENGTHS_ONLY 0
 
-using namespace std;
-
+// Global data
 const int MAP_WIDTH_MAX = 1000;
 const int MAP_HEIGHT_MAX = 1000;
+int world_map[ MAP_WIDTH_MAX * MAP_HEIGHT_MAX ] = {};
 int MAP_WIDTH = 20;
 int MAP_HEIGHT = 21;
 
-// Global data
-int world_map[ MAP_WIDTH_MAX * MAP_HEIGHT_MAX ] =
-{
-
-// 0001020304050607080910111213141516171819
-	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,   // 00
-	1,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,1,   // 01
-	1,9,9,1,1,9,9,9,1,9,1,9,1,9,1,9,9,9,1,1,   // 02
-	1,9,9,1,1,9,9,9,1,9,1,9,1,9,1,9,9,9,1,1,   // 03
-	1,9,1,1,1,1,9,9,1,9,1,9,1,1,1,1,9,9,1,1,   // 04
-	1,9,1,1,9,1,1,1,1,9,1,1,1,1,9,1,1,1,1,1,   // 05
-	1,9,9,9,9,1,1,1,1,1,1,9,9,9,9,1,1,1,1,1,   // 06
-	1,9,9,9,9,9,9,9,9,1,1,1,9,9,9,9,9,9,9,1,   // 07
-	1,9,1,1,1,1,1,1,1,1,1,9,1,1,1,1,1,1,1,1,   // 08
-	1,9,1,9,9,9,9,9,9,9,1,1,9,9,9,9,9,9,9,1,   // 09
-	1,9,1,1,1,1,9,1,1,9,1,1,1,1,1,1,1,1,1,1,   // 10
-	1,9,9,9,9,9,1,9,1,9,1,9,9,9,9,9,1,1,1,1,   // 11
-	1,9,1,9,1,9,9,9,1,9,1,9,1,9,1,9,9,9,1,1,   // 12
-	1,9,1,9,1,9,9,9,1,9,1,9,1,9,1,9,9,9,1,1,   // 13
-	1,9,1,1,1,1,9,9,1,9,1,9,1,1,1,1,9,9,1,1,   // 14
-	1,9,1,1,9,1,1,1,1,9,1,1,1,1,9,1,1,1,1,1,   // 15
-	1,9,9,9,9,1,1,1,1,1,1,9,9,9,9,1,1,1,1,1,   // 16
-	1,1,9,9,9,9,9,9,9,1,1,1,9,9,9,1,9,9,9,9,   // 17
-	1,9,1,1,1,1,1,1,1,1,1,9,1,1,1,1,1,1,1,1,   // 18
-	1,1,1,1,1,1,1,9,9,1,1,1,1,1,1,1,1,1,1,1,   // 19
-	1,9,1,1,1,9,9,1,1,1,1,9,1,1,1,1,1,1,1,1,	 //20
-};
+static const std::string INPUT = "Input";
+static const std::string OUTPUT = "Output";
 
 // The world map
 
 int main( int argc, char *argv[] )
 {
 
+	ros::init(argc, argv, "find_route");
+	ros::NodeHandle nh;
+	image_transport::ImageTransport it(nh);
+	image_transport::Publisher pub = it.advertise("maps/image", 1);
+	Mat image = imread("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/626_mdf.pgm", CV_LOAD_IMAGE_COLOR);
+	namedWindow(INPUT, CV_WINDOW_AUTOSIZE); 
+	imshow(INPUT, image); 
+	
+	namedWindow(OUTPUT, CV_WINDOW_AUTOSIZE); 
+	Mat dilation_dst;  
 
+	ofstream  path_node; 
+	path_node.open ("/home/colibri/clbri_ws/src/colibri_pathfinding/path/nodes.txt");	
+	
+	int dilation_type = MORPH_ELLIPSE;
+	int dilation_size = 7; 
+	Mat element = cv::getStructuringElement( dilation_type,
+										 Size( 2*dilation_size + 1, 2*dilation_size+1 ),
+										 Point( dilation_size, dilation_size ) );
+	/// Apply the dilation operation
+	erode( image, dilation_dst, element );	
+	imshow(OUTPUT, dilation_dst); 
+	
+	imwrite("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/Gray_Image.pgm", dilation_dst);
 
-	cout << "STL A* Search implementation\n(C)2001 Justin Heyes-Jones\n";
+	if(image.empty()){
+	 printf("open error\n");
+	 }
+	sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", dilation_dst).toImageMsg();
 
-	// Our sample problem defines the world as a 2d array representing a terrain
-	// Each element contains an integer from 0 to 5 which indicates the cost
-	// of travel across the terrain. Zero means the least possible difficulty
-	// in travelling (think ice rink if you can skate) whilst 5 represents the
-	// most difficult. 9 indicates that we cannot pass.
+	MAP_WIDTH = msg->width;
+	MAP_HEIGHT = msg->height;
+	for (int pix_index = 0; pix_index < MAP_WIDTH*MAP_HEIGHT; pix_index++)
+	{
+		world_map[pix_index] = 255 - msg->data[pix_index];
 
-	// Create an instance of the search class...
+	}
 
 	AStarSearch<MapSearchNode> astarsearch;
 
@@ -83,15 +99,15 @@ int main( int argc, char *argv[] )
 		MapSearchNode nodeStart;
 		//nodeStart.x = rand()%MAP_WIDTH;
 		//nodeStart.y = rand()%MAP_HEIGHT;
-		nodeStart.x = 3;
-		nodeStart.y = 2;
+		nodeStart.x = 500;
+		nodeStart.y = 225;
 
 		// Define the goal state
 		MapSearchNode nodeEnd;
 		//nodeEnd.x = rand()%MAP_WIDTH;
 		//nodeEnd.y = rand()%MAP_HEIGHT;
-		nodeEnd.x = 7;
-		nodeEnd.y = 20;
+		nodeEnd.x = 550;
+		nodeEnd.y = 225;
 		// Set Start and goal states
 
 		astarsearch.SetStartAndGoalStates( nodeStart, nodeEnd );
@@ -104,42 +120,6 @@ int main( int argc, char *argv[] )
 			SearchState = astarsearch.SearchStep();
 
 			SearchSteps++;
-
-	#if DEBUG_LISTS
-
-			cout << "Steps:" << SearchSteps << "\n";
-
-			int len = 0;
-
-			cout << "Open:\n";
-			MapSearchNode *p = astarsearch.GetOpenListStart();
-			while( p )
-			{
-				len++;
-	#if !DEBUG_LIST_LENGTHS_ONLY
-				((MapSearchNode *)p)->PrintNodeInfo();
-	#endif
-				p = astarsearch.GetOpenListNext();
-
-			}
-
-			cout << "Open list has " << len << " nodes\n";
-
-			len = 0;
-
-			cout << "Closed:\n";
-			p = astarsearch.GetClosedListStart();
-			while( p )
-			{
-				len++;
-	#if !DEBUG_LIST_LENGTHS_ONLY
-				p->PrintNodeInfo();
-	#endif
-				p = astarsearch.GetClosedListNext();
-			}
-
-			cout << "Closed list has " << len << " nodes\n";
-	#endif
 
 		}
 		while( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_SEARCHING );
@@ -156,6 +136,13 @@ int main( int argc, char *argv[] )
 				int steps = 0;
 
 				node->PrintNodeInfo();
+
+				path_node << node->x;
+				path_node << '\t';
+				path_node << node->y;
+				path_node << '\n';
+
+				
 				for( ;; )
 				{
 					node = astarsearch.GetSolutionNext();
@@ -167,6 +154,11 @@ int main( int argc, char *argv[] )
 
 					node->PrintNodeInfo();
 					steps ++;
+					
+					path_node << node->x;
+					path_node << '\t';
+					path_node << node->y;
+					path_node << '\n';
 
 				};
 
@@ -187,9 +179,25 @@ int main( int argc, char *argv[] )
 		cout << "SearchSteps : " << SearchSteps << "\n";
 
 		SearchCount ++;
-
 		astarsearch.EnsureMemoryFreed();
 	}
+
+	path_node.close();	//record laser dis completed
+
+	ros::Rate loop_rate(5);
+	while (nh.ok()) {
+	  pub.publish(msg);
+	  ros::spinOnce();
+	
+	  imshow(INPUT, image);
+	  imshow(OUTPUT, dilation_dst);  
+	  waitKey(1000);
+	
+	  loop_rate.sleep();
+	}
+	
+	destroyWindow(INPUT);  
+	destroyWindow(OUTPUT);
 
 	return 0;
 }
