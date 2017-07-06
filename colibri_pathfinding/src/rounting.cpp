@@ -70,8 +70,11 @@ int main( int argc, char *argv[] )
 	/// Apply the dilation operation
 	erode( image, dilation_dst, element );	
 	imshow(OUTPUT, dilation_dst); 
+	Mat gray_mat;
 	
-	imwrite("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/Gray_Image.pgm", dilation_dst);
+	cvtColor(dilation_dst, gray_mat, CV_BGR2GRAY);
+	
+	imwrite("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/Dialate_Img.pgm", gray_mat);
 
 	if(image.empty()){
 	 printf("open error\n");
@@ -99,8 +102,8 @@ int main( int argc, char *argv[] )
 		MapSearchNode nodeStart;
 		//nodeStart.x = rand()%MAP_WIDTH;
 		//nodeStart.y = rand()%MAP_HEIGHT;
-		nodeStart.x = 500;
-		nodeStart.y = 225;
+		nodeStart.x = 390;
+		nodeStart.y = 230;
 
 		// Define the goal state
 		MapSearchNode nodeEnd;
