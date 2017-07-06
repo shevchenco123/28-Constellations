@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <fstream>
+#include <ctime>
 
 #include <ros/ros.h>
 #include <iostream>
@@ -93,7 +94,7 @@ int main( int argc, char *argv[] )
 		world_map[pix_index] = 255 - msg->data[pix_index];
 
 	}
-
+	
 	AStarSearch<MapSearchNode> astarsearch;
 
 	unsigned int SearchCount = 0;
@@ -102,7 +103,6 @@ int main( int argc, char *argv[] )
 
 	while(SearchCount < NumSearches)
 	{
-
 		// Create a start state
 		MapSearchNode nodeStart;
 		//nodeStart.x = rand()%MAP_WIDTH;
@@ -114,8 +114,8 @@ int main( int argc, char *argv[] )
 		MapSearchNode nodeEnd;
 		//nodeEnd.x = rand()%MAP_WIDTH;
 		//nodeEnd.y = rand()%MAP_HEIGHT;
-		nodeEnd.x = 680;
-		nodeEnd.y = 207;
+		nodeEnd.x = 600;
+		nodeEnd.y = 85;
 		// Set Start and goal states
 
 		astarsearch.SetStartAndGoalStates( nodeStart, nodeEnd );
