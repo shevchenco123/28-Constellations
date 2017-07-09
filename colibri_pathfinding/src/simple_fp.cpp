@@ -41,6 +41,7 @@ int MAP_WIDTH = 1;
 int MAP_HEIGHT = 1;
 
 static const std::string OUTPUT = "Output";
+
 bool CalcGoalEdgePoint(int &node_x, int &node_y,int &edge_x, int &edge_y)
 {
 
@@ -246,4 +247,3 @@ int main( int argc, char *argv[] )
 	return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
