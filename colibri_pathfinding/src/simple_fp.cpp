@@ -15,23 +15,11 @@
 
 #include <ros/ros.h>
 
-#include <cv_bridge/cv_bridge.h>
-#include <image_transport/image_transport.h>
-
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-
 #include "stlastar.h" 
 #include "map_search.h"
 
-using namespace std;
-using namespace cv;
-
 #define DEBUG_LISTS 1
 #define DEBUG_LIST_LENGTHS_ONLY 0
-#define DILATION_TYPE MORPH_ELLIPSE
-#define DILATION_SIZE 7 
 
 // Global data
 const int MAP_WIDTH_MAX = 1000;
@@ -42,100 +30,24 @@ int MAP_HEIGHT = 1;
 
 static const std::string OUTPUT = "Output";
 
-bool CalcGoalEdgePoint(int &node_x, int &node_y,int &edge_x, int &edge_y)
-{
-
-	if(world_map[node_y * MAP_WIDTH + node_x] < 255) // if the set goal is not in black area
-	{
-		edge_x = node_x;
-		edge_y = node_y;	
-	}
-	else
-	{
-		for(int i = 1; i <= 2*DILATION_SIZE; i++)	// should conce
-		{
-			if(world_map[node_y * MAP_WIDTH + node_x + i] < 255)
-			{
-				edge_x = node_x + i;
-				edge_y = node_y;
-				break;
-			}
-			if(world_map[(node_y - i) * MAP_WIDTH + node_x] < 255)
-			{
-				edge_x = node_x ;
-				edge_y = node_y - i;
-				break;
-			}
-
-			if(world_map[node_y * MAP_WIDTH + node_x - i] < 255)
-			{
-				edge_x = node_x - i;
-				edge_y = node_y;
-				break;
-			}
-
-			if(world_map[(node_y + i) *MAP_WIDTH + node_x] < 255)
-			{
-				edge_x = node_x;
-				edge_y = node_y + i;
-				break;
-			}
-			
-			if( 2 * DILATION_SIZE == i)
-			{
-				cout <<"No nearest edge point to approx the goal!"<<endl;
-				edge_x = node_x;
-				edge_y = node_y;
-				return false;
-			}
-
-		}
-	}
-
-	return true;
-
-}
 // The world map
 
 int main( int argc, char *argv[] )
 {
 
 	ros::init(argc, argv, "find_route");
-	ros::NodeHandle nh;
 	ros::Rate loop_rate(5);
 	
 	ofstream  path_node; 
 	path_node.open ("/home/colibri/clbri_ws/src/colibri_pathfinding/path/nodes.txt");
 
-	image_transport::ImageTransport it(nh);
-	image_transport::Publisher pub = it.advertise("maps/image", 1);	
-	Mat image = imread("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/626_mdf.pgm", CV_LOAD_IMAGE_COLOR);
-	if(image.empty())
-	{
-	 	cout<<"open error!"<<endl;
-	}
-
 	namedWindow(OUTPUT, CV_WINDOW_AUTOSIZE); 
-	Mat dilation_img;  
-	Mat element = cv::getStructuringElement( DILATION_TYPE, Size( 2*DILATION_SIZE + 1, 2*DILATION_SIZE+1 ),
-										     Point( DILATION_SIZE, DILATION_SIZE ) );
-	/// Apply the dilation operation as the free space is at gray value 254, we use erode function
-	erode( image, dilation_img, element );		
-	Mat gray_img;
-	cvtColor(dilation_img, gray_img, CV_BGR2GRAY);
+ 
+
 	imwrite("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/Dilate_Img.pgm", gray_img);
 
-	sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", gray_img).toImageMsg();
-	sensor_msgs::ImagePtr ori_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", dilation_img).toImageMsg();
-
-	MAP_WIDTH = msg->width;
-	MAP_HEIGHT = msg->height;
 	
-	for (int pix_index = 0; pix_index < MAP_WIDTH*MAP_HEIGHT; pix_index++)
-	{
-		world_map[pix_index] = 255 - msg->data[pix_index];
-
-	}
+	sensor_msgs::ImagePtr ori_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", dilation_img).toImageMsg();
 	
 	AStarSearch<MapSearchNode> astarsearch;
 
