@@ -1,8 +1,19 @@
 #include "map_proc.h"
 
+template <class Type>  
+Type stringToNum(const string& str)  
+{  
+    istringstream iss(str);  
+    Type num;  
+    iss >> num;  
+    return num;      
+}  
+
 map_proc::map_proc()
 {
-	cur_goal[3] = {0.0, 0.0, 0.0};		
+	cur_goal[0] = 0.0;
+	cur_goal[1] = 0.0;
+	cur_goal[2] = 0.0;
 	obtain_goal_flag = false;
 	
 	start.x = 1;
@@ -11,9 +22,9 @@ map_proc::map_proc()
 	terminal.y = 1;
 	revised_terminal.x = terminal.x;
 	revised_terminal.y = terminal.y;
-	
-	nh_img.param("origin", map_origin, [-1.0, -1.0, 0]);
-	nh_img.param("resolution", map_resol, 0.05);
+	string tmp = "[-20.0, -4.027744, 0.0]";
+	nh_img.param("origin", str_origin,tmp);
+	nh_img.param("resolution", map_resol, (float)0.05);
 
 	pub4path = nh_img.advertise<nav_msgs::Path>("/nav_path", 1);
 
@@ -143,10 +154,12 @@ bool map_proc::NavPos2ImgPix(map_point & position, pix_point & pix)
 bool map_proc::PixNodes2NavPath(vector<pix_point> & nav_nodes, vector<map_point> &nav_path)
 {
 	map_point tmp_pos;
-    for (auto iter = nav_nodes.begin(); iter != nav_nodes.end(); iter++)
+	nav_path.clear();
+	size_t len = nav_nodes.size();
+    for (size_t i = 0; i < len; i++)
     {
 
-		if(ImgPix2NavPos(*iter, tmp_pos))
+		if(ImgPix2NavPos(nav_nodes[i], tmp_pos))
 		{
 			nav_path.push_back(tmp_pos);
 		}
@@ -174,8 +187,39 @@ bool map_proc::LoadGoalFromTask()
 
 }
 
-void map_proc::PubNavPath(vector<map_point> &nav_path)
+bool map_proc::PubNavPath(vector<map_point> &nav_path)
 {
+	if(nav_path.empty())
+	{
+		return false;
+	}
+	else
+	{
+		plan_path.poses.clear();
+		geometry_msgs::PoseStamped tmp_pose_stamped;
+		
+		plan_path.header.stamp = ros::Time::now();
+		plan_path.header.frame_id = "robot";
+		tmp_pose_stamped.header.stamp = ros::Time::now();
+		tmp_pose_stamped.header.frame_id = "robot";
+
+		size_t len = nav_path.size();
+		for (size_t i = 0; i < len; i++)
+		{
+			tmp_pose_stamped.pose.position.x = nav_path[i].x;			
+			tmp_pose_stamped.pose.position.y = nav_path[i].y;
+			tmp_pose_stamped.pose.position.z = 0.0;
+			tmp_pose_stamped.pose.orientation.x = 0.0;
+			tmp_pose_stamped.pose.orientation.y = 0.0;
+			tmp_pose_stamped.pose.orientation.z = 0.0;
+			tmp_pose_stamped.pose.orientation.w = 1.0;
+			plan_path.poses.push_back(tmp_pose_stamped);
+		}
+		
+		pub4path.publish(plan_path);
+		
+		return true;
+	}
 	
 }
 
@@ -213,8 +257,24 @@ bool map_proc::PixBoundCheck(pix_point & pix)
 		cout<<"The pix u/v in Img is out of the img itself"<<endl;
 		return false;
 	}
+	else
+	{
+		return true;
+	}
 
 }
 
+bool map_proc::ParseMapOrigin(void)
+{
+	vector<string> vStr;
+	boost::split( vStr, str_origin, boost::is_any_of( ", " ), boost::token_compress_on );
+	for( vector<string>::iterator it = vStr.begin(); it != vStr.end(); ++it )
+	{
+	  cout << *it << endl;
+	}
+	map_origin[0] = stringToNum<float>(vStr[0].substr(1));
+	map_origin[1] = stringToNum<float>(vStr[1]);
+	map_origin[2] = 0.0;
+}
 
 

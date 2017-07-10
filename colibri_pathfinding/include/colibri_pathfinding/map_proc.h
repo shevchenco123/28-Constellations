@@ -1,12 +1,15 @@
+#include <string>
+#include <vector>
+#include <cmath>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "nav_msgs/Path.h" 
 
-#include <vector>
-#include <math>
-
+#include <ros/ros.h>
 #include <cv_bridge/cv_bridge.h>
-#include <image_transport/image_transport.h>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -25,6 +28,8 @@ extern int MAP_HEIGHT;
 #define DILATION_TYPE MORPH_ELLIPSE
 #define DILATION_SIZE 7
 #define GOAL_EDGE_MAX 15
+
+#define RAD2DEG 57.296
 
 typedef struct st_pix_point
 {
@@ -61,10 +66,13 @@ class map_proc
 		pix_point terminal;
 		pix_point revised_terminal;
 
+		string str_origin;
 		float map_origin[3];
 		float map_resol;
 
+		vector<pix_point> nav_nodes;
 		vector<map_point> nav_path;
+		nav_msgs::Path plan_path;
 
 		map_proc();
 		~map_proc();
@@ -75,12 +83,15 @@ class map_proc
 		bool ImgPix2NavPos(pix_point & pix, map_point & position);
 		bool NavPos2ImgPix(map_point & position, pix_point & pix);
 		
-		void PixNodes2NavPath();
-		void NavPath2PixNodes();
-		void PubNavPath();
+		bool PixNodes2NavPath(vector<pix_point> & nav_nodes, vector<map_point> &nav_path);
 
-		bool LocalMapUpdate(); //TODO
-		bool LoadGoalFromTask(); //TODO
+		void NavPath2PixNodes();
+		bool PubNavPath(vector<map_point> &nav_path);
+
+		bool LocalMapUpdate(void); //TODO
+		bool LoadGoalFromTask(void); //TODO
+
+		bool ParseMapOrigin(void);
 
 
 	private:

@@ -148,6 +148,9 @@ add_executable(rounting_node src/rounting.cpp src/MapSearch.cpp)
 target_link_libraries(rounting_node ${catkin_LIBRARIES})
 
 
+add_executable(modular_path_node src/simple_fp.cpp src/MapSearch.cpp src/map_proc.cpp)
+target_link_libraries(modular_path_node ${catkin_LIBRARIES})
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/colibri_pathfinding.cpp

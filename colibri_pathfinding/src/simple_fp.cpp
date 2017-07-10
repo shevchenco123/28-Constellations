@@ -17,6 +17,10 @@
 
 #include "stlastar.h" 
 #include "map_search.h"
+#include "map_proc.h"
+
+#include <image_transport/image_transport.h>
+
 
 #define DEBUG_LISTS 1
 #define DEBUG_LIST_LENGTHS_ONLY 0
@@ -36,18 +40,18 @@ int main( int argc, char *argv[] )
 {
 
 	ros::init(argc, argv, "find_route");
-	ros::Rate loop_rate(5);
+	map_proc mapObj;
 	
+	ros::Rate loop_rate(5);	
+
 	ofstream  path_node; 
 	path_node.open ("/home/colibri/clbri_ws/src/colibri_pathfinding/path/nodes.txt");
 
 	namedWindow(OUTPUT, CV_WINDOW_AUTOSIZE); 
- 
+	mapObj.SearchMapPreProc();
+	mapObj.ParseMapOrigin();
 
-	imwrite("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/Dilate_Img.pgm", gray_img);
-
-	
-	sensor_msgs::ImagePtr ori_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", dilation_img).toImageMsg();
+	imwrite("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/Dilate_Img.pgm", mapObj.gray_img);
 	
 	AStarSearch<MapSearchNode> astarsearch;
 
@@ -65,15 +69,19 @@ int main( int argc, char *argv[] )
 		// Define the goal state
 		MapSearchNode nodeEnd;
 		nodeEnd.x = 600;
-		nodeEnd.y = 97;
+		nodeEnd.y = 80;
 		// Set Start and goal states
 
-		int tmp_goal_x, tmp_goal_y;
-		bool isgoal = CalcGoalEdgePoint(nodeEnd.x, nodeEnd.y, tmp_goal_x, tmp_goal_y);
+		pix_point t_end;
+		t_end.x = nodeEnd.x;
+		t_end.y = nodeEnd.y;
+		pix_point end;
+		
+		bool isgoal = mapObj.CalcGoalEdgePoint(t_end, end);
 		if(true == isgoal)
 		{
-			nodeEnd.x = tmp_goal_x;
-			nodeEnd.y = tmp_goal_y;
+			nodeEnd.x = end.x;
+			nodeEnd.y = end.y;
 		}
 
 		astarsearch.SetStartAndGoalStates( nodeStart, nodeEnd );
@@ -92,6 +100,9 @@ int main( int argc, char *argv[] )
 		{
 			cout << "Search found goal state\n";
 
+				pix_point tmp_nav_node;
+				mapObj.nav_nodes.clear();
+
 				MapSearchNode *node = astarsearch.GetSolutionStart();
 				int steps = 0;
 
@@ -101,7 +112,7 @@ int main( int argc, char *argv[] )
 				path_node << '\t';
 				path_node << node->y;
 				path_node << '\n';
-				
+	
 				for( ;; )
 				{
 					node = astarsearch.GetSolutionNext();
@@ -113,6 +124,10 @@ int main( int argc, char *argv[] )
 
 					node->PrintNodeInfo();
 					steps ++;
+					
+					tmp_nav_node.x = node->x;
+					tmp_nav_node.y = node->y;				
+					mapObj.nav_nodes.push_back(tmp_nav_node);
 					
 					path_node << node->x;
 					path_node << '\t';
@@ -143,12 +158,15 @@ int main( int argc, char *argv[] )
 
 	path_node.close();	//record laser dis completed
 
-	while (nh.ok()) 
+	mapObj.PixNodes2NavPath(mapObj.nav_nodes, mapObj.nav_path);
+
+	while (mapObj.nh_img.ok()) 
 	{
-	  pub.publish(ori_msg);
+	  mapObj.PubNavPath(mapObj.nav_path);
+
 	  ros::spinOnce();
 	
-	  imshow(OUTPUT, dilation_img);  
+	  imshow(OUTPUT, mapObj.dilation_img);  
 	  waitKey(1000);
 	
 	  loop_rate.sleep();
