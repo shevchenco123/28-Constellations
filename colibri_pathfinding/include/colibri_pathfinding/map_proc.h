@@ -57,6 +57,7 @@ template<typename T1, typename T2>
 vector<T1> Smooth5p3t(const vector<T2> input, const int iter)
 {
 	vector<T1> output;
+	vector<T1> mid_val(input);
 	T1 tmp_val;
 	size_t len = input.size();
 	if(len < 5)
@@ -68,21 +69,23 @@ vector<T1> Smooth5p3t(const vector<T2> input, const int iter)
 	
 	for(int i = 0; i < iter; i++)
 	{
-		tmp_val = (69 * input[0] + 4 * (input[1] + input[3]) - 6 * input[2] - input[4]) / 70.0;
+		tmp_val = (69 * mid_val[0] + 4 * (mid_val[1] + mid_val[3]) - 6 * mid_val[2] - mid_val[4]) / 70.0;
 		output.push_back(tmp_val);
-		tmp_val = (2 * (input[0] + input[4]) + 27 * input[1] + 12 * input[2] - 8 * input[3] ) / 35.0;
+		tmp_val = (2 * (mid_val[0] + mid_val[4]) + 27 * mid_val[1] + 12 * mid_val[2] - 8 * mid_val[3] ) / 35.0;
 		output.push_back(tmp_val);
 
 		for(size_t j = 2; j < (len - 2); j++)
 		{
-			tmp_val = (-3 * (input[j-2] + input[j + 2]) + 12 * (input[j -1] + input[j + 1]) + 17 * input[j]) / 35.0;
+			tmp_val = (-3 * (mid_val[j-2] + mid_val[j + 2]) + 12 * (mid_val[j -1] + mid_val[j + 1]) + 17 * mid_val[j]) / 35.0;
 			output.push_back(tmp_val);
 		}
 		
-		tmp_val = (2 * (input[len - 1] + input[len - 5]) + 27 * input[len - 2] + 12 * input[len - 3] - 8 * input[len - 4]) / 35.0;
+		tmp_val = (2 * (mid_val[len - 1] + mid_val[len - 5]) + 27 * mid_val[len - 2] + 12 * mid_val[len - 3] - 8 * mid_val[len - 4]) / 35.0;
 		output.push_back(tmp_val);
-		tmp_val = (69 * input[len -1] + 4 * (input[len - 2] + input[len - 4]) - 6 * input[len - 3] - input[len - 4]) / 70.0;
+		tmp_val = (69 * mid_val[len -1] + 4 * (mid_val[len - 2] + mid_val[len - 4]) - 6 * mid_val[len - 3] - mid_val[len - 4]) / 70.0;
 		output.push_back(tmp_val);
+
+		mid_val.swap(output);
 
 	}
 
