@@ -44,9 +44,6 @@ int main( int argc, char *argv[] )
 	
 	ros::Rate loop_rate(5);	
 
-	ofstream  path_node; 
-	path_node.open ("/home/colibri/clbri_ws/src/colibri_pathfinding/path/nodes.txt");
-
 	namedWindow(OUTPUT, CV_WINDOW_AUTOSIZE); 
 	mapObj.SearchMapPreProc();
 	mapObj.ParseMapOrigin();
@@ -69,7 +66,7 @@ int main( int argc, char *argv[] )
 		// Define the goal state
 		MapSearchNode nodeEnd;
 		nodeEnd.x = 600;
-		nodeEnd.y = 80;
+		nodeEnd.y = 97;
 		// Set Start and goal states
 
 		pix_point t_end;
@@ -107,12 +104,6 @@ int main( int argc, char *argv[] )
 				int steps = 0;
 
 				node->PrintNodeInfo();
-
-				path_node << node->x;
-				path_node << '\t';
-				path_node << node->y;
-				path_node << '\n';
-	
 				for( ;; )
 				{
 					node = astarsearch.GetSolutionNext();
@@ -129,10 +120,6 @@ int main( int argc, char *argv[] )
 					tmp_nav_node.y = node->y;				
 					mapObj.nav_nodes.push_back(tmp_nav_node);
 					
-					path_node << node->x;
-					path_node << '\t';
-					path_node << node->y;
-					path_node << '\n';
 
 				};
 
@@ -156,7 +143,6 @@ int main( int argc, char *argv[] )
 		astarsearch.EnsureMemoryFreed();
 	}
 
-	path_node.close();	//record laser dis completed
 
 	mapObj.PixNodes2NavPath(mapObj.nav_nodes, mapObj.nav_path);
 
