@@ -9,13 +9,6 @@ Type stringToNum(const string& str)
     return num;      
 }  
 
-template<typename T1, typename T2>
-vector<T1> smooth5p3t(const vector<T2> input, const int iter)
-{
-	
-}
-
-
 map_proc::map_proc()
 {
 	cur_goal[0] = 0.0;
@@ -206,9 +199,9 @@ bool map_proc::PubNavPath(vector<map_point> &nav_path)
 		geometry_msgs::PoseStamped tmp_pose_stamped;
 		
 		plan_path.header.stamp = ros::Time::now();
-		plan_path.header.frame_id = "robot";
+		plan_path.header.frame_id = "map";
 		tmp_pose_stamped.header.stamp = ros::Time::now();
-		tmp_pose_stamped.header.frame_id = "robot";
+		tmp_pose_stamped.header.frame_id = "map";
 
 		size_t len = nav_path.size();
 		for (size_t i = 0; i < len; i++)
