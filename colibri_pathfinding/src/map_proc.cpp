@@ -9,6 +9,13 @@ Type stringToNum(const string& str)
     return num;      
 }  
 
+template<typename T1, typename T2>
+vector<T1> smooth5p3t(const vector<T2> input, const int iter)
+{
+	
+}
+
+
 map_proc::map_proc()
 {
 	cur_goal[0] = 0.0;

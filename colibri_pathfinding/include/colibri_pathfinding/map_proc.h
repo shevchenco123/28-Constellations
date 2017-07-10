@@ -38,6 +38,13 @@ typedef struct st_pix_point
 
 }pix_point;
 
+typedef struct st_smpix_point
+{
+	float x;
+	float y;
+	
+}smpix_point;
+
 typedef struct st_map_point
 {
 	float x;
@@ -45,6 +52,44 @@ typedef struct st_map_point
 	float yaw;
 	
 }map_point;
+
+template<typename T1, typename T2>
+vector<T1> Smooth5p3t(const vector<T2> input, const int iter)
+{
+	vector<T1> output;
+	T1 tmp_val;
+	size_t len = input.size();
+	if(len < 5)
+	{
+		cout<<"can not exec the 5 points 3 time smooth filter!"<<endl;
+		output.swap(input);
+		return output;
+	}
+	
+	for(int i = 0; i < iter; i++)
+	{
+		tmp_val = (69 * input[0] + 4 * (input[1] + input[3]) - 6 * input[2] - input[4]) / 70.0;
+		output.push_back(tmp_val);
+		tmp_val = (2 * (input[0] + input[4]) + 27 * input[1] + 12 * input[2] - 8 * input[3] ) / 35.0;
+		output.push_back(tmp_val);
+
+		for(size_t j = 2; j < (len - 2); j++)
+		{
+			tmp_val = (-3 * (input[j-2] + input[j + 2]) + 12 * (input[j -1] + input[j + 1]) + 17 * input[j]) / 35.0;
+			output.push_back(tmp_val);
+		}
+		
+		tmp_val = (2 * (input[len - 1] + input[len - 5]) + 27 * input[len - 2] + 12 * input[len - 3] - 8 * input[len - 4]) / 35.0;
+		output.push_back(tmp_val);
+		tmp_val = (69 * input[len -1] + 4 * (input[len - 2] + input[len - 4]) - 6 * input[len - 3] - input[len - 4]) / 70.0;
+		output.push_back(tmp_val);
+
+	}
+
+	return output;
+}
+
+
 
 class map_proc
 {
