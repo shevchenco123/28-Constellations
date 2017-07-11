@@ -151,6 +151,10 @@ target_link_libraries(rounting_node ${catkin_LIBRARIES})
 add_executable(modular_path_node src/simple_fp.cpp src/MapSearch.cpp src/map_proc.cpp)
 target_link_libraries(modular_path_node ${catkin_LIBRARIES})
 
+add_executable(fp_srv_node src/fp_srv.cpp src/MapSearch.cpp src/map_proc.cpp)
+target_link_libraries(fp_srv_node ${catkin_LIBRARIES})
+
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/colibri_pathfinding.cpp

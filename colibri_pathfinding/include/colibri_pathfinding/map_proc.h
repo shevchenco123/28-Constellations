@@ -12,6 +12,8 @@
 #include <cv_bridge/cv_bridge.h>
 #include <nav_msgs/GetPlan.h>
 
+#include <boost/bind.hpp>
+
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -65,6 +67,7 @@ class map_proc
 	public :
 		ros::NodeHandle nh_img;
 		ros::Publisher pub4path;
+		ros::ServiceServer srv4fp;
 
 		Mat map_image;
 		Mat dilation_img;  
@@ -115,7 +118,6 @@ class map_proc
 		bool SearchNodeInit(map_point &start, map_point & goal, MapSearchNode &nodeStart, MapSearchNode &nodeEnd);
 		bool SearchNodeInit(pix_point &start, pix_point & goal, MapSearchNode &nodeStart, MapSearchNode &nodeEnd);
 		bool SearchAndObatainNodes(AStarSearch<MapSearchNode> &astarObj);
-
 
 
 	private:

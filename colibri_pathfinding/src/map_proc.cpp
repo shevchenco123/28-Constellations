@@ -74,6 +74,9 @@ map_proc::map_proc()
 
 	structe_element = cv::getStructuringElement( DILATION_TYPE, Size( 2*DILATION_SIZE + 1, 2*DILATION_SIZE+1 ),
 										 		Point( DILATION_SIZE, DILATION_SIZE ) );
+
+ 	srv4fp = nh_img.advertiseService("/move_base/make_plan", &map_proc::ExecPathFindingSrv, this);
+
 	
 }
 
