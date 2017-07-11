@@ -10,10 +10,13 @@
 
 #include <ros/ros.h>
 #include <cv_bridge/cv_bridge.h>
+#include <nav_msgs/GetPlan.h>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+
+#include "map_search.h" // See header for copyright and usage information
 
 using namespace std;
 using namespace cv;
@@ -24,6 +27,8 @@ using namespace cv;
 extern int world_map[];
 extern int MAP_WIDTH;
 extern int MAP_HEIGHT;
+
+extern AStarSearch<MapSearchNode> astarsearch;
 
 #define DILATION_TYPE MORPH_ELLIPSE
 #define DILATION_SIZE 7
@@ -97,7 +102,7 @@ class map_proc
 		bool PixNodes2NavPath(vector<smpix_point> & smnav_nodes, vector<map_point> &nav_path);
 
 		void NavPath2PixNodes();
-		bool PubNavPath(vector<map_point> &nav_path);
+		bool StdNavPath(vector<map_point> &nav_path);
 
 		bool LocalMapUpdate(void); //TODO
 		bool LoadGoalFromTask(void); //TODO
@@ -105,6 +110,13 @@ class map_proc
 		void ParseMapOrigin(void);
 
 		bool PixBoundCheck(pix_point & pix);
+		bool ExecPathFindingSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPlan::Response & res);
+		
+		bool SearchNodeInit(map_point &start, map_point & goal, MapSearchNode &nodeStart, MapSearchNode &nodeEnd);
+		bool SearchNodeInit(pix_point &start, pix_point & goal, MapSearchNode &nodeStart, MapSearchNode &nodeEnd);
+		bool SearchAndObatainNodes(AStarSearch<MapSearchNode> &astarObj);
+
+
 
 	private:
 		

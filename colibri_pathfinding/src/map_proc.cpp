@@ -260,7 +260,7 @@ bool map_proc::LoadGoalFromTask()
 
 }
 
-bool map_proc::PubNavPath(vector<map_point> &nav_path)
+bool map_proc::StdNavPath(vector<map_point> &nav_path)
 {
 	if(nav_path.empty())
 	{
@@ -288,8 +288,6 @@ bool map_proc::PubNavPath(vector<map_point> &nav_path)
 			tmp_pose_stamped.pose.orientation.w = 1.0;
 			plan_path.poses.push_back(tmp_pose_stamped);
 		}
-		
-		pub4path.publish(plan_path);
 		
 		return true;
 	}
@@ -349,5 +347,180 @@ void map_proc::ParseMapOrigin(void)
 	map_origin[1] = stringToNum<float>(vStr[1]);
 	map_origin[2] = 0.0;
 }
+
+bool map_proc::ExecPathFindingSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPlan::Response & res)
+{
+
+	map_point tmp_start,tmp_goal;
+	
+	tmp_start.x = req.start.pose.position.x;
+	tmp_start.y = req.start.pose.position.y;
+	tmp_goal.x = req.goal.pose.position.x;
+	tmp_goal.y = req.goal.pose.position.y;
+
+	MapSearchNode nodeStart;
+	MapSearchNode nodeEnd;
+
+	bool isOK = this->SearchNodeInit(tmp_start, tmp_goal, nodeStart, nodeEnd);
+
+	if(true == isOK)
+	{
+		astarsearch.SetStartAndGoalStates( nodeStart, nodeEnd );
+		this->SearchAndObatainNodes(astarsearch);
+		astarsearch.EnsureMemoryFreed();
+	}
+	else
+	{
+		cout<<"The search point is not normal!"<< endl;
+	}
+
+	vector<smpix_point> tmp_smnodes; 
+
+	tmp_smnodes	= Smooth5p3t(this->nav_nodes);
+	this->PixNodes2NavPath(tmp_smnodes, this->nav_path );
+	this->StdNavPath(this->nav_path);
+
+	res.plan = this->plan_path;
+
+	return true;
+	
+}
+
+bool map_proc::SearchAndObatainNodes(AStarSearch<MapSearchNode> &astarObj)
+{
+	unsigned int SearchState;
+	unsigned int SearchSteps = 0;
+	
+	do
+	{
+		SearchState = astarObj.SearchStep();
+		SearchSteps++;
+	}
+	while(SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_SEARCHING);
+	
+	if(SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_SUCCEEDED)
+	{
+			cout << "Search found goal state\n";
+	
+			pix_point tmp_nav_node;
+			nav_nodes.clear();
+	
+			MapSearchNode *node = astarObj.GetSolutionStart();
+			int steps = 0;
+			node->PrintNodeInfo();
+			for( ;; )
+			{
+				node = astarObj.GetSolutionNext();
+	
+				if( !node )
+				{
+					break;
+				}
+	
+				node->PrintNodeInfo();
+				steps ++;
+				
+				tmp_nav_node.x = node->x;
+				tmp_nav_node.y = node->y;				
+				nav_nodes.push_back(tmp_nav_node);	
+	
+			};
+			cout << "Solution steps " << steps << endl;
+			// Once you're done with the solution you can free the nodes up
+			astarObj.FreeSolutionNodes();	
+	
+	}
+	else if( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_FAILED )
+	{	
+		cout << "Search terminated. Did not find goal state\n";
+		return false;
+	}
+	
+	// Display the number of loops the search went through
+	cout << "SearchSteps : " << SearchSteps << "\n";
+	return true;
+
+}
+
+bool map_proc::SearchNodeInit(map_point &start, map_point & goal, MapSearchNode &nodeStart, MapSearchNode &nodeEnd)
+{
+	// pos transfer to pix info
+	pix_point start_node = {1, 1};
+	pix_point goal_node = {1, 1};
+	pix_point revised_node = {1, 1};
+	bool trans_start_flag = false;
+	bool trans_goal_flag = false;
+	
+	trans_start_flag = NavPos2ImgPix(start, start_node);
+	trans_goal_flag = NavPos2ImgPix(goal, goal_node);
+
+	if(trans_start_flag && trans_goal_flag)
+	{
+		
+		nodeStart.x = start_node.x;
+		nodeStart.y = start_node.y;
+
+		bool isgoal = CalcGoalEdgePoint(goal_node, revised_node);
+		if(true == isgoal)
+		{
+			nodeEnd.x = revised_node.x;
+			nodeEnd.y = revised_node.y;
+		}
+		else
+		{
+			nodeEnd.x = goal.x;
+			nodeEnd.y = goal.y;	
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+
+}
+
+bool map_proc::SearchNodeInit(pix_point &start, pix_point & goal, MapSearchNode &nodeStart, MapSearchNode &nodeEnd)
+{
+	// pos transfer to pix info
+	pix_point start_node = {1, 1};
+	pix_point goal_node = {1, 1};
+	pix_point revised_node = {1, 1};
+	bool start_in_flag = false;
+	bool goal_in_flag = false;
+	
+	start_in_flag = PixBoundCheck(start);
+	goal_in_flag = PixBoundCheck(goal);
+
+	if(start_in_flag && goal_in_flag)
+	{
+		
+		nodeStart.x = start.x;
+		nodeStart.y = start.y;
+
+		bool isgoal = CalcGoalEdgePoint(goal, revised_node);
+		if(true == isgoal)
+		{
+			nodeEnd.x = revised_node.x;
+			nodeEnd.y = revised_node.y;
+		}
+		else
+		{
+			nodeEnd.x = goal.x;
+			nodeEnd.y = goal.y;		
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+
+}
+
 
 
