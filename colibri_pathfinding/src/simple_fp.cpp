@@ -32,8 +32,6 @@ int world_map[ MAP_WIDTH_MAX * MAP_HEIGHT_MAX ] = {};
 int MAP_WIDTH = 1;
 int MAP_HEIGHT = 1;
 
-static const std::string OUTPUT = "Output";
-
 // The world map
 
 int main( int argc, char *argv[] )
@@ -44,11 +42,8 @@ int main( int argc, char *argv[] )
 	
 	ros::Rate loop_rate(5);	
 
-	namedWindow(OUTPUT, CV_WINDOW_AUTOSIZE); 
 	mapObj.SearchMapPreProc();
 	mapObj.ParseMapOrigin();
-
-	imwrite("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/Dilate_Img.pgm", mapObj.gray_img);
 	
 	AStarSearch<MapSearchNode> astarsearch;
 
@@ -66,7 +61,7 @@ int main( int argc, char *argv[] )
 		// Define the goal state
 		MapSearchNode nodeEnd;
 		nodeEnd.x = 600;
-		nodeEnd.y = 97;
+		nodeEnd.y = 92;
 		// Set Start and goal states
 
 		pix_point t_end;
@@ -154,15 +149,10 @@ int main( int argc, char *argv[] )
 	  mapObj.PubNavPath(mapObj.nav_path);
 
 	  ros::spinOnce();
-	
-	  imshow(OUTPUT, mapObj.dilation_img);  
-	  waitKey(1000);
-	
+		
 	  loop_rate.sleep();
 	}
 	
-	destroyWindow(OUTPUT);
-
 	return 0;
 }
 
