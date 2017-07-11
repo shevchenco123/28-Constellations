@@ -34,6 +34,8 @@ int MAP_HEIGHT = 1;
 
 bool SearchNodeInit(map_proc & Obj, map_point &start, map_point & goal, MapSearchNode &nodeStart, MapSearchNode &nodeEnd);
 bool SearchNodeInit(map_proc & Obj, pix_point &start, pix_point & goal, MapSearchNode &nodeStart, MapSearchNode &nodeEnd);
+bool SearchAndObatinNodes(AStarSearch<MapSearchNode> &astarObj, map_proc & mapObj);
+
 
 int main( int argc, char *argv[] )
 {
@@ -54,86 +56,22 @@ int main( int argc, char *argv[] )
 	pix_point test_start = {390, 150};
 	pix_point test_goal = {600, 97};
 
-	unsigned int SearchCount = 0;
+	MapSearchNode nodeStart;
+	MapSearchNode nodeEnd;
+	
+	bool isOK = SearchNodeInit(mapObj, test_start, test_goal, nodeStart, nodeEnd);
 
-	const unsigned int NumSearches = 1;
-
-	while(SearchCount < NumSearches)
+	if(true == isOK)
 	{
-		// Create a start state
-		MapSearchNode nodeStart;
-		MapSearchNode nodeEnd;
-		
-		bool isOK = SearchNodeInit(mapObj, test_start, test_goal, nodeStart, nodeEnd);
-
 		astarsearch.SetStartAndGoalStates( nodeStart, nodeEnd );
-
-		unsigned int SearchState;
-		unsigned int SearchSteps = 0;
-
-		start=clock();
-
-		do
-		{
-			SearchState = astarsearch.SearchStep();
-			SearchSteps++;
-		}
-		while( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_SEARCHING );
-
-		finish=clock();
-		totaltime=(double)(finish-start)/CLOCKS_PER_SEC;
-		cout<<"searching running time:	"<<totaltime<<endl;
-
-		if( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_SUCCEEDED )
-		{
-			cout << "Search found goal state\n";
-
-				pix_point tmp_nav_node;
-				mapObj.nav_nodes.clear();
-
-				MapSearchNode *node = astarsearch.GetSolutionStart();
-				int steps = 0;
-
-				node->PrintNodeInfo();
-				for( ;; )
-				{
-					node = astarsearch.GetSolutionNext();
-
-					if( !node )
-					{
-						break;
-					}
-
-					node->PrintNodeInfo();
-					steps ++;
-					
-					tmp_nav_node.x = node->x;
-					tmp_nav_node.y = node->y;				
-					mapObj.nav_nodes.push_back(tmp_nav_node);
-					
-
-				};
-
-				cout << "Solution steps " << steps << endl;
-
-				// Once you're done with the solution you can free the nodes up
-				astarsearch.FreeSolutionNodes();
-
-
-		}
-		else if( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_FAILED )
-		{
-			cout << "Search terminated. Did not find goal state\n";
-
-		}
-
-		// Display the number of loops the search went through
-		cout << "SearchSteps : " << SearchSteps << "\n";
-
-		SearchCount ++;
+		bool searchOk = SearchAndObatinNodes(astarsearch, mapObj);	
 		astarsearch.EnsureMemoryFreed();
 	}
-	
+	else
+	{
+		cout<<"The search point is not normal!"<< endl;
+	}
+
 	vector<smpix_point> tmp_smnodes; 
 
 	tmp_smnodes	= Smooth5p3t(mapObj.nav_nodes);
@@ -232,4 +170,66 @@ bool SearchNodeInit(map_proc & Obj, pix_point &start, pix_point & goal, MapSearc
 
 }
 
+bool SearchAndObatinNodes(AStarSearch<MapSearchNode> &astarObj, map_proc & mapObj)
+{
+	unsigned int SearchState;
+	unsigned int SearchSteps = 0;
+	
+	do
+	{
+		SearchState = astarObj.SearchStep();
+		SearchSteps++;
+	}
+	while( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_SEARCHING );
+	
+	if( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_SUCCEEDED )
+	{
+			cout << "Search found goal state\n";
+	
+			pix_point tmp_nav_node;
+			mapObj.nav_nodes.clear();
+	
+			MapSearchNode *node = astarObj.GetSolutionStart();
+			int steps = 0;
+	
+			node->PrintNodeInfo();
+			for( ;; )
+			{
+				node = astarObj.GetSolutionNext();
+	
+				if( !node )
+				{
+					break;
+				}
+	
+				node->PrintNodeInfo();
+				steps ++;
+				
+				tmp_nav_node.x = node->x;
+				tmp_nav_node.y = node->y;				
+				mapObj.nav_nodes.push_back(tmp_nav_node);
+				
+	
+			};
+	
+			cout << "Solution steps " << steps << endl;
+	
+			// Once you're done with the solution you can free the nodes up
+			astarObj.FreeSolutionNodes();
+
+			
+	
+	}
+	else if( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_FAILED )
+	{
+		return false;
+		cout << "Search terminated. Did not find goal state\n";
+	
+	}
+	
+	// Display the number of loops the search went through
+	cout << "SearchSteps : " << SearchSteps << "\n";
+	return true;
+
+}
 
