@@ -1,12 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// STL A* Search implementation
-// (C)2001 Justin Heyes-Jones
-//
-// Finding a path on a simple grid maze
-// This shows how to do shortest path finding using A*
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
@@ -30,7 +22,6 @@ int world_map[ MAP_WIDTH_MAX * MAP_HEIGHT_MAX ] = {};
 int MAP_WIDTH = 1;
 int MAP_HEIGHT = 1;
 
-
 AStarSearch<MapSearchNode> astarsearch;
 
 int main( int argc, char *argv[] )
@@ -46,8 +37,7 @@ int main( int argc, char *argv[] )
 	MapSearchNode nodeEnd;
 
 	ros::Rate loop_rate(1); 
-
-	//ros::ServiceServer service = nh.advertiseService("/move_base/make_plan", mapObj.ExecPathFindingSrv);
+	
 	ROS_INFO("Ready to provide sex srv.");
 
 	while (mapObj.nh_img.ok()) 
