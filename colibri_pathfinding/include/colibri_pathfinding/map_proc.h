@@ -104,13 +104,12 @@ class map_proc
 
 		void ParseMapOrigin(void);
 
+		bool PixBoundCheck(pix_point & pix);
 
 	private:
 		
 		void ObtainRvizGoalCallBack(const geometry_msgs::PoseStamped::ConstPtr& rviz_goal);
 		void Quaternion2Yaw(const geometry_msgs::PoseStamped &pose, float &yaw);
-
-		bool PixBoundCheck(pix_point & pix);
 
 
 };

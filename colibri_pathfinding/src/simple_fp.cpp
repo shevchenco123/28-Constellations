@@ -32,7 +32,8 @@ int world_map[ MAP_WIDTH_MAX * MAP_HEIGHT_MAX ] = {};
 int MAP_WIDTH = 1;
 int MAP_HEIGHT = 1;
 
-// The world map
+bool SearchNodeInit(map_proc & Obj, map_point &start, map_point & goal, MapSearchNode &nodeStart, MapSearchNode &nodeEnd);
+bool SearchNodeInit(map_proc & Obj, pix_point &start, pix_point & goal, MapSearchNode &nodeStart, MapSearchNode &nodeEnd);
 
 int main( int argc, char *argv[] )
 {
@@ -50,6 +51,9 @@ int main( int argc, char *argv[] )
 	
 	AStarSearch<MapSearchNode> astarsearch;
 
+	pix_point test_start = {390, 150};
+	pix_point test_goal = {600, 97};
+
 	unsigned int SearchCount = 0;
 
 	const unsigned int NumSearches = 1;
@@ -58,26 +62,9 @@ int main( int argc, char *argv[] )
 	{
 		// Create a start state
 		MapSearchNode nodeStart;
-		nodeStart.x = 390;
-		nodeStart.y = 150;
-
-		// Define the goal state
 		MapSearchNode nodeEnd;
-		nodeEnd.x = 600;
-		nodeEnd.y = 80;
-		// Set Start and goal states
-
-		pix_point t_end;
-		t_end.x = nodeEnd.x;
-		t_end.y = nodeEnd.y;
-		pix_point end;
 		
-		bool isgoal = mapObj.CalcGoalEdgePoint(t_end, end);
-		if(true == isgoal)
-		{
-			nodeEnd.x = end.x;
-			nodeEnd.y = end.y;
-		}
+		bool isOK = SearchNodeInit(mapObj, test_start, test_goal, nodeStart, nodeEnd);
 
 		astarsearch.SetStartAndGoalStates( nodeStart, nodeEnd );
 
@@ -164,4 +151,85 @@ int main( int argc, char *argv[] )
 	
 	return 0;
 }
+
+bool SearchNodeInit(map_proc & Obj, map_point &start, map_point & goal, MapSearchNode &nodeStart, MapSearchNode &nodeEnd)
+{
+	// pos transfer to pix info
+	pix_point start_node = {1, 1};
+	pix_point goal_node = {1, 1};
+	pix_point revised_node = {1, 1};
+	bool trans_start_flag = false;
+	bool trans_goal_flag = false;
+	
+	trans_start_flag = Obj.NavPos2ImgPix(start, start_node);
+	trans_goal_flag = Obj.NavPos2ImgPix(goal, goal_node);
+
+	if(trans_start_flag && trans_goal_flag)
+	{
+		
+		nodeStart.x = start_node.x;
+		nodeStart.y = start_node.y;
+
+		bool isgoal = Obj.CalcGoalEdgePoint(goal_node, revised_node);
+		if(true == isgoal)
+		{
+			nodeEnd.x = revised_node.x;
+			nodeEnd.y = revised_node.y;
+		}
+		else
+		{
+			nodeEnd.x = goal.x;
+			nodeEnd.y = goal.y;	
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+
+}
+
+bool SearchNodeInit(map_proc & Obj, pix_point &start, pix_point & goal, MapSearchNode &nodeStart, MapSearchNode &nodeEnd)
+{
+	// pos transfer to pix info
+	pix_point start_node = {1, 1};
+	pix_point goal_node = {1, 1};
+	pix_point revised_node = {1, 1};
+	bool start_in_flag = false;
+	bool goal_in_flag = false;
+	
+	start_in_flag = Obj.PixBoundCheck(start);
+	goal_in_flag = Obj.PixBoundCheck(goal);
+
+	if(start_in_flag && goal_in_flag)
+	{
+		
+		nodeStart.x = start.x;
+		nodeStart.y = start.y;
+
+		bool isgoal = Obj.CalcGoalEdgePoint(goal, revised_node);
+		if(true == isgoal)
+		{
+			nodeEnd.x = revised_node.x;
+			nodeEnd.y = revised_node.y;
+		}
+		else
+		{
+			nodeEnd.x = goal.x;
+			nodeEnd.y = goal.y;		
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+
+}
+
 
