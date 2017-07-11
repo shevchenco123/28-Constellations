@@ -14,13 +14,11 @@
 #include <ctime>
 
 #include <ros/ros.h>
+#include <image_transport/image_transport.h>
 
 #include "stlastar.h" 
 #include "map_search.h"
 #include "map_proc.h"
-
-#include <image_transport/image_transport.h>
-
 
 #define DEBUG_LISTS 1
 #define DEBUG_LIST_LENGTHS_ONLY 0
@@ -34,8 +32,7 @@ int MAP_HEIGHT = 1;
 
 bool SearchNodeInit(map_proc & Obj, map_point &start, map_point & goal, MapSearchNode &nodeStart, MapSearchNode &nodeEnd);
 bool SearchNodeInit(map_proc & Obj, pix_point &start, pix_point & goal, MapSearchNode &nodeStart, MapSearchNode &nodeEnd);
-bool SearchAndObatinNodes(AStarSearch<MapSearchNode> &astarObj, map_proc & mapObj);
-
+bool SearchAndObatainNodes(AStarSearch<MapSearchNode> &astarObj, map_proc & mapObj);
 
 int main( int argc, char *argv[] )
 {
@@ -64,7 +61,7 @@ int main( int argc, char *argv[] )
 	if(true == isOK)
 	{
 		astarsearch.SetStartAndGoalStates( nodeStart, nodeEnd );
-		bool searchOk = SearchAndObatinNodes(astarsearch, mapObj);	
+		SearchAndObatainNodes(astarsearch, mapObj);
 		astarsearch.EnsureMemoryFreed();
 	}
 	else
@@ -170,7 +167,7 @@ bool SearchNodeInit(map_proc & Obj, pix_point &start, pix_point & goal, MapSearc
 
 }
 
-bool SearchAndObatinNodes(AStarSearch<MapSearchNode> &astarObj, map_proc & mapObj)
+bool SearchAndObatainNodes(AStarSearch<MapSearchNode> &astarObj, map_proc & mapObj)
 {
 	unsigned int SearchState;
 	unsigned int SearchSteps = 0;
@@ -180,9 +177,9 @@ bool SearchAndObatinNodes(AStarSearch<MapSearchNode> &astarObj, map_proc & mapOb
 		SearchState = astarObj.SearchStep();
 		SearchSteps++;
 	}
-	while( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_SEARCHING );
+	while(SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_SEARCHING);
 	
-	if( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_SUCCEEDED )
+	if(SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_SUCCEEDED)
 	{
 			cout << "Search found goal state\n";
 	
@@ -191,7 +188,6 @@ bool SearchAndObatinNodes(AStarSearch<MapSearchNode> &astarObj, map_proc & mapOb
 	
 			MapSearchNode *node = astarObj.GetSolutionStart();
 			int steps = 0;
-	
 			node->PrintNodeInfo();
 			for( ;; )
 			{
@@ -207,24 +203,18 @@ bool SearchAndObatinNodes(AStarSearch<MapSearchNode> &astarObj, map_proc & mapOb
 				
 				tmp_nav_node.x = node->x;
 				tmp_nav_node.y = node->y;				
-				mapObj.nav_nodes.push_back(tmp_nav_node);
-				
+				mapObj.nav_nodes.push_back(tmp_nav_node);	
 	
 			};
-	
 			cout << "Solution steps " << steps << endl;
-	
 			// Once you're done with the solution you can free the nodes up
-			astarObj.FreeSolutionNodes();
-
-			
+			astarObj.FreeSolutionNodes();	
 	
 	}
 	else if( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_FAILED )
-	{
-		return false;
+	{	
 		cout << "Search terminated. Did not find goal state\n";
-	
+		return false;
 	}
 	
 	// Display the number of loops the search went through
