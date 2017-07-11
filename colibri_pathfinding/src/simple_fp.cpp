@@ -142,8 +142,11 @@ int main( int argc, char *argv[] )
 		SearchCount ++;
 		astarsearch.EnsureMemoryFreed();
 	}
+	
+	vector<smpix_point> tmp_smnodes; 
 
-
+	tmp_smnodes	= Smooth5p3t(mapObj.nav_nodes);
+	
 	mapObj.PixNodes2NavPath(mapObj.nav_nodes, mapObj.nav_path);
 
 	while (mapObj.nh_img.ok()) 

@@ -9,6 +9,44 @@ Type stringToNum(const string& str)
     return num;      
 }  
 
+vector<smpix_point> Smooth5p3t(vector<pix_point> &input)
+{
+	vector<smpix_point> output;
+	vector<pix_point> mid_val(input);
+	smpix_point tmp_val;
+	size_t len = input.size();
+	if(len < 5)
+	{
+		cout<<"can not exec the 5 points 3 time smooth filter!"<<endl;
+		return output;
+	}
+	
+	tmp_val.x = (69 * mid_val[0].x + 4 * (mid_val[1].x + mid_val[3].x) - 6 * mid_val[2].x - mid_val[4].x) / 70.0;
+	tmp_val.y = (69 * mid_val[0].y + 4 * (mid_val[1].y + mid_val[3].y) - 6 * mid_val[2].y - mid_val[4].y) / 70.0;
+	output.push_back(tmp_val);
+	
+	tmp_val.x = (2 * (mid_val[0].x + mid_val[4].x) + 27 * mid_val[1].x + 12 * mid_val[2].x - 8 * mid_val[3].x) / 35.0;
+	tmp_val.y = (2 * (mid_val[0].y + mid_val[4].y) + 27 * mid_val[1].y + 12 * mid_val[2].y - 8 * mid_val[3].y) / 35.0;
+	output.push_back(tmp_val);
+
+	for(size_t j = 2; j < (len - 2); j++)
+	{
+		tmp_val.x = (-3 * (mid_val[j-2].x + mid_val[j + 2].x) + 12 * (mid_val[j -1].x + mid_val[j + 1].x) + 17 * mid_val[j].x) / 35.0;
+		tmp_val.y = (-3 * (mid_val[j-2].y + mid_val[j + 2].y) + 12 * (mid_val[j -1].y + mid_val[j + 1].y) + 17 * mid_val[j].y) / 35.0;
+		output.push_back(tmp_val);
+	}
+	
+	tmp_val.x = (2 * (mid_val[len - 1].x + mid_val[len - 5].x) + 27 * mid_val[len - 2].x + 12 * mid_val[len - 3].x - 8 * mid_val[len - 4].x) / 35.0;
+	tmp_val.y = (2 * (mid_val[len - 1].y + mid_val[len - 5].y) + 27 * mid_val[len - 2].y + 12 * mid_val[len - 3].y - 8 * mid_val[len - 4].y) / 35.0;
+	output.push_back(tmp_val);
+	tmp_val.x = (69 * mid_val[len -1].x + 4 * (mid_val[len - 2].x + mid_val[len - 4].x) - 6 * mid_val[len - 3].x - mid_val[len - 4].x) / 70.0;
+	tmp_val.y = (69 * mid_val[len -1].y + 4 * (mid_val[len - 2].y + mid_val[len - 4].y) - 6 * mid_val[len - 3].y - mid_val[len - 4].y) / 70.0;
+	output.push_back(tmp_val);
+
+	return output;
+}
+
+
 map_proc::map_proc()
 {
 	cur_goal[0] = 0.0;
@@ -264,13 +302,13 @@ bool map_proc::PixBoundCheck(pix_point & pix)
 
 }
 
-bool map_proc::ParseMapOrigin(void)
+void map_proc::ParseMapOrigin(void)
 {
 	vector<string> vStr;
 	boost::split( vStr, str_origin, boost::is_any_of( ", " ), boost::token_compress_on );
 	for( vector<string>::iterator it = vStr.begin(); it != vStr.end(); ++it )
 	{
-	  cout << *it << endl;
+	  //cout << *it << endl;
 	}
 	map_origin[0] = stringToNum<float>(vStr[0].substr(1));
 	map_origin[1] = stringToNum<float>(vStr[1]);

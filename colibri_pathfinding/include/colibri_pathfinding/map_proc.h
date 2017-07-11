@@ -53,46 +53,7 @@ typedef struct st_map_point
 	
 }map_point;
 
-template<typename T1, typename T2>
-vector<T1> Smooth5p3t(const vector<T2> input, const int iter)
-{
-	vector<T1> output;
-	vector<T1> mid_val(input);
-	T1 tmp_val;
-	size_t len = input.size();
-	if(len < 5)
-	{
-		cout<<"can not exec the 5 points 3 time smooth filter!"<<endl;
-		output.swap(input);
-		return output;
-	}
-	
-	for(int i = 0; i < iter; i++)
-	{
-		tmp_val = (69 * mid_val[0] + 4 * (mid_val[1] + mid_val[3]) - 6 * mid_val[2] - mid_val[4]) / 70.0;
-		output.push_back(tmp_val);
-		tmp_val = (2 * (mid_val[0] + mid_val[4]) + 27 * mid_val[1] + 12 * mid_val[2] - 8 * mid_val[3] ) / 35.0;
-		output.push_back(tmp_val);
-
-		for(size_t j = 2; j < (len - 2); j++)
-		{
-			tmp_val = (-3 * (mid_val[j-2] + mid_val[j + 2]) + 12 * (mid_val[j -1] + mid_val[j + 1]) + 17 * mid_val[j]) / 35.0;
-			output.push_back(tmp_val);
-		}
-		
-		tmp_val = (2 * (mid_val[len - 1] + mid_val[len - 5]) + 27 * mid_val[len - 2] + 12 * mid_val[len - 3] - 8 * mid_val[len - 4]) / 35.0;
-		output.push_back(tmp_val);
-		tmp_val = (69 * mid_val[len -1] + 4 * (mid_val[len - 2] + mid_val[len - 4]) - 6 * mid_val[len - 3] - mid_val[len - 4]) / 70.0;
-		output.push_back(tmp_val);
-
-		mid_val.swap(output);
-
-	}
-
-	return output;
-}
-
-
+vector<smpix_point> Smooth5p3t(vector<pix_point> &input);
 
 class map_proc
 {
@@ -139,7 +100,7 @@ class map_proc
 		bool LocalMapUpdate(void); //TODO
 		bool LoadGoalFromTask(void); //TODO
 
-		bool ParseMapOrigin(void);
+		void ParseMapOrigin(void);
 
 
 	private:
