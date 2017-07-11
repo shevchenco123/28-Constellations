@@ -37,6 +37,9 @@ int MAP_HEIGHT = 1;
 int main( int argc, char *argv[] )
 {
 
+	clock_t start,finish;
+	double totaltime;
+
 	ros::init(argc, argv, "find_route");
 	map_proc mapObj;
 	
@@ -61,7 +64,7 @@ int main( int argc, char *argv[] )
 		// Define the goal state
 		MapSearchNode nodeEnd;
 		nodeEnd.x = 600;
-		nodeEnd.y = 92;
+		nodeEnd.y = 80;
 		// Set Start and goal states
 
 		pix_point t_end;
@@ -81,12 +84,18 @@ int main( int argc, char *argv[] )
 		unsigned int SearchState;
 		unsigned int SearchSteps = 0;
 
+		start=clock();
+
 		do
 		{
 			SearchState = astarsearch.SearchStep();
 			SearchSteps++;
 		}
 		while( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_SEARCHING );
+
+		finish=clock();
+		totaltime=(double)(finish-start)/CLOCKS_PER_SEC;
+		cout<<"searching running time:	"<<totaltime<<endl;
 
 		if( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_SUCCEEDED )
 		{
