@@ -177,6 +177,19 @@ bool map_proc::ImgPix2NavPos(pix_point & pix, map_point & position)
 	
 }
 
+bool map_proc::ImgPix2NavPos(smpix_point & pix, map_point & position)
+{
+	bool transfer_flag = false;
+
+	position.x = map_origin[0] + map_resol * pix.x;
+	position.y = map_origin[1] + (MAP_HEIGHT - pix.y) * map_resol;
+	position.yaw = 0.0;
+	
+	return true;
+	
+}
+
+
 bool map_proc::NavPos2ImgPix(map_point & position, pix_point & pix)
 {
 	bool transfer_flag = false;
@@ -208,6 +221,28 @@ bool map_proc::PixNodes2NavPath(vector<pix_point> & nav_nodes, vector<map_point>
 		
     }
 	return true;
+}
+
+bool map_proc::PixNodes2NavPath(vector<smpix_point> & smnav_nodes, vector<map_point> &nav_path)
+{
+	map_point tmp_pos;
+	nav_path.clear();
+	size_t len = smnav_nodes.size();
+    for (size_t i = 0; i < len; i++)
+    {
+
+		if(ImgPix2NavPos(smnav_nodes[i], tmp_pos))
+		{
+			nav_path.push_back(tmp_pos);
+		}
+		else
+		{
+			return false;
+		}
+		
+    }
+	return true;
+
 }
 
 void map_proc::NavPath2PixNodes()

@@ -147,7 +147,7 @@ int main( int argc, char *argv[] )
 
 	tmp_smnodes	= Smooth5p3t(mapObj.nav_nodes);
 	
-	mapObj.PixNodes2NavPath(mapObj.nav_nodes, mapObj.nav_path);
+	mapObj.PixNodes2NavPath(tmp_smnodes, mapObj.nav_path);
 
 	while (mapObj.nh_img.ok()) 
 	{

@@ -90,9 +90,11 @@ class map_proc
 		bool SearchMapPreProc(void);
 		
 		bool ImgPix2NavPos(pix_point & pix, map_point & position);
+		bool ImgPix2NavPos(smpix_point & pix, map_point & position);
 		bool NavPos2ImgPix(map_point & position, pix_point & pix);
 		
 		bool PixNodes2NavPath(vector<pix_point> & nav_nodes, vector<map_point> &nav_path);
+		bool PixNodes2NavPath(vector<smpix_point> & smnav_nodes, vector<map_point> &nav_path);
 
 		void NavPath2PixNodes();
 		bool PubNavPath(vector<map_point> &nav_path);
