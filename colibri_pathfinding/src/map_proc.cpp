@@ -1,5 +1,16 @@
 #include "map_proc.h"
 
+#ifdef HAVE_NEW_YAMLCPP
+// The >> operator disappeared in yaml-cpp 0.5, so this function is
+// added to provide support for code written under the yaml-cpp 0.3 API.
+template<typename T>
+void operator >> (const YAML::Node& node, T& i)
+{
+  i = node.as<T>();
+}
+#endif
+
+
 template <class Type>  
 Type stringToNum(const string& str)  
 {  
@@ -47,7 +58,7 @@ vector<smpix_point> Smooth5p3t(vector<pix_point> &input)
 }
 
 
-map_proc::map_proc()
+map_proc::map_proc(const string & fname)
 {
 	cur_goal[0] = 0.0;
 	cur_goal[1] = 0.0;
@@ -60,9 +71,36 @@ map_proc::map_proc()
 	terminal.y = 1;
 	revised_terminal.x = terminal.x;
 	revised_terminal.y = terminal.y;
-	string tmp = "[-20.0, -4.027744, 0.0]";
-	nh_img.param("origin", str_origin,tmp);
-	nh_img.param("resolution", map_resol, (float)0.05);
+
+	ifstream fin(fname.c_str());
+	if(fin.fail())
+	{
+		ROS_ERROR("map yaml can not open in parse the map yaml argv in proc");
+		exit(-1);
+	}
+
+#ifdef HAVE_NEW_YAMLCPP
+		// The document loading process changed in yaml-cpp 0.5.
+		YAML::Node doc = YAML::Load(fin);
+#else
+		YAML::Parser parser(fin);
+		YAML::Node doc;
+		parser.GetNextDocument(doc);
+#endif
+
+
+	try 
+	{ 
+		doc["origin"][0] >> map_origin[0]; 
+		doc["origin"][1] >> map_origin[1]; 
+		doc["origin"][2] >> map_origin[2]; 
+	} catch (YAML::InvalidScalar) 
+	{ 
+		ROS_ERROR("The map does not contain an origin tag or it is invalid.");
+		exit(-1);
+	}
+	
+	nh_img.param("/fp_node/resolution", map_resol, (float)0.05);
 
 	pub4path = nh_img.advertise<nav_msgs::Path>("/nav_path", 1);
 

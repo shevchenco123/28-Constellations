@@ -27,18 +27,16 @@ AStarSearch<MapSearchNode> astarsearch;
 int main( int argc, char *argv[] )
 {
 
-	ros::init(argc, argv, "path_plan_node");
-
-	map_proc mapObj;
-	pix_point test_start = {390, 150};
-	pix_point test_goal = {600, 97};
-
-	MapSearchNode nodeStart;
-	MapSearchNode nodeEnd;
+	ros::init(argc, argv, "fp_node");
+	string fname(argv[1]);
+	map_proc mapObj(fname);
 
 	ros::Rate loop_rate(1); 
 	
 	ROS_INFO("Ready to provide path_planning srv.");
+	cout<<"map_origin:"<<mapObj.map_origin[0]<<" "<<mapObj.map_origin[1]<<endl;
+	cout<<"map_resol:"<<mapObj.map_resol<<endl;
+
 
 	while (mapObj.nh_img.ok()) 
 	{

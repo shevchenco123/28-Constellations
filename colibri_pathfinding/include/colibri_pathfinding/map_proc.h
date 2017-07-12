@@ -4,6 +4,9 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
+#include <fstream>
+#include "yaml-cpp/yaml.h"
+
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "nav_msgs/Path.h" 
@@ -91,7 +94,7 @@ class map_proc
 		vector<map_point> nav_path;
 		nav_msgs::Path plan_path;
 
-		map_proc();
+		map_proc(const string & fname);
 		~map_proc();
 		
 		bool CalcGoalEdgePoint(pix_point & end, pix_point & revised_end);
