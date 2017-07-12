@@ -21,7 +21,6 @@ int world_map[ MAP_WIDTH_MAX * MAP_HEIGHT_MAX ] = {};
 int MAP_WIDTH = 1;
 int MAP_HEIGHT = 1;
 
-
 AStarSearch<MapSearchNode> astarsearch;
 
 int main( int argc, char *argv[] )

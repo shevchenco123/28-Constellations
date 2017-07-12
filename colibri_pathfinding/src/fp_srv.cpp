@@ -27,7 +27,7 @@ AStarSearch<MapSearchNode> astarsearch;
 int main( int argc, char *argv[] )
 {
 
-	ros::init(argc, argv, "find_route");
+	ros::init(argc, argv, "path_plan_node");
 
 	map_proc mapObj;
 	pix_point test_start = {390, 150};
@@ -38,7 +38,7 @@ int main( int argc, char *argv[] )
 
 	ros::Rate loop_rate(1); 
 	
-	ROS_INFO("Ready to provide sex srv.");
+	ROS_INFO("Ready to provide path_planning srv.");
 
 	while (mapObj.nh_img.ok()) 
 	{
