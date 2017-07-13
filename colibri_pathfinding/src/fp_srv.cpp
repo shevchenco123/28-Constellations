@@ -31,6 +31,8 @@ int main( int argc, char *argv[] )
 	string fname(argv[1]);
 	map_proc mapObj(fname);
 
+	mapObj.SearchMapPreProc();
+
 	ros::Rate loop_rate(1); 
 	
 	ROS_INFO("Ready to provide path_planning srv.");

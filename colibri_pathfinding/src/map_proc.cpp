@@ -236,7 +236,12 @@ bool map_proc::NavPos2ImgPix(map_point & position, pix_point & pix)
 	bool transfer_flag = false;
 
 	pix.x = floor((position.x - map_origin[0]) / map_resol);
-	pix.y = floor(MAP_HEIGHT - ((position.x - map_origin[1]) / map_resol));
+	pix.y = floor(MAP_HEIGHT - ((position.y - map_origin[1]) / map_resol));
+	cout<<"MAP_WIDTH: "<<MAP_WIDTH<<endl;
+	cout<<"MAP_HEIGHT: "<<MAP_HEIGHT<<endl;
+	cout<<"map_origin[0]: "<<map_origin[0]<<endl;
+	cout<<"map_origin[1]: "<<map_origin[1]<<endl;
+	cout<<"map_resol: "<<map_resol<<endl;
 
 	transfer_flag = PixBoundCheck(pix);
 
@@ -398,6 +403,10 @@ bool map_proc::ExecPathFindingSrv(nav_msgs::GetPlan::Request & req, nav_msgs::Ge
 	tmp_start.y = req.start.pose.position.y;
 	tmp_goal.x = req.goal.pose.position.x;
 	tmp_goal.y = req.goal.pose.position.y;
+	cout<<"req start.x: "<<tmp_start.x<<endl;
+	cout<<"req start.y: "<<tmp_start.y<<endl;
+	cout<<"req goal.x: "<<tmp_goal.x<<endl;
+	cout<<"req goal.y: "<<tmp_goal.y<<endl;	
 
 	MapSearchNode nodeStart;
 	MapSearchNode nodeEnd;
