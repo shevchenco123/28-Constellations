@@ -104,7 +104,7 @@ map_proc::map_proc(const string & fname)
 
 	pub4path = nh_img.advertise<nav_msgs::Path>("/nav_path", 1);
 
-	map_image = imread("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/626_mdf.pgm", CV_LOAD_IMAGE_COLOR);
+	map_image = imread("/home/colibri/colibri_ws/src/colibri_pathfinding/maps/626_mdf.pgm", CV_LOAD_IMAGE_COLOR);
 	if(map_image.empty())
 	{
 	 	cout<<"open existed map error!"<<endl;
