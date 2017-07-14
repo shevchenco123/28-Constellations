@@ -57,7 +57,10 @@ void MapSearchNode::PrintNodeInfo()
 
 float MapSearchNode::GoalDistanceEstimate( MapSearchNode &nodeGoal )
 {
-	return fabsf(x - nodeGoal.x) + fabsf(y - nodeGoal.y);
+	//return fabsf(x - nodeGoal.x) + fabsf(y - nodeGoal.y);
+	float h_dis =  fabsf(x - nodeGoal.x) + fabsf(y - nodeGoal.y);	//init using manhaton dis
+	h_dis = sqrt(pow((nodeGoal.x - x), 2) + pow((nodeGoal.y - y), 2));
+	return h_dis;
 }
 
 bool MapSearchNode::IsGoal( MapSearchNode &nodeGoal )
@@ -164,7 +167,10 @@ bool MapSearchNode::GetSuccessors( AStarSearch<MapSearchNode> *astarsearch, MapS
 
 float MapSearchNode::GetCost( MapSearchNode &successor )
 {
-	return (float) GetMap( x, y);
+//	return (float) GetMap( x, y);
+	float g_dis = 1.0;	//using current node's successor to current nodes euculide dis works as the current move cost instead of current nodes's val
+	g_dis = sqrt(pow((successor.x - x), 2) + pow((successor.y - y), 2));
 
+	return g_dis;
 }
 
