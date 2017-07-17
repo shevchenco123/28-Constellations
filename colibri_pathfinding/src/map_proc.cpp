@@ -72,6 +72,11 @@ map_proc::map_proc(const string & fname)
 	revised_terminal.x = terminal.x;
 	revised_terminal.y = terminal.y;
 
+	orimap_width = 0;
+	orimap_height = 0;	
+	submap_width_comple = 0;
+	submap_height_comple = 0;
+
 	ifstream fin(fname.c_str());
 	if(fin.fail())
 	{
@@ -104,7 +109,7 @@ map_proc::map_proc(const string & fname)
 
 	pub4path = nh_img.advertise<nav_msgs::Path>("/nav_path", 1);
 
-	map_image = imread("/home/colibri/colibri_ws/src/colibri_pathfinding/maps/626_mdf.pgm", CV_LOAD_IMAGE_COLOR);
+	map_image = imread("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/626_mdf.pgm", CV_LOAD_IMAGE_COLOR);
 	if(map_image.empty())
 	{
 	 	cout<<"open existed map error!"<<endl;
@@ -188,8 +193,9 @@ bool map_proc::SearchMapPreProc(void)
 	erode( map_image, dilation_img, structe_element );		
 	cvtColor(dilation_img, gray_img, CV_BGR2GRAY);
 	msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", gray_img).toImageMsg();
+	/*
 
-/*	this segment code is for original inflated map for searching;
+	//this segment code is for original inflated map for searching;
 	MAP_WIDTH = msg->width;
 	MAP_HEIGHT = msg->height;
 	for (int pix_index = 0; pix_index < MAP_WIDTH*MAP_HEIGHT; pix_index++)
@@ -198,16 +204,58 @@ bool map_proc::SearchMapPreProc(void)
 
 	}
 	return true;
-*/
+	
+	*/
 
-	MAP_WIDTH = int (msg->width / SUBMAP_ROSOL);
-	MAP_HEIGHT = int (msg->height / SUBMAP_ROSOL);
+	orimap_width = (int) msg->width;
+	orimap_height = (int) msg->height;
+
+	MAP_WIDTH = int (orimap_width / SUBMAP_RESOL);
+	MAP_HEIGHT = int (orimap_height / SUBMAP_RESOL);
+
+	submap_width_comple = msg->width % SUBMAP_RESOL;
+	submap_height_comple = msg->height % SUBMAP_RESOL;
+
+	CalcSubMap(msg);
 
 	return true;	
-
-
-
 }
+
+bool map_proc::CalcSubMap(sensor_msgs::ImagePtr &msg)
+{
+	int blank_matrix[SUBMAP_RESOL*SUBMAP_RESOL];
+	memset(blank_matrix, 1, sizeof(blank_matrix));
+	
+	ofstream  file1; 
+	file1.open("/home/colibri/submap.txt");	
+
+	vector<int> square_matrix(blank_matrix, blank_matrix + sizeof(blank_matrix)/sizeof(blank_matrix[0]));
+	int tmp_val = 254;
+	
+	for(int y = 0; y < MAP_HEIGHT; y++)
+	{
+		for(int x = 0; x < MAP_WIDTH; x++)
+		{
+			square_matrix.clear();
+			for(int index = 0; index < SUBMAP_RESOL*SUBMAP_RESOL; index++)
+			{
+				int sub_row = index / SUBMAP_RESOL;
+				int sub_col = index % SUBMAP_RESOL;
+				square_matrix.push_back(msg->data[x * SUBMAP_RESOL + (SUBMAP_RESOL*y + sub_row) * orimap_width + sub_col]);
+			}
+			tmp_val = *min_element(square_matrix.begin(),square_matrix.end());
+			world_map[x + y*MAP_WIDTH] = 255 - tmp_val;
+			file1 << world_map[x + y*MAP_WIDTH];
+			file1 << '\t';			
+		}
+			file1 << '\n';	
+	}
+
+	file1.close();
+
+	return true;
+}
+
 
 bool map_proc::ImgPix2NavPos(pix_point & pix, map_point & position)
 {
@@ -244,6 +292,11 @@ bool map_proc::NavPos2ImgPix(map_point & position, pix_point & pix)
 {
 	bool transfer_flag = false;
 
+#ifdef SUBMAP_SEARCH
+	pix.x = floor((position.x - map_origin[0]) / map_resol);
+	pix.y = floor(MAP_HEIGHT - ((position.y - map_origin[1]) / map_resol));
+
+#else
 	pix.x = floor((position.x - map_origin[0]) / map_resol);
 	pix.y = floor(MAP_HEIGHT - ((position.y - map_origin[1]) / map_resol));
 	cout<<"MAP_WIDTH: "<<MAP_WIDTH<<endl;
@@ -251,6 +304,7 @@ bool map_proc::NavPos2ImgPix(map_point & position, pix_point & pix)
 	cout<<"map_origin[0]: "<<map_origin[0]<<endl;
 	cout<<"map_origin[1]: "<<map_origin[1]<<endl;
 	cout<<"map_resol: "<<map_resol<<endl;
+#endif
 
 	transfer_flag = PixBoundCheck(pix);
 

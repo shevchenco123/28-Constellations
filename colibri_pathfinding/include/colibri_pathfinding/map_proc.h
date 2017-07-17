@@ -40,7 +40,9 @@ extern AStarSearch<MapSearchNode> astarsearch;
 #define GOAL_EDGE_MAX 15
 
 #define RAD2DEG 57.296
-#define SUBMAP_ROSOL 3
+
+#define SUBMAP_SEARCH
+#define SUBMAP_RESOL 3
 
 typedef struct st_pix_point
 {
@@ -91,6 +93,11 @@ class map_proc
 		float map_origin[3];
 		float map_resol;
 
+		int orimap_width;
+		int orimap_height;
+		int submap_width_comple;
+		int submap_height_comple;
+
 		vector<pix_point> nav_nodes;
 		vector<map_point> nav_path;
 		nav_msgs::Path plan_path;
@@ -113,6 +120,8 @@ class map_proc
 
 		bool LocalMapUpdate(void); //TODO
 		bool LoadGoalFromTask(void); //TODO
+
+		bool CalcSubMap(sensor_msgs::ImagePtr &msg);
 
 		void ParseMapOrigin(void);
 
