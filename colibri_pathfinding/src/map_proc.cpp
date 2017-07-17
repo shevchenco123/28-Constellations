@@ -225,9 +225,6 @@ bool map_proc::CalcSubMap(sensor_msgs::ImagePtr &msg)
 {
 	int blank_matrix[SUBMAP_RESOL*SUBMAP_RESOL];
 	memset(blank_matrix, 1, sizeof(blank_matrix));
-	
-	ofstream  file1; 
-	file1.open("/home/colibri/submap.txt");	
 
 	vector<int> square_matrix(blank_matrix, blank_matrix + sizeof(blank_matrix)/sizeof(blank_matrix[0]));
 	int tmp_val = 254;
@@ -244,14 +241,10 @@ bool map_proc::CalcSubMap(sensor_msgs::ImagePtr &msg)
 				square_matrix.push_back(msg->data[x * SUBMAP_RESOL + (SUBMAP_RESOL*y + sub_row) * orimap_width + sub_col]);
 			}
 			tmp_val = *min_element(square_matrix.begin(),square_matrix.end());
-			world_map[x + y*MAP_WIDTH] = 255 - tmp_val;
-			file1 << world_map[x + y*MAP_WIDTH];
-			file1 << '\t';			
+			world_map[x + y*MAP_WIDTH] = 255 - tmp_val;		
 		}
-			file1 << '\n';	
 	}
 
-	file1.close();
 
 	return true;
 }
