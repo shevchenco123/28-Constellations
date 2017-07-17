@@ -138,7 +138,9 @@ bool map_proc::CalcGoalEdgePoint(pix_point & end, pix_point & revised_end)
 	}
 	else
 	{
-		for(int i = 1; i <= GOAL_EDGE_MAX; i++)	// should conce
+
+#ifdef SUBMAP_SEARCH
+		for(int i = 1; i <= 2; i++) // only concern 2*SUBMAP_RESOL*mapresol
 		{
 			if(world_map[end.y * MAP_WIDTH + end.x + i] < 255)
 			{
@@ -181,6 +183,54 @@ bool map_proc::CalcGoalEdgePoint(pix_point & end, pix_point & revised_end)
 			}
 
 		}
+
+#else
+		for(int i = 1; i <= GOAL_EDGE_MAX; i++) // should conce
+		{
+			if(world_map[end.y * MAP_WIDTH + end.x + i] < 255)
+			{
+				revised_end.x = end.x + i;
+				revised_end.y = end.y;	
+
+				break;
+			}
+			if(world_map[(end.y - i) * MAP_WIDTH + end.x] < 255)
+			{
+				revised_end.x = end.x ;
+				revised_end.y = end.y - i;	
+
+				break;
+			}
+
+			if(world_map[end.y * MAP_WIDTH + end.x - i] < 255)
+			{
+				revised_end.x = end.x - i;
+				revised_end.y = end.y;	
+
+				break;
+			}
+
+			if(world_map[(end.y + i) *MAP_WIDTH + end.x] < 255)
+			{
+				revised_end.x = end.x;
+				revised_end.y = end.y + i;
+
+				break;
+			}
+			
+			if( GOAL_EDGE_MAX == i)
+			{
+				cout <<"No nearest edge point to approx the goal!"<<endl;
+				revised_end.x = end.x;
+				revised_end.y = end.y;
+
+				return false;
+			}
+
+		}
+
+#endif
+
 	}
 
 	return true;
@@ -193,20 +243,8 @@ bool map_proc::SearchMapPreProc(void)
 	erode( map_image, dilation_img, structe_element );		
 	cvtColor(dilation_img, gray_img, CV_BGR2GRAY);
 	msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", gray_img).toImageMsg();
-	/*
 
-	//this segment code is for original inflated map for searching;
-	MAP_WIDTH = msg->width;
-	MAP_HEIGHT = msg->height;
-	for (int pix_index = 0; pix_index < MAP_WIDTH*MAP_HEIGHT; pix_index++)
-	{
-		world_map[pix_index] = 255 - msg->data[pix_index];
-
-	}
-	return true;
-	
-	*/
-
+#ifdef SUBMAP_SEARCH
 	orimap_width = (int) msg->width;
 	orimap_height = (int) msg->height;
 
@@ -217,6 +255,17 @@ bool map_proc::SearchMapPreProc(void)
 	submap_height_comple = msg->height % SUBMAP_RESOL;
 
 	CalcSubMap(msg);
+
+#else
+	MAP_WIDTH = msg->width;
+	MAP_HEIGHT = msg->height;
+	for (int pix_index = 0; pix_index < MAP_WIDTH*MAP_HEIGHT; pix_index++)
+	{
+		world_map[pix_index] = 255 - msg->data[pix_index];
+
+	}
+
+#endif
 
 	return true;	
 }
@@ -245,7 +294,6 @@ bool map_proc::CalcSubMap(sensor_msgs::ImagePtr &msg)
 		}
 	}
 
-
 	return true;
 }
 
@@ -260,9 +308,18 @@ bool map_proc::ImgPix2NavPos(pix_point & pix, map_point & position)
 	}
 	else
 	{
-		position.x = map_origin[0] + map_resol * pix.x;
-		position.y = map_origin[1] + (MAP_HEIGHT - pix.y) * map_resol;
-		position.yaw = 0.0;
+
+#ifdef SUBMAP_SEARCH
+	position.x = map_origin[0] + map_resol * (SUBMAP_RESOL * pix.x + 1);
+	position.y = map_origin[1] + submap_height_comple*map_resol + (MAP_HEIGHT - pix.y) * map_resol * SUBMAP_RESOL - map_resol;
+	position.yaw = 0.0;
+	
+#else
+	position.x = map_origin[0] + map_resol * pix.x;
+	position.y = map_origin[1] + (MAP_HEIGHT - pix.y) * map_resol;
+	position.yaw = 0.0;
+
+#endif
 		return true;
 	}
 	
@@ -272,9 +329,18 @@ bool map_proc::ImgPix2NavPos(smpix_point & pix, map_point & position)
 {
 	bool transfer_flag = false;
 
-	position.x = map_origin[0] + map_resol * pix.x;
-	position.y = map_origin[1] + (MAP_HEIGHT - pix.y) * map_resol;
-	position.yaw = 0.0;
+#ifdef SUBMAP_SEARCH
+		position.x = map_origin[0] + map_resol * (SUBMAP_RESOL * pix.x + 1);
+		position.y = map_origin[1] + submap_height_comple*map_resol + (MAP_HEIGHT - pix.y) * map_resol * SUBMAP_RESOL - map_resol;
+		position.yaw = 0.0;
+		
+#else
+		position.x = map_origin[0] + map_resol * pix.x;
+		position.y = map_origin[1] + (MAP_HEIGHT - pix.y) * map_resol;
+		position.yaw = 0.0;
+	
+#endif
+
 	
 	return true;
 	
@@ -286,18 +352,20 @@ bool map_proc::NavPos2ImgPix(map_point & position, pix_point & pix)
 	bool transfer_flag = false;
 
 #ifdef SUBMAP_SEARCH
-	pix.x = floor((position.x - map_origin[0]) / map_resol);
-	pix.y = floor(MAP_HEIGHT - ((position.y - map_origin[1]) / map_resol));
+	pix.x = floor((position.x - map_origin[0]) / (map_resol * SUBMAP_RESOL));
+	pix.y = floor(MAP_HEIGHT - ((position.y - map_origin[1] - submap_height_comple*map_resol) / (map_resol * SUBMAP_RESOL)));
 
 #else
 	pix.x = floor((position.x - map_origin[0]) / map_resol);
 	pix.y = floor(MAP_HEIGHT - ((position.y - map_origin[1]) / map_resol));
+
+#endif
+
 	cout<<"MAP_WIDTH: "<<MAP_WIDTH<<endl;
 	cout<<"MAP_HEIGHT: "<<MAP_HEIGHT<<endl;
 	cout<<"map_origin[0]: "<<map_origin[0]<<endl;
 	cout<<"map_origin[1]: "<<map_origin[1]<<endl;
 	cout<<"map_resol: "<<map_resol<<endl;
-#endif
 
 	transfer_flag = PixBoundCheck(pix);
 
