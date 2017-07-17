@@ -40,6 +40,7 @@ extern AStarSearch<MapSearchNode> astarsearch;
 #define GOAL_EDGE_MAX 15
 
 #define RAD2DEG 57.296
+#define SUBMAP_ROSOL 3
 
 typedef struct st_pix_point
 {

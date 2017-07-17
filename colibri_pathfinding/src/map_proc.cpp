@@ -189,14 +189,23 @@ bool map_proc::SearchMapPreProc(void)
 	cvtColor(dilation_img, gray_img, CV_BGR2GRAY);
 	msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", gray_img).toImageMsg();
 
+/*	this segment code is for original inflated map for searching;
 	MAP_WIDTH = msg->width;
 	MAP_HEIGHT = msg->height;
-
 	for (int pix_index = 0; pix_index < MAP_WIDTH*MAP_HEIGHT; pix_index++)
 	{
 		world_map[pix_index] = 255 - msg->data[pix_index];
 
 	}
+	return true;
+*/
+
+	MAP_WIDTH = int (msg->width / SUBMAP_ROSOL);
+	MAP_HEIGHT = int (msg->height / SUBMAP_ROSOL);
+
+	return true;	
+
+
 
 }
 
