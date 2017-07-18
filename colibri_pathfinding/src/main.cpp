@@ -20,7 +20,7 @@ int main(int argc, char** argv)
   ros::NodeHandle nh;
   image_transport::ImageTransport it(nh);
   image_transport::Publisher pub = it.advertise("maps/image", 1);
-  Mat image = imread("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/626_mdf.pgm", CV_LOAD_IMAGE_COLOR);
+  Mat image = imread("/home/colibri/colibri_ws/src/colibri_pathfinding/maps/626_mdf.pgm", CV_LOAD_IMAGE_COLOR);
   namedWindow(INPUT, CV_WINDOW_AUTOSIZE); 
   imshow(INPUT, image); 
 
@@ -38,7 +38,7 @@ int main(int argc, char** argv)
   imshow(OUTPUT, dilation_dst); 
 
 
-  imwrite("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/Gray_Image.pgm", dilation_dst);
+  imwrite("/home/colibri/colibri_ws/src/colibri_pathfinding/maps/Gray_Image.pgm", dilation_dst);
 
   if(image.empty()){
    printf("open error\n");
