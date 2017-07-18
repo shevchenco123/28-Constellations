@@ -185,7 +185,10 @@ int main(int argc, char* argv[])
 			
 			if(tmp_delta_dis >= GOAL_NGHBORHD)
 			{
+				cout<<"+++ Exe Ajust Dir Action : "<<endl;
 				ptr_action_cmd_t = actionObj.AdjustMovingDirAction(&local4navObj.amcl_cur_state[2], &dir_goal_in_laser, &tmp_robot2goal_yaw, &turn_adj_flag);
+				
+				cout<<"--- Exe Ajust Dir a Ctrl Circle"<<endl;
 			}
 			else
 			{
@@ -215,7 +218,7 @@ int main(int argc, char* argv[])
 			
 			cout<<"tmp_delta_dis: " << tmp_delta_dis <<endl;
 			
-			cout<<"local4navObj.laser_safe_velocity.steer:"<< local4navObj.laser_safe_velocity.steer<< endl;
+			//cout<<"local4navObj.laser_safe_velocity.steer:"<< local4navObj.laser_safe_velocity.steer<< endl;
 			cout<<"rt_r2g_dis: " << rt_r2g_dis <<endl;
 
 			float tmp_linear = local4navObj.apf_cmd_vel.linear.x;

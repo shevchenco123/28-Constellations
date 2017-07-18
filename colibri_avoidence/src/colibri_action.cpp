@@ -174,6 +174,7 @@ float* nav_action::AdjustMovingDirAction(float* cur_yaw, float* goal_in_laser, f
 	static float tmp_target4adj = 0.0;
 	static unsigned int rotating_flag = 0;
 	static unsigned int rot4adj_finish_flag = 0;
+	float tmp_r2g = 0.0;
 
 	if((*goal_in_laser >= 0.0)&&(*goal_in_laser <= 180.0)&&(rotating_flag == 0))
 	{
@@ -186,11 +187,31 @@ float* nav_action::AdjustMovingDirAction(float* cur_yaw, float* goal_in_laser, f
 	{
 		rotating_flag = 1;
 		*finish_flag = 0;
-		tmp_target4adj = *robot2goal;
-		cout<<"---tmp_target4adj: "<<tmp_target4adj<<endl;
+		if(tmp_target4adj < 0.1)// this section used to handle the still rotation  causing robot2gravaton angle +/- 180 jump
+		{
+			tmp_target4adj = *robot2goal;
+		}
+		else
+		{
+			tmp_r2g = *robot2goal;
+			if(abs(tmp_r2g - tmp_target4adj) > 60)
+			{
+				
+			}
+			else
+			{
+				tmp_target4adj = tmp_r2g;
+			}
+
+
+		}
+
+		cout<<" >>.tmp_target4adj: "<<tmp_target4adj<<endl;
+		cout<<" >>....cur_yaw: "<<*cur_yaw<<endl;
 
 		tmp_action_cmd = StillRotatingAction(cur_yaw, &tmp_target4adj, &rot4adj_finish_flag);
 		//tmp_action_cmd = CL4StillRotatingAction(cur_yaw, &tmp_target4adj, &rot4adj_finish_flag);
+		cout<<" >>......rot4adj_finish_flag: "<<rot4adj_finish_flag<<endl;
 
 		action4cmd_vel[0] = *tmp_action_cmd;
 		action4cmd_vel[1] = *(tmp_action_cmd + 1);
@@ -199,6 +220,7 @@ float* nav_action::AdjustMovingDirAction(float* cur_yaw, float* goal_in_laser, f
 		{
 			*finish_flag = 1;
 			rotating_flag = 0;
+			tmp_target4adj = 0.0;
 		}
 	}
 

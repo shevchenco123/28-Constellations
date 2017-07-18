@@ -33,7 +33,7 @@ int main( int argc, char *argv[] )
 
 	mapObj.SearchMapPreProc();
 
-	ros::Rate loop_rate(5); 
+	ros::Rate loop_rate(10); 
 	
 	ROS_INFO("Ready to provide path_planning srv.");
 	cout<<"map_origin:"<<mapObj.map_origin[0]<<" "<<mapObj.map_origin[1]<<endl;
