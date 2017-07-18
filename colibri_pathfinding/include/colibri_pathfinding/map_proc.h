@@ -66,7 +66,8 @@ typedef struct st_map_point
 	
 }map_point;
 
-vector<smpix_point> Smooth5p3t(vector<pix_point> &input);
+template<typename T>
+vector<smpix_point> Smooth5p3t(vector<T> &input);
 
 class map_proc
 {

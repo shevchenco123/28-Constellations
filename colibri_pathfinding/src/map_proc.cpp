@@ -20,10 +20,11 @@ Type stringToNum(const string& str)
     return num;      
 }  
 
-vector<smpix_point> Smooth5p3t(vector<pix_point> &input)
+template<typename T>
+vector<smpix_point> Smooth5p3t(vector<T> &input)
 {
 	vector<smpix_point> output;
-	vector<pix_point> mid_val(input);
+	vector<T> mid_val(input);
 	smpix_point tmp_val;
 	size_t len = input.size();
 	if(len < 5)
@@ -56,8 +57,7 @@ vector<smpix_point> Smooth5p3t(vector<pix_point> &input)
 
 	return output;
 }
-
-
+	
 map_proc::map_proc(const string & fname)
 {
 	cur_goal[0] = 0.0;
@@ -551,6 +551,7 @@ bool map_proc::ExecPathFindingSrv(nav_msgs::GetPlan::Request & req, nav_msgs::Ge
 	vector<smpix_point> tmp_smnodes; 
 
 	tmp_smnodes	= Smooth5p3t(this->nav_nodes);
+	tmp_smnodes	= Smooth5p3t(tmp_smnodes);
 	this->PixNodes2NavPath(tmp_smnodes, this->nav_path );
 	this->StdNavPath(this->nav_path);
 
