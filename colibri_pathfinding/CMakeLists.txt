@@ -146,12 +146,12 @@ INCLUDE_DIRECTORIES(./include/colibri_pathfinding)
 add_executable(findpath_node src/findpath.cpp)
 target_link_libraries(findpath_node ${catkin_LIBRARIES})
 
-add_executable(path_plan_node src/main.cpp)
-target_link_libraries(path_plan_node ${catkin_LIBRARIES})
+#add_executable(path_plan_node src/main.cpp)
+#target_link_libraries(path_plan_node ${catkin_LIBRARIES})
 
 
-add_executable(rounting_node src/rounting.cpp src/MapSearch.cpp)
-target_link_libraries(rounting_node ${catkin_LIBRARIES})
+#add_executable(rounting_node src/rounting.cpp src/MapSearch.cpp)
+#target_link_libraries(rounting_node ${catkin_LIBRARIES})
 
 
 #add_executable(modular_path_node src/simple_fp.cpp src/MapSearch.cpp src/map_proc.cpp)
