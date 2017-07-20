@@ -35,6 +35,9 @@ extern int MAP_HEIGHT;
 
 extern AStarSearch<MapSearchNode> astarsearch;
 
+extern string map_pgm_name;
+extern string map_yaml_name;
+
 #define DILATION_TYPE MORPH_ELLIPSE
 #define DILATION_SIZE 7
 #define GOAL_EDGE_MAX 15
@@ -103,7 +106,7 @@ class map_proc
 		vector<map_point> nav_path;
 		nav_msgs::Path plan_path;
 
-		map_proc(const string & fname);
+		map_proc();
 		~map_proc();
 		
 		bool CalcGoalEdgePoint(pix_point & end, pix_point & revised_end);

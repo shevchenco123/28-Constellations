@@ -1,5 +1,5 @@
 <launch>
-  <arg name="map_file" default="$(find colibri_pathfinding)/maps/626_mdf.yaml"/>
+  <arg name="map_file" default="$(find colibri_pathfinding)/maps/626_mdf"/>
   <!-- <node pkg="colibri_pathfinding" type="fp_srv_node" name="fp_node" output="screen" args="$(arg map_file)" args="$(arg map_file)" launch-prefix= "xterm -e gdb -args" > -->
   <node pkg="colibri_pathfinding" type="fp_srv_node" name="fp_node" output="screen" args="$(arg map_file)" >
     <rosparam file="$(find colibri_pathfinding)/maps/626_mdf.yaml" command="load"/>

@@ -22,14 +22,19 @@ int world_map[ MAP_WIDTH_MAX * MAP_HEIGHT_MAX ] = {};
 int MAP_WIDTH = 1;
 int MAP_HEIGHT = 1;
 
+string map_pgm_name;
+string map_yaml_name;
+
 AStarSearch<MapSearchNode> astarsearch;
 
 int main( int argc, char *argv[] )
 {
 
 	ros::init(argc, argv, "fp_node");
-	string fname(argv[1]);
-	map_proc mapObj(fname);
+	string name(argv[1]);
+	map_pgm_name.assign(name + ".pgm");
+	map_yaml_name.assign(name + ".yaml");
+	map_proc mapObj;
 
 	mapObj.SearchMapPreProc();
 

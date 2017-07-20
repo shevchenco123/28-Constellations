@@ -58,7 +58,7 @@ vector<smpix_point> Smooth5p3t(vector<T> &input)
 	return output;
 }
 	
-map_proc::map_proc(const string & fname)
+map_proc::map_proc()
 {
 	cur_goal[0] = 0.0;
 	cur_goal[1] = 0.0;
@@ -77,7 +77,7 @@ map_proc::map_proc(const string & fname)
 	submap_width_comple = 0;
 	submap_height_comple = 0;
 
-	ifstream fin(fname.c_str());
+	ifstream fin(map_yaml_name.c_str());
 	if(fin.fail())
 	{
 		ROS_ERROR("map yaml can not open in parse the map yaml argv in proc");
@@ -109,7 +109,9 @@ map_proc::map_proc(const string & fname)
 
 	pub4path = nh_img.advertise<nav_msgs::Path>("/nav_path", 1);
 
-	map_image = imread("/home/colibri/colibri_ws/src/colibri_pathfinding/maps/626_mdf.pgm", CV_LOAD_IMAGE_COLOR);
+	//map_image = imread("/home/colibri/colibri_ws/src/colibri_pathfinding/maps/626_mdf.pgm", CV_LOAD_IMAGE_COLOR);
+	map_image = imread(map_pgm_name, CV_LOAD_IMAGE_COLOR);
+
 	if(map_image.empty())
 	{
 	 	cout<<"open existed map error!"<<endl;
