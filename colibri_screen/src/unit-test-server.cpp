@@ -64,7 +64,7 @@ int main(int argc, char*argv[])
 	
     use_backend = RTU;
       
-    ctx = modbus_new_rtu("/dev/screen", 9600, 'E', 8, 1);
+    ctx = modbus_new_rtu("/dev/ttyS0", 9600, 'E', 8, 1);
         modbus_set_slave(ctx, SERVER_ID);
         query = (uint8_t *)malloc(MODBUS_RTU_MAX_ADU_LENGTH);
     
