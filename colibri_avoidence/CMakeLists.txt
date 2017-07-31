@@ -4,9 +4,6 @@ project(colibri_avoidence)
 #set (CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}  -g ")
 #set (CMAKE_VERBOSE_MAKEFILE ON)
 
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   rosconsole
@@ -17,39 +14,6 @@ find_package(catkin REQUIRED COMPONENTS
   std_srvs
   tf
 )
-
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
-
-
-## Uncomment this if the package has a setup.py. This macro ensures
-## modules and global scripts declared therein get installed
-## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
-
-################################################
-## Declare ROS messages, services and actions ##
-################################################
-
-## To declare and build messages, services or actions from within this
-## package, follow these steps:
-## * Let MSG_DEP_SET be the set of packages whose message types you use in
-##   your messages/services/actions (e.g. std_msgs, actionlib_msgs, ...).
-## * In the file package.xml:
-##   * add a build_depend tag for "message_generation"
-##   * add a build_depend and a run_depend tag for each package in MSG_DEP_SET
-##   * If MSG_DEP_SET isn't empty the following dependency has been pulled in
-##     but can be declared for certainty nonetheless:
-##     * add a run_depend tag for "message_runtime"
-## * In this file (CMakeLists.txt):
-##   * add "message_generation" and every package in MSG_DEP_SET to
-##     find_package(catkin REQUIRED COMPONENTS ...)
-##   * add "message_runtime" and every package in MSG_DEP_SET to
-##     catkin_package(CATKIN_DEPENDS ...)
-##   * uncomment the add_*_files sections below as needed
-##     and list every .msg/.srv/.action file to be processed
-##   * uncomment the generate_messages entry below
-##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
 # add_message_files(
@@ -72,51 +36,6 @@ find_package(catkin REQUIRED COMPONENTS
 #   Action2.action
 # )
 
-## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   nav_msgs#   sensor_msgs#   std_msgs
-# )
-
-################################################
-## Declare ROS dynamic reconfigure parameters ##
-################################################
-
-## To declare and build dynamic reconfigure parameters within this
-## package, follow these steps:
-## * In the file package.xml:
-##   * add a build_depend and a run_depend tag for "dynamic_reconfigure"
-## * In this file (CMakeLists.txt):
-##   * add "dynamic_reconfigure" to
-##     find_package(catkin REQUIRED COMPONENTS ...)
-##   * uncomment the "generate_dynamic_reconfigure_options" section below
-##     and list every .cfg file to be processed
-
-## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
-
-###################################
-## catkin specific configuration ##
-###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if you package contains header files
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES colibri_avoidence
-#  CATKIN_DEPENDS nav_msgs rosconsole roscpp rospy sensor_msgs std_msgs std_srvs tf
-#  DEPENDS system_lib
-)
-
-###########
-## Build ##
-###########
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
@@ -131,31 +50,14 @@ include_directories(
 #   src/${PROJECT_NAME}/colibri_avoidence.cpp
 # )
 
-## Add cmake target dependencies of the library
-## as an example, code may need to be generated before libraries
-## either from message generation or dynamic reconfigure
-# add_dependencies(colibri_avoidence ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
 ## Declare a C++ executable
  add_executable(colibri_ca_node src/colibri_ca_node.cpp src/colibri_ca.cpp )
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-# add_dependencies(colibri_avoidence_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
  target_link_libraries(colibri_ca_node
    ${catkin_LIBRARIES}
  )
 
 
  add_executable(local_nav_node src/fixedpoint_local_nav.cpp src/colibri_local_nav.cpp src/colibri_ca.cpp )
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-# add_dependencies(colibri_avoidence_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
  target_link_libraries(local_nav_node
    ${catkin_LIBRARIES}
  )
@@ -163,128 +65,53 @@ include_directories(
 
  add_executable(approach_point_node src/approaching_point.cpp 
  src/PID_controller.cpp src/colibri_action.cpp src/colibri_local_nav.cpp src/colibri_ca.cpp )
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-# add_dependencies(colibri_avoidence_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
  target_link_libraries(approach_point_node
    ${catkin_LIBRARIES}
  )
 
  add_executable(safe_node src/safe_node.cpp src/protect.cpp)
-
-
-## Specify libraries to link a library or executable target against
  target_link_libraries(safe_node
    ${catkin_LIBRARIES}
  )
 
-  add_executable(getpath_node src/get_path_node.cpp)
-
-
-## Specify libraries to link a library or executable target against
+ add_executable(getpath_node src/get_path_node.cpp)
  target_link_libraries(getpath_node
    ${catkin_LIBRARIES}
  )
 
-   add_executable(path_node src/path_plan_node.cpp src/global_planner.cpp)
-
-
-## Specify libraries to link a library or executable target against
+ add_executable(path_node src/path_plan_node.cpp src/global_planner.cpp)
  target_link_libraries(path_node
    ${catkin_LIBRARIES}
  )
 
-    add_executable(follow_path_node src/follow_path_node.cpp 
+ add_executable(follow_path_node src/follow_path_node.cpp 
     src/global_planner.cpp src/colibri_action.cpp src/colibri_local_nav.cpp 
     src/colibri_ca.cpp src/PID_controller.cpp)
 
-
-## Specify libraries to link a library or executable target against
  target_link_libraries(follow_path_node
    ${catkin_LIBRARIES}
  )
 
 
-     add_executable(task_node src/task_node.cpp src/task_mgr.cpp)
-
-
-## Specify libraries to link a library or executable target against
+ add_executable(task_node src/task_node.cpp src/task_mgr.cpp)
  target_link_libraries(task_node
    ${catkin_LIBRARIES}
  )
 
-      add_executable(nav_rvizgoal_node src/nav_to_point.cpp src/task_mgr.cpp src/global_planner.cpp src/colibri_action.cpp src/colibri_local_nav.cpp 
+ add_executable(nav_rvizgoal_node src/nav_to_point.cpp src/task_mgr.cpp src/global_planner.cpp src/colibri_action.cpp src/colibri_local_nav.cpp 
     src/colibri_ca.cpp src/PID_controller.cpp)
-
-
-## Specify libraries to link a library or executable target against
  target_link_libraries(nav_rvizgoal_node
    ${catkin_LIBRARIES}
  )
 
-       add_executable(mult_rvizgoal src/nav_to_multipoint.cpp src/task_mgr.cpp src/global_planner.cpp src/colibri_action.cpp src/colibri_local_nav.cpp 
+ add_executable(mult_rvizgoal src/nav_to_multipoint.cpp src/task_mgr.cpp src/global_planner.cpp src/colibri_action.cpp src/colibri_local_nav.cpp 
     src/colibri_ca.cpp src/PID_controller.cpp)
-
-
-## Specify libraries to link a library or executable target against
  target_link_libraries(mult_rvizgoal
    ${catkin_LIBRARIES}
  )
 
-        add_executable(pub_auxinfo src/colibri_aux.cpp)
-
-
-## Specify libraries to link a library or executable target against
+ add_executable(pub_auxinfo src/colibri_aux.cpp)
  target_link_libraries(pub_auxinfo
    ${catkin_LIBRARIES}
  )
-#############
-## Install ##
-#############
 
-# all install targets should use catkin DESTINATION variables
-# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
-
-## Mark executable scripts (Python etc.) for installation
-## in contrast to setup.py, you can choose the destination
-# install(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
-## Mark executables and/or libraries for installation
-# install(TARGETS colibri_avoidence
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
-## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
-
-## Mark other files for installation (e.g. launch and bag files, etc.)
-# install(FILES
-#   # myfile1
-#   # myfile2
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-# )
-
-#############
-## Testing ##
-#############
-
-## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_colibri_avoidence.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
-
-## Add folders to be run by python nosetests
-# catkin_add_nosetests(test)
