@@ -574,6 +574,7 @@ void AIV_Driver::ReadInfoProc(unsigned char buf[], boost::system::error_code ec,
 
 void AIV_Driver::ReadFromCom(void *args)
 {
+
 	while(ros::ok())
 	{
 		async_read(pserialport,buffer(recv_cache,CONST_PROTOCOL_LEN),boost::bind(&AIV_Driver::ReadInfoProc,this,recv_cache,_1,_2));
@@ -581,6 +582,7 @@ void AIV_Driver::ReadFromCom(void *args)
 		ComCallHandle();	
 		recv_cnt ++;
 		//cout <<"recv times: "<<recv_cnt<<endl;
+
 	}
 
 }
