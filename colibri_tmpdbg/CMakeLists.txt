@@ -9,7 +9,11 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   tf
+  cmake_modules
 )
+
+find_package(Eigen REQUIRED)
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -91,6 +95,7 @@ find_package(catkin REQUIRED COMPONENTS
 #   cfg/DynReconf2.cfg
 # )
 
+
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -107,16 +112,18 @@ catkin_package(
   DEPENDS system_lib
 )
 
+include_directories(${Eigen_INCLUDE_DIRS})
 ###########
 ## Build ##
 ###########
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-# include_directories(include)
-#include_directories(
-#  ${catkin_INCLUDE_DIRS}
-#)
+
+include_directories( ${catkin_INCLUDE_DIRS} )
+INCLUDE_DIRECTORIES(/usr/local/include)
+link_directories(/usr/local/lib)
+INCLUDE_DIRECTORIES(./include/colibri_tmpdbg) 
 
 ## Declare a C++ library
 # add_library(colibri_tmpdbg
@@ -156,6 +163,12 @@ add_executable(pub_constvel src/pub_constvel.cpp)
 #############
 ## Install ##
 #############
+
+add_executable(kalman_filter src/kalman_filter_test.cpp src/kalman_filter.cpp 
+src/kalman_interface.cpp)
+ target_link_libraries(kalman_filter
+   ${catkin_LIBRARIES}
+ )
 
 # all install targets should use catkin DESTINATION variables
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
