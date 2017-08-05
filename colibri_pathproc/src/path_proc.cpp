@@ -1,11 +1,15 @@
 #include "path_proc.h"
 
-void PathProc::PathProc()
+PathProc::PathProc()
 {
+	memset(map_origin_, 0.0, 3);
+
+	map_resol_ = 0.05;
+	segs_num_ = 0;
 
 }
 
-void PathProc::~PathProc()
+PathProc::~PathProc()
 {
 
 }
@@ -26,11 +30,10 @@ void PathProc::CatLine2Route()
 }
 
 
-vector HorizontalLine(point2d<int> &start, point2d<int> &end)
+bool  HorizontalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &hor_line)
 {
-	vector<point2d<int> > hor_line;
-	point2d<int> tmp_point;
-
+	point2d_pix tmp_point;
+	hor_line.clear();
 	int index = start.x;
 	if(start.x < end.x)
 	{
@@ -52,15 +55,16 @@ vector HorizontalLine(point2d<int> &start, point2d<int> &end)
 			index--;
 		}while(index >= end.x); 	
 	}
-	return hor_line;
+	return true;
 
 
 }
 
-vector VerticalLine(point2d<int> &start, point2d<int> &end)
+bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver_line)
 {
-	vector<point2d<int> > ver_line;
-	point2d<int> tmp_point;
+	
+	point2d_pix tmp_point;
+	ver_line.clear();
 
 	int index = start.y;
 	if(start.y < end.y)
@@ -84,11 +88,11 @@ vector VerticalLine(point2d<int> &start, point2d<int> &end)
 		}while(index >= end.y); 	
 	}
 
-	return ver_line;
+	return true;
 
 }
 
-vector BresenhamLine(point2d<int> & start, point2d<int> & end);  
+bool BresenhamLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line) 
 {  
     int dx = fabs(end.x - start.x);
 	int dy = fabs(end.y - start.y);  
@@ -96,16 +100,17 @@ vector BresenhamLine(point2d<int> & start, point2d<int> & end);
     int twoDy = 2 * dy;
 	int twoDyMinusDx = 2 * (dy - dx);
     int x,y;
-	vector<point2d<int> > point_at_line;
-	point2d<int> tmp_point;
+	
+	point2d_pix tmp_point;
+	point_at_line.clear();
 
 	if(start.x == end.x)
 	{
-	 	point_at_line = HorizontalLine(start, end);		
+		HorizontalLine(start, end, point_at_line);		
 	}
 	else if(start.y == end.y)
 	{
-		point_at_line = VerticalLine(start, end);
+		VerticalLine(start, end, point_at_line);
 	}
 	else	//non vertical and horizontal line
 	{
@@ -150,7 +155,7 @@ vector BresenhamLine(point2d<int> & start, point2d<int> & end);
 
 	}
 
-	return point_at_line;	
+	return true;	
   
 } 
 
