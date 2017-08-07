@@ -11,6 +11,7 @@
 #include <string.h>
 
 using namespace std;
+extern string taskpath;
 
 #ifdef HAVE_NEW_YAMLCPP
 // The >> operator disappeared in yaml-cpp 0.5, so this function is
@@ -64,7 +65,7 @@ typedef struct st_seg_prop{
 
 bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver_line);
 bool BresenhamBasic(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
-bool CalcPointsInLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
+bool CalcPixesInLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
 
 class PathProc{
 
