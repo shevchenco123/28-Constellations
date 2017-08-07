@@ -33,7 +33,18 @@ int main(int argc, char *argv[])
 
 	pathProcObj.CalcAllPointsInSegs();
 
-	vector<segment>::iterator t = find_if(pathProcObj.vec_seg_.begin(), pathProcObj.vec_seg_.end(),FindX<int>(1));
+	vector<segment>::iterator t0 = find_if(pathProcObj.vec_seg_.begin(), pathProcObj.vec_seg_.end(),FindX<int>(0));
+	vector<segment>::iterator t1 = find_if(pathProcObj.vec_seg_.begin(), pathProcObj.vec_seg_.end(),FindX<int>(1));
+	vector<segment>::iterator t2 = find_if(pathProcObj.vec_seg_.begin(), pathProcObj.vec_seg_.end(),FindX<int>(2));
+	vector<segment>::iterator t3 = find_if(pathProcObj.vec_seg_.begin(), pathProcObj.vec_seg_.end(),FindX<int>(3));
+	
+	route_list route;
+	route.target_id = 1;
+	route.seg_list.push_back(0);
+	route.seg_list.push_back(1);	
+
+	pathProcObj.CatSeg2Route(route);
+
 	
 	while(ros::ok())
 	{

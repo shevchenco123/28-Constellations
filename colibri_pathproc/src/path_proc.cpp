@@ -74,6 +74,7 @@ void PathProc::CalcAllPointsInSegs()
 	
 	for (vector<seg_property>::iterator it = vec_seg_property_.begin(); it!=vec_seg_property_.end(); ++it)
 	{
+
 		tmp.seg_id = (*it).seg_id;
 		tmp.start_id = (*it).start_id;
 		tmp.end_id = (*it).end_id;
@@ -87,6 +88,8 @@ void PathProc::CalcAllPointsInSegs()
 void PathProc::Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &points_map)
 {
 	point2d_map tmp;
+	points_map.clear();
+	vector<point2d_map> ().swap(points_map);
 	for (vector<point2d_pix>::iterator it = points_pix.begin(); it!=points_pix.end(); ++it)
 	{
 		int tmp_x = (*it).x;
@@ -94,21 +97,25 @@ void PathProc::Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &poi
 		tmp.x = (float) map_origin_[0] + tmp_x * map_resol_;
 		tmp.y = (float) map_origin_[1] + tmp_y * map_resol_;
 		points_map.push_back(tmp);
+		
 	}
 }
 
-void PathProc::ObatainSegProperty()
+void PathProc::CatSeg2Route(route_list &route)
 {
-
-}
-
-void PathProc::InterpolatingLine()
-{
-
-}
-
-void PathProc::CatLine2Route()
-{
+	route_pix_.clear();
+	vector<point2d_pix> ().swap(route_pix_);
+	route_map_.clear();
+	vector<point2d_map> ().swap(route_map_);
+	for (vector<int>::iterator it = route.seg_list.begin(); it!=route.seg_list.end(); ++it)
+	{
+		vector<segment>::iterator tmp = find_if(vec_seg_.begin(), vec_seg_.end(),FindX<int>(*it));
+		segment tmp_rm_start(*tmp);
+		tmp_rm_start.points_pix.erase(tmp_rm_start.points_pix.begin());	// remove the start point
+		tmp_rm_start.points_map.erase(tmp_rm_start.points_map.begin());
+		route_pix_.insert(route_pix_.end(), tmp_rm_start.points_pix.begin(), tmp_rm_start.points_pix.end());
+		route_map_.insert(route_map_.end(), tmp_rm_start.points_map.begin(), tmp_rm_start.points_map.end());
+	}
 
 }
 

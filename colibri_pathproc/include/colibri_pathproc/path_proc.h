@@ -23,7 +23,6 @@ void operator >> (const YAML::Node& node, T& i)
 }
 #endif
 
-
 template <class Type>  
 Type stringToNum(const string& str)  
 {  
@@ -60,6 +59,12 @@ typedef struct st_seg_prop{
 	point2d_pix end;
 }seg_property;
 
+typedef struct st_route_list
+{
+	int target_id;
+	vector<int> seg_list;
+}route_list;
+
 
 bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver_line);
 bool BresenhamBasic(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
@@ -75,13 +80,16 @@ class PathProc{
 		int segs_num_;
 		vector<seg_property> vec_seg_property_;
 		vector<segment> vec_seg_;
+		vector<point2d_map> route_map_;
+		vector<point2d_pix> route_pix_;
+		route_list cur_route_;
+		route_list last_route_;
+		route_list next_route_;
 
 		PathProc();
 		~PathProc();
 		void CalcAllPointsInSegs();
-		void ObatainSegProperty();
-		void InterpolatingLine();
-		void CatLine2Route();
+		void CatSeg2Route(route_list &route);
 
 	private:
 		void Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &points_map);
@@ -98,7 +106,7 @@ class FindX
 
          bool operator()(segment &seg)
 		 {
-	         if( abs(seg.seg_id - x_) < 0.0001 )
+	         if( abs(seg.seg_id - x_) < 0.0001)
 
 	              return true;
 	         else
