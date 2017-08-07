@@ -23,8 +23,8 @@ PathProc::PathProc()
 		doc_path["path"]["map_origin"][0] >> map_origin_[0];
 		doc_path["path"]["map_origin"][1] >> map_origin_[1];
 		doc_path["path"]["map_origin"][2] >> map_origin_[2];
-		doc_path["path"]["map_size"][0] >> map_size[0];
-		doc_path["path"]["map_size"][1] >> map_size[1];
+		doc_path["path"]["map_size"][0] >> map_size_[0];
+		doc_path["path"]["map_size"][1] >> map_size_[1];
 		doc_path["path"]["seg_num"] >> segs_num_;
 		
 		string seg_prop_name;
@@ -43,10 +43,10 @@ PathProc::PathProc()
 			doc_path["path"][seg_prop_name][1] >> tmp_seg_prop.start_id;
 			doc_path["path"][seg_prop_name][2] >> tmp_seg_prop.end_id;
 			
-			doc_path["path"][seg_terminal_name][0] >> tmp_seg_prop.start_pix_x;		
-			doc_path["path"][seg_terminal_name][1] >> tmp_seg_prop.start_pix_y;
-			doc_path["path"][seg_terminal_name][2] >> tmp_seg_prop.end_pix_x;
-			doc_path["path"][seg_terminal_name][3] >> tmp_seg_prop.end_pix_y;
+			doc_path["path"][seg_terminal_name][0] >> tmp_seg_prop.start.x;		
+			doc_path["path"][seg_terminal_name][1] >> tmp_seg_prop.start.y;
+			doc_path["path"][seg_terminal_name][2] >> tmp_seg_prop.end.x;
+			doc_path["path"][seg_terminal_name][3] >> tmp_seg_prop.end.y;
 
 			vec_seg_property_.push_back(tmp_seg_prop);
 			sstr_num.str("");
@@ -64,6 +64,37 @@ PathProc::PathProc()
 PathProc::~PathProc()
 {
 
+}
+
+void PathProc::CalcAllPointsInSegs()
+{
+	vec_seg_.clear();
+	vector<segment> ().swap(vec_seg_);
+	segment tmp;
+	
+	for (vector<seg_property>::iterator it = vec_seg_property_.begin(); it!=vec_seg_property_.end(); ++it)
+	{
+		tmp.seg_id = (*it).seg_id;
+		tmp.start_id = (*it).start_id;
+		tmp.end_id = (*it).end_id;
+		CalcPixesInLine((*it).start, (*it).end, tmp.points_pix);
+		Pix2Map(tmp.points_pix, tmp.points_map);
+		vec_seg_.push_back(tmp);
+	}
+	
+}
+
+void PathProc::Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &points_map)
+{
+	point2d_map tmp;
+	for (vector<point2d_pix>::iterator it = points_pix.begin(); it!=points_pix.end(); ++it)
+	{
+		int tmp_x = (*it).x;
+		int tmp_y = map_size_[1] - (*it).y;
+		tmp.x = (float) map_origin_[0] + tmp_x * map_resol_;
+		tmp.y = (float) map_origin_[1] + tmp_y * map_resol_;
+		points_map.push_back(tmp);
+	}
 }
 
 void PathProc::ObatainSegProperty()
@@ -85,8 +116,7 @@ bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver
 {
 	
 	point2d_pix tmp_point;
-	ver_line.clear();
-
+	
 	int index = start.y;
 	if(start.y < end.y)
 	{

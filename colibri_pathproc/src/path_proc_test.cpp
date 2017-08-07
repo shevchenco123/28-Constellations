@@ -30,6 +30,8 @@ int main(int argc, char *argv[])
 	tmp_end.y = 10;	
 	
 	CalcPixesInLine(tmp_start, tmp_end, tmp_line_points);  
+
+	pathProcObj.CalcAllPointsInSegs();
 	
 	while(ros::ok())
 	{

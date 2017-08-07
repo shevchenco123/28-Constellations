@@ -56,10 +56,8 @@ typedef struct st_seg_prop{
 	int seg_id;
 	int start_id;
 	int end_id;
-	int start_pix_x;
-	int start_pix_y;
-	int end_pix_x;
-	int end_pix_y;	
+	point2d_pix start;
+	point2d_pix end;
 }seg_property;
 
 
@@ -72,7 +70,7 @@ class PathProc{
 	public:
 		string map_name_;
 		float map_origin_[3];
-		int map_size[2];
+		int map_size_[2];
 		float map_resol_;
 		int segs_num_;
 		vector<seg_property> vec_seg_property_;
@@ -80,9 +78,14 @@ class PathProc{
 
 		PathProc();
 		~PathProc();
+		void CalcAllPointsInSegs();
 		void ObatainSegProperty();
 		void InterpolatingLine();
 		void CatLine2Route();
+
+	private:
+		void Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &points_map);
+
 
 };
 
