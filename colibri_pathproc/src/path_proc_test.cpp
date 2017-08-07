@@ -17,9 +17,9 @@ int main(int argc, char *argv[])
 	ros::init(argc, argv, "pathproc_test_node");
 	ros::NodeHandle nh;
 
-	string path_name(argv[1]);
-	//string path_name;
-	//path_name.assign("/home/colibri/colibri_ws/src/colibri_pathproc/path/path.yaml");
+	//string path_name(argv[1]);
+	string path_name;
+	path_name.assign("/home/colibri/colibri_ws/src/colibri_pathproc/path/path.yaml");
 	
 	ros::Rate loop_rate(10); 
 
@@ -48,6 +48,8 @@ int main(int argc, char *argv[])
 		doc_path["path"]["map_origin"][0] >> pathProcObj.map_origin_[0];
 		doc_path["path"]["map_origin"][1] >> pathProcObj.map_origin_[1];
 		doc_path["path"]["map_origin"][2] >> pathProcObj.map_origin_[2];
+		doc_path["path"]["map_size"][0] >> pathProcObj.map_size[0];
+		doc_path["path"]["map_size"][1] >> pathProcObj.map_size[1];
 
 		doc_path["path"]["seg_num"] >> pathProcObj.segs_num_;
 		string seg_prop_name;
@@ -81,6 +83,22 @@ int main(int argc, char *argv[])
 		ROS_ERROR("The yaml does not contain an origin tag or it is invalid.");
 		exit(-1);
 	}
+
+	point2d_pix tmp_start;
+	point2d_pix tmp_end;
+	vector<point2d_pix> tmp_line_points;
+	tmp_start.x = 30;
+	tmp_start.y = 10;
+	tmp_end.x = 40;
+	tmp_end.y = 20;	
+
+	//HorizontalLine(tmp_start, tmp_end, tmp_line_points);
+	
+	//VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver_line);
+	CalcPointsInLine(tmp_start, tmp_end, tmp_line_points);  
+	
+
+
 
 	while(ros::ok())
 	{

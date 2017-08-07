@@ -29,37 +29,6 @@ void PathProc::CatLine2Route()
 
 }
 
-
-bool  HorizontalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &hor_line)
-{
-	point2d_pix tmp_point;
-	hor_line.clear();
-	int index = start.x;
-	if(start.x < end.x)
-	{
-		do
-		{
-			tmp_point.x = index;
-			tmp_point.y = start.y;
-			hor_line.push_back(tmp_point);
-			index++;
-		}while(index <= end.x); 	
-	}
-	else
-	{
-		do
-		{
-			tmp_point.x = index;
-			tmp_point.y = start.y;
-			hor_line.push_back(tmp_point);
-			index--;
-		}while(index >= end.x); 	
-	}
-	return true;
-
-
-}
-
 bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver_line)
 {
 	
@@ -92,9 +61,10 @@ bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver
 
 }
 
-bool BresenhamLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line) 
+bool BresenhamBasic(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line) 
 {  
-    int dx = fabs(end.x - start.x);
+	// Calc the slop [0, 1] bresenham
+	int dx = fabs(end.x - start.x);
 	int dy = fabs(end.y - start.y);  
     int p = 2 * dy - dx;  
     int twoDy = 2 * dy;
@@ -102,61 +72,124 @@ bool BresenhamLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &po
     int x,y;
 	
 	point2d_pix tmp_point;
-	point_at_line.clear();
 
-	if(start.x == end.x)
+	bool reverse_flag = false;
+	if(start.x > end.x)  
+	{  
+	  x = end.x;  
+	  y = end.y;  
+	  end.x = start.x;
+	  reverse_flag = true;
+	}  
+	else	
+	{  
+	  x = start.x;	
+	  y = start.y;	
+	}  
+	tmp_point.x = x;
+	tmp_point.y = y;
+	point_at_line.push_back(tmp_point);
+
+	while(x < end.x)	
+	{  
+	  x++;	
+	  if(p<0)
+	  {
+		  p+=twoDy; 
+	  }
+	  else	
+	  {  
+		  y++;	
+		  p+=twoDyMinusDx;	
+	  }  
+	  tmp_point.x = x;
+	  tmp_point.y = y;
+	  point_at_line.push_back(tmp_point); 
+	} 
+
+	if(reverse_flag == true)
 	{
-		HorizontalLine(start, end, point_at_line);		
+	  reverse(point_at_line.begin(), point_at_line.end()); 
 	}
-	else if(start.y == end.y)
-	{
-		VerticalLine(start, end, point_at_line);
-	}
-	else	//non vertical and horizontal line
-	{
-		 bool reverse_flag = false;
-		  if(start.x > end.x)  
-		  {  
-			  x = end.x;  
-			  y = end.y;  
-			  end.x = start.x;
-			  reverse_flag = true;
-		  }  
-		  else	
-		  {  
-			  x = start.x;	
-			  y = start.y;	
-		  }  
-		  tmp_point.x = x;
-		  tmp_point.y = y;
-		  point_at_line.push_back(tmp_point);
-
-		  while(x <= end.x)	
-		  {  
-			  x++;	
-			  if(p<0)
-			  {
-				  p+=twoDy; 
-			  }
-			  else	
-			  {  
-				  y++;	
-				  p+=twoDyMinusDx;	
-			  }  
-			  tmp_point.x = x;
-			  tmp_point.y = y;
-			  point_at_line.push_back(tmp_point); 
-		  } 
-
-		  if(reverse_flag == true)
-		  {
-			  reverse(point_at_line.begin(), point_at_line.end()); 
-		  }
-
-	}
-
-	return true;	
   
 } 
+
+bool CalcPointsInLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line)
+{
+
+	point_at_line.clear();
+	vector<point2d_pix> ().swap(point_at_line);
+
+	if (start.x==end.x && start.y==end.y)
+		return false;
+	
+	if (start.x == end.x)
+	{
+		VerticalLine(start, end, point_at_line);
+
+		return true;
+	}
+
+	float k = (float)(end.y-start.y)/(end.x-start.x);
+
+	if (k >= 0 && k <= 1)
+	{
+
+		BresenhamBasic(start, end, point_at_line);
+
+	}
+	else if (k > 1)
+	{
+		int tmp = start.x;
+		start.x = start.y;
+		start.y = tmp;
+		tmp = end.x;
+		end.x = end.y;
+		end.y = tmp;
+		BresenhamBasic(start, end, point_at_line);
+		for (vector<point2d_pix>::iterator it = point_at_line.begin(); it!=point_at_line.end(); ++it)
+		{
+			int tmp = (*it).x;
+			(*it).x = (*it).y;
+			(*it).y = tmp;
+		}
+
+	}
+	else if (k >= -1 && k < 0)
+	{
+		start.y = -1 * start.y;
+		end.y = -1 * end.y;
+
+		BresenhamBasic(start, end, point_at_line);
+		for (vector<point2d_pix>::iterator it = point_at_line.begin(); it!=point_at_line.end(); ++it)
+		{
+			(*it).y = -(*it).y;
+		}
+
+	}
+	else if (k < -1)
+	{
+
+		int tmp = start.x;
+		start.x = -1 * start.y;
+		start.y = tmp;
+		tmp = end.x;
+		end.x = -1 * end.y;
+		end.y = tmp;
+
+		BresenhamBasic(start, end, point_at_line);
+		for (vector<point2d_pix>::iterator it = point_at_line.begin(); it!=point_at_line.end(); ++it)
+		{
+			int tmp = (*it).x;
+			(*it).x = (*it).y;
+			(*it).y = tmp;
+			(*it).y = -(*it).y;
+		}
+
+	}
+
+	return true;
+
+}
 
 

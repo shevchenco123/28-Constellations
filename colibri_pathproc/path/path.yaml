@@ -2,6 +2,7 @@ path:
   map_name: fac625.pgm
   resolution: 0.050000
   map_origin: [-28.446854, -4.027744, 0.000000]
+  map_size: [704, 307]
   seg_num: 2  #line segment number
   seg0_property: [0, 0, 1]   # line seg #0 property [seg_ID start_ID end_ID]
   seg0_vector: [11, 34, 14, 37]  # line seg #0 terminal point coordinatte [start_x start_y end_x end y]

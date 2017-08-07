@@ -61,16 +61,17 @@ typedef struct st_seg_prop{
 	int end_pix_y;	
 }seg_property;
 
-bool HorizontalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &hor_line);
-bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver_line);
-bool BresenhamLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);  
 
+bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver_line);
+bool BresenhamBasic(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
+bool CalcPointsInLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
 
 class PathProc{
 
 	public:
 		string map_name_;
 		float map_origin_[3];
+		int map_size[2];
 		float map_resol_;
 		int segs_num_;
 		vector<seg_property> vec_seg_property_;
