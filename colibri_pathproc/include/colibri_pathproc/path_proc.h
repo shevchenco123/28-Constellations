@@ -89,5 +89,26 @@ class PathProc{
 
 };
 
+template <class T>  
+class FindX
+{
+	public:
+         FindX(const T ref){ x_ = ref;}
+         T GetX() {return x_;}
+
+         bool operator()(segment &seg)
+		 {
+	         if( abs(seg.seg_id - x_) < 0.0001 )
+
+	              return true;
+	         else
+	              return false;
+          }
+
+	private: 
+		 T x_;
+
+};
+
 
 #endif

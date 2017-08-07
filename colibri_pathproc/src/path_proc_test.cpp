@@ -32,6 +32,8 @@ int main(int argc, char *argv[])
 	CalcPixesInLine(tmp_start, tmp_end, tmp_line_points);  
 
 	pathProcObj.CalcAllPointsInSegs();
+
+	vector<segment>::iterator t = find_if(pathProcObj.vec_seg_.begin(), pathProcObj.vec_seg_.end(),FindX<int>(1));
 	
 	while(ros::ok())
 	{
