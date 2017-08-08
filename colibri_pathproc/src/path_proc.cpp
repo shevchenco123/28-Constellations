@@ -119,16 +119,50 @@ void PathProc::CatSeg2Route(route_list &route)
 
 }
 
-bool PathProc::DecomposeRoute(int &check_node, int &sub_route_num)
+bool PathProc::DecomposeRoute(vector<int> &seg_list, vector<int> &check_nodes, int &sub_route_num)
 {
-	//vector<int>::iterator iElement = find(cur_route_.seg_list.begin(), cur_route_.seg_list.end(), check_node); 
+	vector<int> remain_segs(seg_list);
+	route_list tmp_sub_route;
+	sub_route_num = 0;
+	for(vector<int>::iterator it = remain_segs.begin(); it != remain_segs.end(); ++it) //get every segs in the whole route
+	{
+		int tmp_node = seg_node_map_[*it];
+		vector<int>::iterator iElement = find(check_nodes.begin(), check_nodes.end(), tmp_node);// check the node in route is in check_nodes
+		if(iElement != check_nodes.end())	//node in the check_nodes
+		{
+			for(vector<int>::iterator sub_it = remain_segs.begin(); sub_it <= it; ++sub_it)
+			{
+				tmp_sub_route.seg_list.push_back(*sub_it);
+			}
+			tmp_sub_route.target_id = *iElement;
+			sub_route_vec_.push_back(tmp_sub_route);
+			sub_route_num++;
+		}
+		tmp_sub_route.seg_list.clear();
+		vector<int> ().swap(tmp_sub_route.seg_list);		
+	}
+
+	int sub_num = sub_route_vec_.size(); 
+	for(int i = 1; i < sub_num; i++)
+	{
+		for(vector<int>::iterator index = sub_route_vec_[sub_num-1-i].seg_list.begin(); index < sub_route_vec_[sub_num-1-i].seg_list.end(); ++index)
+		{
+			vector<int>::iterator iElem = find(sub_route_vec_[sub_num-i].seg_list.begin(), sub_route_vec_[sub_num-i].seg_list.end(), (*index));
+			sub_route_vec_[sub_num-i].seg_list.erase(iElem);
+		}
+	}
+
+
+	return true;
+	
 }
 
 void PathProc::MakeNodeSegMap()
 {
 	for(vector<seg_property>::iterator it = vec_seg_property_.begin(); it != vec_seg_property_.end(); ++it)
 	{
-		seg_point_map_.insert(pair<int, int>((*it).end_id, (*it).seg_id));
+		node_seg_map_.insert(pair<int, int>((*it).end_id, (*it).seg_id));
+		seg_node_map_.insert(pair<int, int>((*it).seg_id, (*it).end_id));
 	}
 }
 

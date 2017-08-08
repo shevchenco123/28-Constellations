@@ -88,13 +88,14 @@ class PathProc{
 		route_list last_route_;
 		route_list next_route_;
 		vector<route_list> sub_route_vec_;
-		map<int, int> seg_point_map_;
+		map<int, int> node_seg_map_;
+		map<int, int> seg_node_map_;
 
 		PathProc();
 		~PathProc();
 		void CalcAllPointsInSegs();
 		void CatSeg2Route(route_list &route);
-		bool DecomposeRoute(int &check_node, int &sub_route_num);
+		bool DecomposeRoute(vector<int> &seg_list, vector<int> &check_nodes, int &sub_route_num);
 		void MakeNodeSegMap();
 
 	private:
