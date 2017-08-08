@@ -109,7 +109,7 @@ void PathProc::CatSeg2Route(route_list &route)
 	vector<point2d_map> ().swap(route_map_);
 	for (vector<int>::iterator it = route.seg_list.begin(); it!=route.seg_list.end(); ++it)
 	{
-		vector<segment>::iterator tmp = find_if(vec_seg_.begin(), vec_seg_.end(),FindX<int>(*it));
+		vector<segment>::iterator tmp = find_if(vec_seg_.begin(), vec_seg_.end(),FindX<int,segment>(*it));
 		segment tmp_rm_start(*tmp);
 		tmp_rm_start.points_pix.erase(tmp_rm_start.points_pix.begin());	// remove the start point
 		tmp_rm_start.points_map.erase(tmp_rm_start.points_map.begin());
@@ -118,6 +118,20 @@ void PathProc::CatSeg2Route(route_list &route)
 	}
 
 }
+
+bool PathProc::DecomposeRoute(int &check_node, int &sub_route_num)
+{
+	//vector<int>::iterator iElement = find(cur_route_.seg_list.begin(), cur_route_.seg_list.end(), check_node); 
+}
+
+void PathProc::MakeNodeSegMap()
+{
+	for(vector<seg_property>::iterator it = vec_seg_property_.begin(); it != vec_seg_property_.end(); ++it)
+	{
+		seg_point_map_.insert(pair<int, int>((*it).end_id, (*it).seg_id));
+	}
+}
+
 
 bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver_line)
 {

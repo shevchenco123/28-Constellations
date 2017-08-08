@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <iostream>
 #include <string.h>
+#include <map>
+#include <utility>
 
 using namespace std;
 extern string taskpath;
@@ -85,11 +87,15 @@ class PathProc{
 		route_list cur_route_;
 		route_list last_route_;
 		route_list next_route_;
+		vector<route_list> sub_route_vec_;
+		map<int, int> seg_point_map_;
 
 		PathProc();
 		~PathProc();
 		void CalcAllPointsInSegs();
 		void CatSeg2Route(route_list &route);
+		bool DecomposeRoute(int &check_node, int &sub_route_num);
+		void MakeNodeSegMap();
 
 	private:
 		void Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &points_map);
@@ -97,14 +103,14 @@ class PathProc{
 
 };
 
-template <class T>  
+template <class T1, class T2>  
 class FindX
 {
 	public:
-         FindX(const T ref){ x_ = ref;}
-         T GetX() {return x_;}
+         FindX(const T1 ref){ x_ = ref;}
+         T1 GetX() {return x_;}
 
-         bool operator()(segment &seg)
+         bool operator()(T2 &seg)
 		 {
 	         if( abs(seg.seg_id - x_) < 0.0001)
 
@@ -114,7 +120,7 @@ class FindX
           }
 
 	private: 
-		 T x_;
+		 T1 x_;
 
 };
 
