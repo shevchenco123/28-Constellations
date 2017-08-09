@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "path_proc.h"
-#include <ros/ros.h>
 
 
 using namespace std;
@@ -42,11 +41,11 @@ int main(int argc, char *argv[])
 	int cnt_path = sizeof(path) / sizeof(int);
 	vector<int> path_segs(path, path + cnt_path);
 
-
 	for(vector<int>::iterator it = segs.begin(); it != segs.end(); ++it)
 	{
 		pathProcObj.node_seg_map_.insert(pair<int, int>((*it)+1, (*it)));
 		pathProcObj.seg_node_map_.insert(pair<int, int>((*it), (*it)+1));
+		pathProcObj.node_heading_map_.insert(pair<int, float>((*it)+1, 10));
 	}
 
 	
@@ -56,17 +55,20 @@ int main(int argc, char *argv[])
 	
 	route_list route;
 	route.target_id = 1;
+	route.target_heading = 0.0;
 	route.seg_list.push_back(0);
 	route.seg_list.push_back(1);
 	
 
-	pathProcObj.CatSeg2Route(route);
+	pathProcObj.CatSeg2Route(route);	
+	pathProcObj.DecomposeRoute(path_segs, check_nodes, sub_route_num);
 
 	
-	pathProcObj.DecomposeRoute(path_segs, check_nodes, sub_route_num);
 	while(ros::ok())
 	{
 		cout<<pathProcObj.map_resol_<<endl;
+		pathProcObj.StdNavPath(pathProcObj.route_map_);
+	  	pathProcObj.pub_route_.publish(pathProcObj.plan_path_);
 		ros::spinOnce();	  
 		loop_rate.sleep();
 	}

@@ -59,6 +59,10 @@ PathProc::PathProc()
 		exit(-1);
 	}
 
+	pub_route_ = nh_route_.advertise<nav_msgs::Path>("/nav_path", 1);
+	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/Coordinator", 1, &PathProc::CoordinatorCallBack,this);
+
+
 }
 
 PathProc::~PathProc()
@@ -66,7 +70,9 @@ PathProc::~PathProc()
 
 }
 
-void PathProc::CalcAllPointsInSegs()
+
+/* Calc the bresham line pix coordinate from all existed segs to fill in segment struct vec_seg_*/
+void PathProc::CalcAllPointsInSegs(void) 
 {
 	vec_seg_.clear();
 	vector<segment> ().swap(vec_seg_);
@@ -101,6 +107,7 @@ void PathProc::Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &poi
 	}
 }
 
+/* Calc the whole  map and pix route removing the seg start from the route_list struct */
 void PathProc::CatSeg2Route(route_list &route)
 {
 	route_pix_.clear();
@@ -119,6 +126,7 @@ void PathProc::CatSeg2Route(route_list &route)
 
 }
 
+/* Calc the sub segs from a known seg_list which is the whole route from hostpc and decompose it into sub_route_vec_*/
 bool PathProc::DecomposeRoute(vector<int> &seg_list, vector<int> &check_nodes, int &sub_route_num)
 {
 	vector<int> remain_segs(seg_list);
@@ -135,6 +143,7 @@ bool PathProc::DecomposeRoute(vector<int> &seg_list, vector<int> &check_nodes, i
 				tmp_sub_route.seg_list.push_back(*sub_it);
 			}
 			tmp_sub_route.target_id = *iElement;
+			tmp_sub_route.target_heading = node_heading_map_[*iElement];
 			sub_route_vec_.push_back(tmp_sub_route);
 			sub_route_num++;
 		}
@@ -157,15 +166,67 @@ bool PathProc::DecomposeRoute(vector<int> &seg_list, vector<int> &check_nodes, i
 	
 }
 
-void PathProc::MakeNodeSegMap()
+bool PathProc::StdNavPath(vector<point2d_map> &nav_path)
 {
+	if(nav_path.empty())
+	{
+		return false;
+	}
+	else
+	{
+		plan_path_.poses.clear();
+		geometry_msgs::PoseStamped tmp_pose_stamped;
+		
+		plan_path_.header.stamp = ros::Time::now();
+		plan_path_.header.frame_id = "map";
+		tmp_pose_stamped.header.stamp = ros::Time::now();
+		tmp_pose_stamped.header.frame_id = "map";
+
+		size_t len = nav_path.size();
+		for (size_t i = 0; i < len; i++)
+		{
+			tmp_pose_stamped.pose.position.x = nav_path[i].x;			
+			tmp_pose_stamped.pose.position.y = nav_path[i].y;
+			tmp_pose_stamped.pose.position.z = 0.0;
+			tmp_pose_stamped.pose.orientation.x = 0.0;
+			tmp_pose_stamped.pose.orientation.y = 0.0;
+			tmp_pose_stamped.pose.orientation.z = 0.0;
+			tmp_pose_stamped.pose.orientation.w = 1.0;
+			plan_path_.poses.push_back(tmp_pose_stamped);
+		}
+		
+		return true;
+	}
+	
+}
+
+
+void PathProc::MakeNodeSegMap(vector<float> &vec_heading)
+{
+	int i = 0;
 	for(vector<seg_property>::iterator it = vec_seg_property_.begin(); it != vec_seg_property_.end(); ++it)
 	{
 		node_seg_map_.insert(pair<int, int>((*it).end_id, (*it).seg_id));
 		seg_node_map_.insert(pair<int, int>((*it).seg_id, (*it).end_id));
+		node_heading_map_.insert(pair<int, float>((*it).end_id, vec_heading[i]));
+		i++;
 	}
 }
 
+void PathProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator)
+{
+	int seg_num = 0;
+	cur_route_.seg_list.clear();
+	vector<int> ().swap(cur_route_.seg_list);
+	basic_ctrl_ = coordinator->basic_ctrl;
+	cur_route_.target_id = coordinator->target_node;
+	cur_route_.target_heading = coordinator->target_heading;
+	seg_num = coordinator->route_segs_num;
+	for(int i = 0; i < seg_num; i++)
+	{
+		cur_route_.seg_list.push_back(coordinator->segs_vector[i]);
+	}
+}
 
 bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver_line)
 {

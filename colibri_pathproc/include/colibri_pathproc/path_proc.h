@@ -12,6 +12,13 @@
 #include <map>
 #include <utility>
 
+#include <ros/ros.h>
+
+#include "nav_msgs/Path.h"
+#include "colibri_msgs/Coordinator.h"
+#include "geometry_msgs/PoseStamped.h"
+
+
 using namespace std;
 extern string taskpath;
 
@@ -64,6 +71,7 @@ typedef struct st_seg_prop{
 typedef struct st_route_list
 {
 	int target_id;
+	float target_heading;
 	vector<int> seg_list;
 }route_list;
 
@@ -75,6 +83,12 @@ bool CalcPixesInLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &
 class PathProc{
 
 	public:
+
+		ros::NodeHandle nh_route_;
+		ros::Subscriber sub_coodinator_;
+		ros::Publisher pub_route_;
+
+		
 		string map_name_;
 		float map_origin_[3];
 		int map_size_[2];
@@ -85,22 +99,26 @@ class PathProc{
 		vector<point2d_map> route_map_;
 		vector<point2d_pix> route_pix_;
 		route_list cur_route_;
-		route_list last_route_;
-		route_list next_route_;
 		vector<route_list> sub_route_vec_;
 		map<int, int> node_seg_map_;
 		map<int, int> seg_node_map_;
+		map<int, float> node_heading_map_;
+
+		int basic_ctrl_;
+		nav_msgs::Path plan_path_;
 
 		PathProc();
 		~PathProc();
-		void CalcAllPointsInSegs();
+		void CalcAllPointsInSegs(void);
 		void CatSeg2Route(route_list &route);
 		bool DecomposeRoute(vector<int> &seg_list, vector<int> &check_nodes, int &sub_route_num);
-		void MakeNodeSegMap();
+		void MakeNodeSegMap(vector<float> &vec_heading);
+		bool StdNavPath(vector<point2d_map> &nav_path);
 
 	private:
 		void Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &points_map);
 
+		void CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator);
 
 };
 
