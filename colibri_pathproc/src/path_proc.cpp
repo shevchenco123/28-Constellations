@@ -5,7 +5,7 @@ PathProc::PathProc()
 
 	//string path_name(taskpath);
 	string path_name;
-	path_name.assign("/home/colibri/colibri_ws/src/colibri_pathproc/path/path.yaml");
+	path_name.assign("/home/colibri/colibri_ws/src/colibri_pathproc/path/path4.yaml");
 
 	ifstream fin_path(path_name.c_str());
 	if(fin_path.fail())
@@ -212,6 +212,44 @@ void PathProc::MakeNodeSegMap(vector<float> &vec_heading)
 		i++;
 	}
 }
+
+void PathProc::ConfigNodesHeading(float *head_array, int &array_size)
+{
+	nodes_heading_.clear();
+	vector<float> ().swap(nodes_heading_);
+	for(int i = 0; i < array_size; i++)
+	{
+		nodes_heading_.push_back(*(head_array + i));
+	}
+
+}
+
+void PathProc::InitKneeNodes(int *node_array, int &array_size)
+{
+	knee_nodes_.clear();
+	vector<int> ().swap(knee_nodes_);
+	for(int i = 0; i < array_size; i++)
+	{
+		knee_nodes_.push_back(*(node_array + i));
+	}
+}
+
+
+bool PathProc::AddTargetNode2KneeNodes(int &target_node)
+{
+	vector<int>::iterator iElement = find(knee_nodes_.begin(), knee_nodes_.end(), target_node);	
+	if(iElement == knee_nodes_.end())
+	{
+		knee_nodes_.push_back(target_node);	
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+}
+
 
 void PathProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator)
 {

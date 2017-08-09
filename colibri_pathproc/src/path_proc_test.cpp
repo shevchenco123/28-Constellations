@@ -27,39 +27,36 @@ int main(int argc, char *argv[])
 	tmp_start.y = 10;
 	tmp_end.x = 40;
 	tmp_end.y = 10;	
-/*
-	int sp_nodes[] = {2, 4, 5, 6, 7, 9};
-	int cnt_nodes = sizeof(sp_nodes) / sizeof(int);
-	vector<int> check_nodes(sp_nodes, sp_nodes + cnt_nodes);
+
+	int sp_nodes[] = {2, 4, 5, 6, 7};
 	
 	float heading[] = {0.0, 90.0, 0.0, 90.0, 90.0, -90.0, -90.0, 0.0, 0.0};
-	int cnt_heading = sizeof(heading) / sizeof(float);
-	vector<float> vec_heading(heading, heading + cnt_heading);
-*/
 
-	int sp_nodes[] = {0, 1, 3, 4};
+
+
+//	int sp_nodes[] = {0, 1, 3};
 	int cnt_nodes = sizeof(sp_nodes) / sizeof(int);
-	vector<int> check_nodes(sp_nodes, sp_nodes + cnt_nodes);
+	pathProcObj.InitKneeNodes(sp_nodes, cnt_nodes);
 	
-	float heading[] = {90.0, 0.0, 90.0, 90.0, 90.0};
-	int cnt_heading = sizeof(heading) / sizeof(float);
-	vector<float> vec_heading(heading, heading + cnt_heading);
+//	float heading[] = {90.0, 0.0, 90.0, 90.0, 90.0};
+	pathProcObj.ConfigNodesHeading(heading, pathProcObj.segs_num_);
 
 	int sub_route_num = 0;
 
-	pathProcObj.MakeNodeSegMap(vec_heading);
+	pathProcObj.MakeNodeSegMap(pathProcObj.nodes_heading_);
 
 	pathProcObj.CalcAllPointsInSegs();
 	
 	route_list route;
-	route.target_id = 4;
+	route.target_id = 9;
 	route.target_heading = 0.0;
-	for(int j= 0; j < 4; j++)
+	for(int j= 0; j < 9; j++)
 	{
 		route.seg_list.push_back(j);
 	}
 
-	pathProcObj.DecomposeRoute(route.seg_list, check_nodes, sub_route_num);
+	pathProcObj.AddTargetNode2KneeNodes(route.target_id);
+	pathProcObj.DecomposeRoute(route.seg_list, pathProcObj.knee_nodes_, sub_route_num);
 		
 	pathProcObj.CatSeg2Route(route);	
 

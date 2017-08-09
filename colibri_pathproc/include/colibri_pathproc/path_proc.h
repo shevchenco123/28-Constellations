@@ -104,11 +104,17 @@ class PathProc{
 		map<int, int> seg_node_map_;
 		map<int, float> node_heading_map_;
 
+		vector<int> knee_nodes_;
+		vector<float> nodes_heading_;
+		
 		int basic_ctrl_;
 		nav_msgs::Path plan_path_;
 
 		PathProc();
 		~PathProc();
+		void ConfigNodesHeading(float *head_array, int &array_size);
+		void InitKneeNodes(int *node_array, int &array_size);
+		bool AddTargetNode2KneeNodes(int &target_node);
 		void CalcAllPointsInSegs(void);
 		void CatSeg2Route(route_list &route);
 		bool DecomposeRoute(vector<int> &seg_list, vector<int> &check_nodes, int &sub_route_num);
