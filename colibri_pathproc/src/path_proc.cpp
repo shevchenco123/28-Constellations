@@ -100,8 +100,8 @@ void PathProc::Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &poi
 	{
 		int tmp_x = (*it).x;
 		int tmp_y = map_size_[1] - (*it).y;
-		tmp.x = (float) map_origin_[0] + tmp_x * map_resol_;
-		tmp.y = (float) map_origin_[1] + tmp_y * map_resol_;
+		tmp.x = (float) (map_origin_[0] + tmp_x * map_resol_);
+		tmp.y = (float) (map_origin_[1] + tmp_y * map_resol_);
 		points_map.push_back(tmp);
 		
 	}

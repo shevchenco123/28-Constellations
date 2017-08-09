@@ -27,46 +27,73 @@ int main(int argc, char *argv[])
 	tmp_start.y = 10;
 	tmp_end.x = 40;
 	tmp_end.y = 10;	
-
-	int sp_nodes[] = {1,2,5,6,7,8,9,10};
+/*
+	int sp_nodes[] = {2, 4, 5, 6, 7, 9};
 	int cnt_nodes = sizeof(sp_nodes) / sizeof(int);
 	vector<int> check_nodes(sp_nodes, sp_nodes + cnt_nodes);
+	
+	float heading[] = {0.0, 90.0, 0.0, 90.0, 90.0, -90.0, -90.0, 0.0, 0.0};
+	int cnt_heading = sizeof(heading) / sizeof(float);
+	vector<float> vec_heading(heading, heading + cnt_heading);
+*/
+
+	int sp_nodes[] = {0, 1, 3, 4};
+	int cnt_nodes = sizeof(sp_nodes) / sizeof(int);
+	vector<int> check_nodes(sp_nodes, sp_nodes + cnt_nodes);
+	
+	float heading[] = {90.0, 0.0, 90.0, 90.0, 90.0};
+	int cnt_heading = sizeof(heading) / sizeof(float);
+	vector<float> vec_heading(heading, heading + cnt_heading);
+
 	int sub_route_num = 0;
 
-	int seg_list[] = {0,1,2,3,4,5,6,7,8,9};
-	int cnt_segs = sizeof(seg_list) / sizeof(int);
-	vector<int> segs(seg_list, seg_list + cnt_segs);
-	
-	int path[] = {1,2,3,4,5,6,7,8,9};
-	int cnt_path = sizeof(path) / sizeof(int);
-	vector<int> path_segs(path, path + cnt_path);
-
-	for(vector<int>::iterator it = segs.begin(); it != segs.end(); ++it)
-	{
-		pathProcObj.node_seg_map_.insert(pair<int, int>((*it)+1, (*it)));
-		pathProcObj.seg_node_map_.insert(pair<int, int>((*it), (*it)+1));
-		pathProcObj.node_heading_map_.insert(pair<int, float>((*it)+1, 10));
-	}
-
-	
-	CalcPixesInLine(tmp_start, tmp_end, tmp_line_points);  
+	pathProcObj.MakeNodeSegMap(vec_heading);
 
 	pathProcObj.CalcAllPointsInSegs();
 	
 	route_list route;
-	route.target_id = 1;
+	route.target_id = 4;
 	route.target_heading = 0.0;
-	route.seg_list.push_back(0);
-	route.seg_list.push_back(1);
-	
+	for(int j= 0; j < 4; j++)
+	{
+		route.seg_list.push_back(j);
+	}
 
+	pathProcObj.DecomposeRoute(route.seg_list, check_nodes, sub_route_num);
+		
 	pathProcObj.CatSeg2Route(route);	
-	pathProcObj.DecomposeRoute(path_segs, check_nodes, sub_route_num);
 
-	
+	cout<<pathProcObj.map_name_<<endl;
+	int i = 0; 
 	while(ros::ok())
 	{
-		cout<<pathProcObj.map_resol_<<endl;
+/*
+		i++;
+		if(i <= 10)
+		{
+			pathProcObj.CatSeg2Route(pathProcObj.sub_route_vec_[0]);
+		}
+		else if(i <= 20 && i > 10)
+		{
+			pathProcObj.CatSeg2Route(pathProcObj.sub_route_vec_[1]);		
+		}
+		else if(i <= 30 && i > 20)
+		{
+			pathProcObj.CatSeg2Route(pathProcObj.sub_route_vec_[2]);
+		}
+		else if(i <= 40 && i > 30)
+		{
+			pathProcObj.CatSeg2Route(route);
+			
+		}
+		else
+		{
+			i = 0;
+		}
+		*/
+		
+		
+		
 		pathProcObj.StdNavPath(pathProcObj.route_map_);
 	  	pathProcObj.pub_route_.publish(pathProcObj.plan_path_);
 		ros::spinOnce();	  
