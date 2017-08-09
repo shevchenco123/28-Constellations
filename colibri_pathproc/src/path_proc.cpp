@@ -60,8 +60,8 @@ PathProc::PathProc()
 	}
 
 	pub_route_ = nh_route_.advertise<nav_msgs::Path>("/nav_path", 1);
-	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/Coordinator", 1, &PathProc::CoordinatorCallBack,this);
-
+	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/Coordinator", 1, &PathProc::CoordinatorCallBack, this);
+	sub_nav_state_ = nh_route_.subscribe<colibri_msgs::NavState>("/Nav_State", 1, &PathProc::NavStateCallBack, this);
 
 }
 
@@ -250,6 +250,22 @@ bool PathProc::AddTargetNode2KneeNodes(int &target_node)
 
 }
 
+void PathProc::NavStateCallBack(const colibri_msgs::NavState::ConstPtr& nav_state)
+{
+	robot_nav_state.target_node = nav_state->target_node;
+	robot_nav_state.target_heading = nav_state->cur_seg;
+	robot_nav_state.cur_seg = nav_state->cur_seg;
+	robot_nav_state.at_target_flag = nav_state->at_target_flag;
+	robot_nav_state.achieve_flag = nav_state->achieve_flag;
+	robot_nav_state.target.x = nav_state->target_x;
+	robot_nav_state.target.y = nav_state->target_y;
+	robot_nav_state.target.yaw = nav_state->target_yaw;
+	robot_nav_state.robot.x = nav_state->cur_x;
+	robot_nav_state.robot.y = nav_state->cur_y;
+	robot_nav_state.robot.yaw = nav_state->cur_yaw;
+	robot_nav_state.err_code = nav_state->err_code;
+
+}
 
 void PathProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator)
 {

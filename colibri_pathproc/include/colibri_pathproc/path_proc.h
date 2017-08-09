@@ -15,7 +15,9 @@
 #include <ros/ros.h>
 
 #include "nav_msgs/Path.h"
+#include "std_msgs/Bool.h"
 #include "colibri_msgs/Coordinator.h"
+#include "colibri_msgs/NavState.h"
 #include "geometry_msgs/PoseStamped.h"
 
 
@@ -51,6 +53,12 @@ typedef struct st_point2D_float{
 	float y;
 }point2d_map;
 
+typedef struct st_pose{
+	float x;
+	float y;
+	float yaw;
+}pose;
+
 
 typedef struct st_segment{
 	int seg_id;
@@ -59,6 +67,17 @@ typedef struct st_segment{
 	vector<point2d_pix> points_pix;
 	vector<point2d_map> points_map;
 }segment;
+
+typedef struct st_nav_state{
+	int target_node;
+	int target_heading;
+	int cur_seg;
+	std_msgs::Bool at_target_flag;
+	std_msgs::Bool achieve_flag;
+	pose target;
+	pose robot;
+	int err_code;
+}nav_state;
 
 typedef struct st_seg_prop{
 	int seg_id;
@@ -86,9 +105,10 @@ class PathProc{
 
 		ros::NodeHandle nh_route_;
 		ros::Subscriber sub_coodinator_;
+		ros::Subscriber sub_nav_state_;
 		ros::Publisher pub_route_;
-
 		
+
 		string map_name_;
 		float map_origin_[3];
 		int map_size_[2];
@@ -106,6 +126,8 @@ class PathProc{
 
 		vector<int> knee_nodes_;
 		vector<float> nodes_heading_;
+
+		nav_state robot_nav_state;
 		
 		int basic_ctrl_;
 		nav_msgs::Path plan_path_;
@@ -125,6 +147,7 @@ class PathProc{
 		void Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &points_map);
 
 		void CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator);
+		void NavStateCallBack(const colibri_msgs::NavState::ConstPtr& nav_state);
 
 };
 

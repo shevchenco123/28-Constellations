@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 	int i = 0; 
 	while(ros::ok())
 	{
-/*
+		/*
 		i++;
 		if(i <= 10)
 		{
@@ -88,8 +88,6 @@ int main(int argc, char *argv[])
 			i = 0;
 		}
 		*/
-		
-		
 		
 		pathProcObj.StdNavPath(pathProcObj.route_map_);
 	  	pathProcObj.pub_route_.publish(pathProcObj.plan_path_);
