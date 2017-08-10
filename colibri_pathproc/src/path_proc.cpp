@@ -18,11 +18,11 @@ PathProc::PathProc()
 	try 
 	{ 
 
-		doc_path["path"]["map_name"] >> map_name_;
+		doc_path["path"]["image"] >> map_name_;
 		doc_path["path"]["resolution"] >> map_resol_;
-		doc_path["path"]["map_origin"][0] >> map_origin_[0];
-		doc_path["path"]["map_origin"][1] >> map_origin_[1];
-		doc_path["path"]["map_origin"][2] >> map_origin_[2];
+		doc_path["path"]["origin"][0] >> map_origin_[0];
+		doc_path["path"]["origin"][1] >> map_origin_[1];
+		doc_path["path"]["origin"][2] >> map_origin_[2];
 		doc_path["path"]["map_size"][0] >> map_size_[0];
 		doc_path["path"]["map_size"][1] >> map_size_[1];
 		doc_path["path"]["seg_num"] >> segs_num_;

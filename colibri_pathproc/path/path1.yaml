@@ -1,7 +1,7 @@
 path:
-  map_name: fac625.pgm
+  image: fac625.pgm
   resolution: 0.050000
-  map_origin: [-28.446854, -4.027744, 0.000000]
+  origin: [-28.446854, -4.027744, 0.000000]
   map_size: [747, 307]
   seg_num: 4
   seg0_property: [0, 0, 1]

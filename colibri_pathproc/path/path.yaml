@@ -1,7 +1,7 @@
 path:
-  map_name: 626_mdf.pgm
+  image: 626_mdf.pgm
   resolution: 0.050000
-  map_origin: [-20.0, -4.027744, 0.000000]
+  origin: [-20.0, -4.027744, 0.000000]
   map_size: [747, 307]
   seg_num: 5
   seg0_property: [0, 0, 1]
