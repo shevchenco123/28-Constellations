@@ -1,6 +1,6 @@
-#include "node_proc.h"
+#include "nav_node_proc.h"
 
-NodeProc::NodeProc()
+NavNodeProc::NavNodeProc()
 {
 /*
 	//string path_name(taskpath);
@@ -65,13 +65,13 @@ NodeProc::NodeProc()
 */
 }
 
-NodeProc::~NodeProc()
+NavNodeProc::NavNodeProc()
 {
 
 }
 
 
-void NodeProc::MakeNodeSegMap(vector<float> &vec_heading)
+void NavNodeProc::MakeNodeSegMap(vector<float> &vec_heading)
 {
 /*
 	int i = 0;
@@ -85,7 +85,7 @@ void NodeProc::MakeNodeSegMap(vector<float> &vec_heading)
 */
 }
 
-void NodeProc::ConfigNodesHeading(float *head_array, int &array_size)
+void NavNodeProc::ConfigNodesHeading(float *head_array, int &array_size)
 {
 /*
 	nodes_heading_.clear();
@@ -98,7 +98,7 @@ void NodeProc::ConfigNodesHeading(float *head_array, int &array_size)
 }
 
 
-void NodeProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator)
+void NavNodeProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator)
 {
 /*
 	int seg_num = 0;

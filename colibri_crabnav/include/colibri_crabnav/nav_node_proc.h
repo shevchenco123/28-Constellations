@@ -1,5 +1,5 @@
-#ifndef _Node_PROC_H_
-#define _Node_PROC_H_
+#ifndef _NAV_NODE_PROC_H_
+#define _NAV_NODE_PROC_H_
 
 #include <fstream>
 #include "yaml-cpp/yaml.h"
@@ -95,11 +95,11 @@ typedef struct st_route_list
 }route_list;
 
 
-class NodeProc{
+class NavNodeProc{
 
 	public:
 
-		ros::NodeHandle nh_route_;
+		ros::NodeHandle nh_node_;
 		ros::Subscriber sub_coodinator_;
 		ros::Publisher pub_nav_state_;	
 
@@ -118,7 +118,6 @@ class NodeProc{
 		map<int, int> seg_node_map_;
 		map<int, float> node_heading_map_;
 
-		vector<int> knee_nodes_;
 		vector<float> nodes_heading_;
 
 		nav_state robot_nav_state;
