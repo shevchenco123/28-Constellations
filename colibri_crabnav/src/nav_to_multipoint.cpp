@@ -4,6 +4,7 @@
 #include "PID_controller.h"
 #include "global_planner.h"
 #include "task_mgr.h"
+#include "nav_node_proc.h"
 
 #include <boost/bind.hpp>
 
@@ -38,6 +39,7 @@ int main(int argc, char* argv[])
 	nav_action actionObj;
 	planner plannerObj;
 	task_mgr taskObj;
+	NavNodeProc navNodeObj;
 
 	// Local key points relation param initial
 	float tmp_delta_dis = 0.0;
@@ -80,6 +82,12 @@ int main(int argc, char* argv[])
 	float ori_apf_linear = 0.0;
 	float ori_apf_angular = 0.0;
 	signal(SIGINT, MySigintHandler);
+
+
+	float heading[] = {0.0, 90.0, 0.0, 90.0, 90.0, -90.0, -90.0, 0.0, 0.0};
+	navNodeObj.ConfigNodesHeading(heading, navNodeObj.segs_num_);
+	navNodeObj.MakeNodeSegMap(navNodeObj.nodes_heading_);
+
 
 	while(taskObj.obtain_goal_flag == false)
 	{

@@ -3,9 +3,8 @@
 NavNodeProc::NavNodeProc()
 {
 
-	//string path_name(taskpath);
 	string path_name;
-	path_name.assign("/home/colibri/colibri_ws/src/colibri_crabnav/path/path.yaml");
+	path_name.assign("/home/colibri/colibri_ws/src/colibri_crabnav/path/path4.yaml");
 
 	ifstream fin_path(path_name.c_str());
 	if(fin_path.fail())
@@ -59,21 +58,31 @@ NavNodeProc::NavNodeProc()
 		exit(-1);
 	}
 
+	cur_nav_node = 255;	//if node_id ==255 means no nav node to go shoule stop immediately
+
 	pub_nav_state_ = nh_nav_node_.advertise<colibri_msgs::NavState>("/nav_state", 1);
 	sub_coodinator_ = nh_nav_node_.subscribe<colibri_msgs::Coordinator>("/Coordinator", 1, &NavNodeProc::CoordinatorCallBack, this);
-	sub_node_id = nh_nav_node_.subscribe<colibri_msgs::NavNodeId>("/NavNodeId", 1, &NavNodeProc::NavNodeCallBack, this);
+	sub_node_id_ = nh_nav_node_.subscribe<colibri_msgs::NavNodeId>("/NavNodeId", 1, &NavNodeProc::NavNodeCallBack, this);
 
 }
 
-NavNodeProc::NavNodeProc()
+NavNodeProc::~NavNodeProc()
 {
+
+}
+
+
+void NavNodeProc::NavNodeCallBack(const colibri_msgs::NavNodeId::ConstPtr& node_id)
+{
+
+	cur_nav_node = node_id->node_id;
 
 }
 
 
 void NavNodeProc::MakeNodeSegMap(vector<float> &vec_heading)
 {
-/*
+
 	int i = 0;
 	for(vector<seg_property>::iterator it = vec_seg_property_.begin(); it != vec_seg_property_.end(); ++it)
 	{
@@ -82,37 +91,26 @@ void NavNodeProc::MakeNodeSegMap(vector<float> &vec_heading)
 		node_heading_map_.insert(pair<int, float>((*it).end_id, vec_heading[i]));
 		i++;
 	}
-*/
+
 }
 
 void NavNodeProc::ConfigNodesHeading(float *head_array, int &array_size)
 {
-/*
+
 	nodes_heading_.clear();
 	vector<float> ().swap(nodes_heading_);
 	for(int i = 0; i < array_size; i++)
 	{
 		nodes_heading_.push_back(*(head_array + i));
 	}
-*/
+
 }
 
 
 void NavNodeProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator)
 {
-/*
-	int seg_num = 0;
-	cur_route_.seg_list.clear();
-	vector<int> ().swap(cur_route_.seg_list);
+
 	basic_ctrl_ = coordinator->basic_ctrl;
-	cur_route_.target_id = coordinator->target_node;
-	cur_route_.target_heading = coordinator->target_heading;
-	seg_num = coordinator->route_segs_num;
-	for(int i = 0; i < seg_num; i++)
-	{
-		cur_route_.seg_list.push_back(coordinator->segs_vector[i]);
-	}
-*/
 }
 
 

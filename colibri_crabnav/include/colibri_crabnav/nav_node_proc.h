@@ -59,15 +59,6 @@ typedef struct st_pose{
 	float yaw;
 }pose;
 
-
-typedef struct st_segment{
-	int seg_id;
-	int start_id;
-	int end_id;
-	vector<point2d_pix> points_pix;
-	vector<point2d_map> points_map;
-}segment;
-
 typedef struct st_nav_state{
 	int target_node;
 	int target_heading;
@@ -87,13 +78,6 @@ typedef struct st_seg_prop{
 	point2d_pix end;
 }seg_property;
 
-typedef struct st_route_list
-{
-	int target_id;
-	float target_heading;
-	vector<int> seg_list;
-}route_list;
-
 
 class NavNodeProc{
 
@@ -101,7 +85,7 @@ class NavNodeProc{
 
 		ros::NodeHandle nh_nav_node_;
 		ros::Subscriber sub_coodinator_;
-		ros::Subscriber sub_node_id;
+		ros::Subscriber sub_node_id_;
 		ros::Publisher pub_nav_state_;
 
 		string map_name_;
@@ -110,23 +94,20 @@ class NavNodeProc{
 		float map_resol_;
 		int segs_num_;
 		vector<seg_property> vec_seg_property_;
-		vector<segment> vec_seg_;
-		vector<point2d_map> route_map_;
-		vector<point2d_pix> route_pix_;
-		route_list cur_route_;
 		map<int, int> node_seg_map_;
 		map<int, int> seg_node_map_;
 		map<int, float> node_heading_map_;
 
 		vector<float> nodes_heading_;
 
-		nav_state robot_nav_state;
+		colibri_msgs::NavState robot_nav_state;
+		int cur_nav_node;
 		
 		int basic_ctrl_;
 		nav_msgs::Path plan_path_;
 
-		PathProc();
-		~PathProc();
+		NavNodeProc();
+		~NavNodeProc();
 		void ConfigNodesHeading(float *head_array, int &array_size);
 		void MakeNodeSegMap(vector<float> &vec_heading);
 
