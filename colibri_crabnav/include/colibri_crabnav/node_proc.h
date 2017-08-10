@@ -1,5 +1,5 @@
-#ifndef _PATH_PROC_H_
-#define _PATH_PROC_H_
+#ifndef _Node_PROC_H_
+#define _Node_PROC_H_
 
 #include <fstream>
 #include "yaml-cpp/yaml.h"
@@ -95,19 +95,13 @@ typedef struct st_route_list
 }route_list;
 
 
-bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver_line);
-bool BresenhamBasic(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
-bool CalcPixesInLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
-
-class PathProc{
+class NodeProc{
 
 	public:
 
 		ros::NodeHandle nh_route_;
 		ros::Subscriber sub_coodinator_;
-		ros::Subscriber sub_nav_state_;
-		ros::Publisher pub_route_;
-		
+		ros::Publisher pub_nav_state_;	
 
 		string map_name_;
 		float map_origin_[3];
@@ -135,42 +129,12 @@ class PathProc{
 		PathProc();
 		~PathProc();
 		void ConfigNodesHeading(float *head_array, int &array_size);
-		void InitKneeNodes(int *node_array, int &array_size);
-		bool AddTargetNode2KneeNodes(int &target_node);
-		void CalcAllPointsInSegs(void);
-		void CatSeg2Route(route_list &route);
-		bool DecomposeRoute(vector<int> &seg_list, vector<int> &check_nodes, int &sub_route_num);
 		void MakeNodeSegMap(vector<float> &vec_heading);
-		bool StdNavPath(vector<point2d_map> &nav_path);
 
 	private:
-		void Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &points_map);
 
 		void CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator);
-		void NavStateCallBack(const colibri_msgs::NavState::ConstPtr& nav_state);
 
 };
-
-template <class T1, class T2>  
-class FindX
-{
-	public:
-         FindX(const T1 ref){ x_ = ref;}
-         T1 GetX() {return x_;}
-
-         bool operator()(T2 &seg)
-		 {
-	         if( abs(seg.seg_id - x_) < 0.0001)
-
-	              return true;
-	         else
-	              return false;
-          }
-
-	private: 
-		 T1 x_;
-
-};
-
 
 #endif
