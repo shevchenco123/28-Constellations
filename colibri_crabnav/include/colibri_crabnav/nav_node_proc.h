@@ -19,7 +19,7 @@
 #include "colibri_msgs/Coordinator.h"
 #include "colibri_msgs/NavState.h"
 #include "geometry_msgs/PoseStamped.h"
-#include "colibri_msgs/Node.h"
+#include "colibri_msgs/NavNodeId.h"
 
 using namespace std;
 extern string taskpath;
@@ -99,9 +99,10 @@ class NavNodeProc{
 
 	public:
 
-		ros::NodeHandle nh_node_;
+		ros::NodeHandle nh_nav_node_;
 		ros::Subscriber sub_coodinator_;
-		ros::Publisher pub_nav_state_;	
+		ros::Subscriber sub_node_id;
+		ros::Publisher pub_nav_state_;
 
 		string map_name_;
 		float map_origin_[3];
@@ -113,7 +114,6 @@ class NavNodeProc{
 		vector<point2d_map> route_map_;
 		vector<point2d_pix> route_pix_;
 		route_list cur_route_;
-		vector<route_list> sub_route_vec_;
 		map<int, int> node_seg_map_;
 		map<int, int> seg_node_map_;
 		map<int, float> node_heading_map_;
@@ -133,6 +133,7 @@ class NavNodeProc{
 	private:
 
 		void CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator);
+		void NavNodeCallBack(const colibri_msgs::NavNodeId::ConstPtr& node_id);
 
 };
 

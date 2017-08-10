@@ -2,10 +2,10 @@
 
 NavNodeProc::NavNodeProc()
 {
-/*
+
 	//string path_name(taskpath);
 	string path_name;
-	path_name.assign("/home/colibri/colibri_ws/src/colibri_pathproc/path/path4.yaml");
+	path_name.assign("/home/colibri/colibri_ws/src/colibri_crabnav/path/path.yaml");
 
 	ifstream fin_path(path_name.c_str());
 	if(fin_path.fail())
@@ -18,11 +18,11 @@ NavNodeProc::NavNodeProc()
 	try 
 	{ 
 
-		doc_path["path"]["map_name"] >> map_name_;
+		doc_path["path"]["image"] >> map_name_;
 		doc_path["path"]["resolution"] >> map_resol_;
-		doc_path["path"]["map_origin"][0] >> map_origin_[0];
-		doc_path["path"]["map_origin"][1] >> map_origin_[1];
-		doc_path["path"]["map_origin"][2] >> map_origin_[2];
+		doc_path["path"]["origin"][0] >> map_origin_[0];
+		doc_path["path"]["origin"][1] >> map_origin_[1];
+		doc_path["path"]["origin"][2] >> map_origin_[2];
 		doc_path["path"]["map_size"][0] >> map_size_[0];
 		doc_path["path"]["map_size"][1] >> map_size_[1];
 		doc_path["path"]["seg_num"] >> segs_num_;
@@ -59,10 +59,10 @@ NavNodeProc::NavNodeProc()
 		exit(-1);
 	}
 
-	pub_route_ = nh_route_.advertise<nav_msgs::Path>("/nav_path", 1);
-	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/Coordinator", 1, &PathProc::CoordinatorCallBack, this);
-	sub_nav_state_ = nh_route_.subscribe<colibri_msgs::NavState>("/Nav_State", 1, &PathProc::NavStateCallBack, this);
-*/
+	pub_nav_state_ = nh_nav_node_.advertise<colibri_msgs::NavState>("/nav_state", 1);
+	sub_coodinator_ = nh_nav_node_.subscribe<colibri_msgs::Coordinator>("/Coordinator", 1, &NavNodeProc::CoordinatorCallBack, this);
+	sub_node_id = nh_nav_node_.subscribe<colibri_msgs::NavNodeId>("/NavNodeId", 1, &NavNodeProc::NavNodeCallBack, this);
+
 }
 
 NavNodeProc::NavNodeProc()

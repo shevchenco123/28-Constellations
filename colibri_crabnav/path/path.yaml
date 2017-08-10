@@ -1,0 +1,24 @@
+path:
+  image: 626_mdf.pgm
+  resolution: 0.050000
+  origin: [-20.0, -4.027744, 0.000000]
+  map_size: [747, 307]
+  seg_num: 9
+  seg0_property: [0, 0, 1]
+  seg0_vector: [385, 137, 385, 185]
+  seg1_property: [1, 1, 2]
+  seg1_vector: [385, 185, 385, 227]
+  seg2_property: [2, 2, 3]
+  seg2_vector: [385, 227, 460, 227]
+  seg3_property: [3, 3, 4]
+  seg3_vector: [460, 227, 537, 227]
+  seg4_property: [4, 4, 5]
+  seg4_vector: [537, 227, 537, 191]
+  seg5_property: [5, 5, 6]
+  seg5_vector: [537, 191, 496, 191]
+  seg6_property: [6, 6, 7]
+  seg6_vector: [496, 191, 496, 86]
+  seg7_property: [7, 7, 8]
+  seg7_vector: [496, 86, 532, 86]
+  seg8_property: [8, 8, 9]
+  seg8_vector: [532, 86, 599, 86]
