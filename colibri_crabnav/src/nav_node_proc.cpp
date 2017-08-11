@@ -61,7 +61,7 @@ NavNodeProc::NavNodeProc()
 	cur_nav_node = 255;	//if node_id ==255 means no nav node to go shoule stop immediately
 	obtain_goal_flag = false;
 
-	pub_nav_state_ = nh_nav_node_.advertise<colibri_msgs::NavState>("/nav_state", 1);
+	pub_nav_state_ = nh_nav_node_.advertise<colibri_msgs::NavState>("/NavState", 1);
 	sub_coodinator_ = nh_nav_node_.subscribe<colibri_msgs::Coordinator>("/Coordinator", 1, &NavNodeProc::CoordinatorCallBack, this);
 	sub_node_id_ = nh_nav_node_.subscribe<colibri_msgs::NavNodeId>("/NavNodeId", 1, &NavNodeProc::NavNodeCallBack, this);
 
@@ -77,7 +77,7 @@ void NavNodeProc::NavNodeCallBack(const colibri_msgs::NavNodeId::ConstPtr& node_
 {
 
 	cur_nav_node = node_id->node_id;
-	obtain_goal_flag = true;
+	NavNode2NavPose();
 
 }
 
@@ -102,6 +102,39 @@ void NavNodeProc::InitNodeAndSegMap(float *head_array, int &array_size)
 
 }
 
+bool NavNodeProc::NavNode2NavPose()
+{	
+	if(cur_nav_node != 255)
+	{
+		point2d_pix tmp_end_pix;
+		vector<seg_property>::iterator it = find_if(vec_seg_property_.begin(), vec_seg_property_.end(),FindX<int,seg_property>(cur_nav_node));
+		if(it != vec_seg_property_.end())
+		{
+			tmp_end_pix = (*it).end;
+			int tmp_x = tmp_end_pix.x;
+			int tmp_y = map_size_[1] - tmp_end_pix.y;
+			cur_goal[0] = (float) (map_origin_[0] + tmp_x * map_resol_);
+			cur_goal[1] = (float) (map_origin_[1] + tmp_y * map_resol_);
+			cur_goal[2] = node_head_map_[(*it).end_id];
+			obtain_goal_flag = true;
+		}
+		else
+		{
+			cout<<"the input nav node not in the path nodes"<<endl;
+			obtain_goal_flag = false;
+			return false;
+		}
+	
+	}
+	else
+	{
+		cout<<"the input nav node is 255 for stop"<<endl;
+		obtain_goal_flag = false;
+		return false;
+	}
+
+}
+
 
 void NavNodeProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator)
 {
@@ -110,5 +143,15 @@ void NavNodeProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr&
 	
 }
 
+void NavNodeProc::Quaternion2Yaw(const geometry_msgs::PoseStamped &pose, float &yaw)
+{
+	float x = 0.0;
+	float y = 0.0;
+	
+	y = 2.0 * (pose.pose.orientation.w * pose.pose.orientation.z + pose.pose.orientation.x * pose.pose.orientation.y);
+	x = 1.0 - 2 * (pow(pose.pose.orientation.y, 2) + pow(pose.pose.orientation.z, 2));
+	yaw = atan2(y,x) * RAD2DEG;
+
+}
 
 

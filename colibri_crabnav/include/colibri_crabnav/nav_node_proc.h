@@ -118,13 +118,36 @@ class NavNodeProc{
 		~NavNodeProc();
 
 		void InitNodeAndSegMap(float *head_array, int &array_size);	
-
+		bool NavNode2NavPose();
 
 	private:
 
 		void CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator);
 		void NavNodeCallBack(const colibri_msgs::NavNodeId::ConstPtr& node_id);
+		void Quaternion2Yaw(const geometry_msgs::PoseStamped &pose, float &yaw);
 
 };
+
+template <class T1, class T2>  
+class FindX
+{
+	public:
+         FindX(const T1 ref){ x_ = ref;}
+         T1 GetX() {return x_;}
+
+         bool operator()(T2 &seg)
+		 {
+	         if( abs(seg.end_id - x_) < 0.0001)
+
+	              return true;
+	         else
+	              return false;
+          }
+
+	private: 
+		 T1 x_;
+
+};
+
 
 #endif
