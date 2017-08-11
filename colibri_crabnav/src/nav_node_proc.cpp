@@ -63,7 +63,7 @@ NavNodeProc::NavNodeProc()
 
 	pub_nav_state_ = nh_nav_node_.advertise<colibri_msgs::NavState>("/NavState", 1);
 	sub_coodinator_ = nh_nav_node_.subscribe<colibri_msgs::Coordinator>("/Coordinator", 1, &NavNodeProc::CoordinatorCallBack, this);
-	sub_node_id_ = nh_nav_node_.subscribe<colibri_msgs::NavNodeId>("/NavNodeId", 1, &NavNodeProc::NavNodeCallBack, this);
+	sub_node_id_ = nh_nav_node_.subscribe<colibri_msgs::NavNode>("/NavNode", 1, &NavNodeProc::NavNodeCallBack, this);
 
 }
 
@@ -73,10 +73,9 @@ NavNodeProc::~NavNodeProc()
 }
 
 
-void NavNodeProc::NavNodeCallBack(const colibri_msgs::NavNodeId::ConstPtr& node_id)
+void NavNodeProc::NavNodeCallBack(const colibri_msgs::NavNode::ConstPtr& node)
 {
-
-	cur_nav_node = node_id->node_id;
+	cur_nav_node = int (node->node_id);
 	NavNode2NavPose();
 
 }

@@ -19,7 +19,7 @@
 #include "colibri_msgs/Coordinator.h"
 #include "colibri_msgs/NavState.h"
 #include "geometry_msgs/PoseStamped.h"
-#include "colibri_msgs/NavNodeId.h"
+#include "colibri_msgs/NavNode.h"
 
 
 #include "colibri_local_nav.h"
@@ -124,7 +124,7 @@ class NavNodeProc{
 	private:
 
 		void CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator);
-		void NavNodeCallBack(const colibri_msgs::NavNodeId::ConstPtr& node_id);
+		void NavNodeCallBack(const colibri_msgs::NavNode::ConstPtr& node);
 		void Quaternion2Yaw(const geometry_msgs::PoseStamped &pose, float &yaw);
 
 };

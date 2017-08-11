@@ -60,11 +60,12 @@ PathProc::PathProc()
 	}
 
 	parsed_node_ = 255;
+	req4path_flag = false;
 
 
 	pub_route_ = nh_route_.advertise<nav_msgs::Path>("/nav_path", 1);
 	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/Coordinator", 1, &PathProc::CoordinatorCallBack, this);
-	sub_nav_state_ = nh_route_.subscribe<colibri_msgs::NavState>("/Nav_State", 1, &PathProc::NavStateCallBack, this);
+	sub_nav_state_ = nh_route_.subscribe<colibri_msgs::NavState>("/NavState", 1, &PathProc::NavStateCallBack, this);
 
  	srv4getpath_ = nh_route_.advertiseService("/move_base/make_plan", &PathProc::ExecGetPathSrv, this);
 
@@ -176,6 +177,8 @@ bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPla
 
 	point2d_map tmp_start,tmp_goal;
 	bool parse_node_flag = false;
+
+	req4path_flag = false;
 	
 	tmp_start.x = req.start.pose.position.x;
 	tmp_start.y = req.start.pose.position.y;
@@ -204,6 +207,7 @@ bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPla
 		CatSeg2Route(route);	
 		StdNavPath(route_map_);
 		res.plan = this->plan_path_;
+		req4path_flag = true;
 
 	}
 	else

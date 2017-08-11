@@ -19,7 +19,7 @@
 
 using namespace std;
 
-#define ULTRA_RF
+//#define ULTRA_RF
 #define EXT_LASER_RF
 //#define ORI_ULTRA_FUSION
 //#define ORI_EXT_FUSION

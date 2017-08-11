@@ -91,7 +91,11 @@ int main(int argc, char *argv[])
 		*/
 		
 		//pathProcObj.StdNavPath(pathProcObj.route_map_);
-	  	pathProcObj.pub_route_.publish(pathProcObj.plan_path_);
+		if(pathProcObj.req4path_flag)
+		{
+			pathProcObj.pub_route_.publish(pathProcObj.plan_path_);
+		}
+
 		ros::spinOnce();	  
 		loop_rate.sleep();
 	}

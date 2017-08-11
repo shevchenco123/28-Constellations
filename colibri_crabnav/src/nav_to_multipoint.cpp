@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 {	
 
 	// ROS nav node initial
-	ros::init(argc, argv, "Nav_Mult_RvizGoal_Node");
+	ros::init(argc, argv, "Nav_Mult_Goal_Node");
 	ROS_INFO("Start to Go to Mult Goals in Rviz ... ");
 
 	// Auto nav obj initial
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 	local_nav local4navObj;
 	nav_action actionObj;
 	planner plannerObj;
-	task_mgr taskObj;
+	//task_mgr taskObj;
 	NavNodeProc navNodeObj;
 
 	// Local key points relation param initial
@@ -87,14 +87,14 @@ int main(int argc, char* argv[])
 	float heading[] = {0.0, 90.0, 0.0, 90.0, 90.0, -90.0, -90.0, 0.0, 0.0};
 	navNodeObj.InitNodeAndSegMap(heading, navNodeObj.segs_num_);
 
-	while(taskObj.obtain_goal_flag == false)
+	while(navNodeObj.obtain_goal_flag == false)
 	{
 		ros::spinOnce();
 		loop_rate.sleep();
 	}	
-	local4navObj.goal_state[0] = taskObj.cur_goal[0];	// Extract the Rviz goal for nav
-	local4navObj.goal_state[1] = taskObj.cur_goal[1];
-	local4navObj.goal_state[2] = taskObj.cur_goal[2];	
+	local4navObj.goal_state[0] = navNodeObj.cur_goal[0];	// Extract the Rviz goal for nav
+	local4navObj.goal_state[1] = navNodeObj.cur_goal[1];
+	local4navObj.goal_state[2] = navNodeObj.cur_goal[2];	
 	
 	while (!ros::service::waitForService(plannerObj.srv4make_plan, ros::Duration(0.2)))		// Waiting for path paln srv
 	{
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
 	finish_plan = plannerObj.ExecMonoPlanAndGravaton(plannerObj,&local4navObj.cur_robot_state[0], &local4navObj.goal_state[0], search_start, index4gravaton);
 
 	// Set path plan timer
-	planner_timer = nh_pp.createTimer(ros::Duration(PLAN_INTERVAL), boost::bind(&PlannerCallback, &plannerObj, &local4navObj.amcl_cur_state[0],&taskObj.cur_goal[0], timer_finish));
+	planner_timer = nh_pp.createTimer(ros::Duration(PLAN_INTERVAL), boost::bind(&PlannerCallback, &plannerObj, &local4navObj.amcl_cur_state[0],&navNodeObj.cur_goal[0], timer_finish));
 
 	while (ros::ok())
 	{	
@@ -146,9 +146,9 @@ int main(int argc, char* argv[])
 				// if robot goes to the setting target goal approching radius, set gravaton same as target goal 
 				if(local4navObj.approaching_flag == true)
 				{
-					plannerObj.gravaton.x = taskObj.cur_goal[0];
-					plannerObj.gravaton.y = taskObj.cur_goal[1];
-					plannerObj.gravaton.yaw = taskObj.cur_goal[2];
+					plannerObj.gravaton.x = navNodeObj.cur_goal[0];
+					plannerObj.gravaton.y = navNodeObj.cur_goal[1];
+					plannerObj.gravaton.yaw = navNodeObj.cur_goal[2];
 				}
 			}
 
@@ -186,7 +186,7 @@ int main(int argc, char* argv[])
 							
 			local4navObj.SatuateCmdVel(local4navObj.apf_ctrl_output, local4navObj.apf_ctrl_output+1);
 
-			local4navObj.CalcEuclidDistance(local4navObj.amcl_cur_state, taskObj.cur_goal, rt_r2g_dis);	// rt_r2g_dis(robot2goal) is different from tmp_delta_dis(robot2gravaton)	
+			local4navObj.CalcEuclidDistance(local4navObj.amcl_cur_state, navNodeObj.cur_goal, rt_r2g_dis);	// rt_r2g_dis(robot2goal) is different from tmp_delta_dis(robot2gravaton)	
 			local4navObj.approaching_flag = local4navObj.ReachApprochingAreaOK(&rt_r2g_dis);
 			
 			if(tmp_delta_dis >= GOAL_NGHBORHD)
