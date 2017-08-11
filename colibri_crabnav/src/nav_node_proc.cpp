@@ -59,6 +59,7 @@ NavNodeProc::NavNodeProc()
 	}
 
 	cur_nav_node = 255;	//if node_id ==255 means no nav node to go shoule stop immediately
+	obtain_goal_flag = false;
 
 	pub_nav_state_ = nh_nav_node_.advertise<colibri_msgs::NavState>("/nav_state", 1);
 	sub_coodinator_ = nh_nav_node_.subscribe<colibri_msgs::Coordinator>("/Coordinator", 1, &NavNodeProc::CoordinatorCallBack, this);
@@ -76,32 +77,27 @@ void NavNodeProc::NavNodeCallBack(const colibri_msgs::NavNodeId::ConstPtr& node_
 {
 
 	cur_nav_node = node_id->node_id;
+	obtain_goal_flag = true;
 
 }
 
 
-void NavNodeProc::MakeNodeSegMap(vector<float> &vec_heading)
+void NavNodeProc::InitNodeAndSegMap(float *head_array, int &array_size)
 {
 
-	int i = 0;
+	int j = 0;
 	for(vector<seg_property>::iterator it = vec_seg_property_.begin(); it != vec_seg_property_.end(); ++it)
 	{
-		node_seg_map_.insert(pair<int, int>((*it).end_id, (*it).seg_id));
-		seg_node_map_.insert(pair<int, int>((*it).seg_id, (*it).end_id));
-		node_heading_map_.insert(pair<int, float>((*it).end_id, vec_heading[i]));
-		i++;
-	}
-
-}
-
-void NavNodeProc::ConfigNodesHeading(float *head_array, int &array_size)
-{
-
-	nodes_heading_.clear();
-	vector<float> ().swap(nodes_heading_);
-	for(int i = 0; i < array_size; i++)
-	{
-		nodes_heading_.push_back(*(head_array + i));
+		node_seg_map_.insert(make_pair((*it).end_id, (*it).seg_id));
+		node_head_map_.insert(pair<int, float>((*it).end_id, *(head_array + j)));
+		seg_node_map_.insert(make_pair((*it).seg_id, (*it).end_id));
+		j++;
+		if(j > array_size)
+		{
+			cout<<"Horriable, the pointer go out of the range..."<<endl;
+			break;
+		}
+		
 	}
 
 }
@@ -111,6 +107,7 @@ void NavNodeProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr&
 {
 
 	basic_ctrl_ = coordinator->basic_ctrl;
+	
 }
 
 

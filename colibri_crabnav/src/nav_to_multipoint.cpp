@@ -85,9 +85,7 @@ int main(int argc, char* argv[])
 
 
 	float heading[] = {0.0, 90.0, 0.0, 90.0, 90.0, -90.0, -90.0, 0.0, 0.0};
-	navNodeObj.ConfigNodesHeading(heading, navNodeObj.segs_num_);
-	navNodeObj.MakeNodeSegMap(navNodeObj.nodes_heading_);
-
+	navNodeObj.InitNodeAndSegMap(heading, navNodeObj.segs_num_);
 
 	while(taskObj.obtain_goal_flag == false)
 	{

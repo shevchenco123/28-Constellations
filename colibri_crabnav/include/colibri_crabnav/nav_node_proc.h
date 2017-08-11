@@ -21,6 +21,8 @@
 #include "geometry_msgs/PoseStamped.h"
 #include "colibri_msgs/NavNodeId.h"
 
+#include "colibri_local_nav.h"
+
 using namespace std;
 extern string taskpath;
 
@@ -52,6 +54,12 @@ typedef struct st_point2D_float{
 	float x;
 	float y;
 }point2d_map;
+
+typedef struct st_id_delta{
+	int id;
+	float delta_yaw;
+}id_delta;
+
 
 typedef struct st_pose{
 	float x;
@@ -89,27 +97,28 @@ class NavNodeProc{
 		ros::Publisher pub_nav_state_;
 
 		string map_name_;
-		float map_origin_[3];
+		float map_origin_[POS_DIM];
 		int map_size_[2];
 		float map_resol_;
 		int segs_num_;
 		vector<seg_property> vec_seg_property_;
 		map<int, int> node_seg_map_;
 		map<int, int> seg_node_map_;
-		map<int, float> node_heading_map_;
-
-		vector<float> nodes_heading_;
+		map<int, float> node_head_map_;
 
 		colibri_msgs::NavState robot_nav_state;
 		int cur_nav_node;
+		float cur_goal[POS_DIM];
+		bool obtain_goal_flag;
 		
 		int basic_ctrl_;
 		nav_msgs::Path plan_path_;
 
 		NavNodeProc();
 		~NavNodeProc();
-		void ConfigNodesHeading(float *head_array, int &array_size);
-		void MakeNodeSegMap(vector<float> &vec_heading);
+
+		void InitNodeAndSegMap(float *head_array, int &array_size);	
+
 
 	private:
 
