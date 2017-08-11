@@ -21,6 +21,7 @@
 #include "geometry_msgs/PoseStamped.h"
 #include "colibri_msgs/NavNodeId.h"
 
+
 #include "colibri_local_nav.h"
 
 using namespace std;

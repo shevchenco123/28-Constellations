@@ -20,6 +20,8 @@
 #include "colibri_msgs/NavState.h"
 #include "geometry_msgs/PoseStamped.h"
 
+#include <nav_msgs/GetPlan.h>
+
 
 using namespace std;
 extern string taskpath;
@@ -108,6 +110,7 @@ class PathProc{
 		ros::Subscriber sub_nav_state_;
 		ros::Publisher pub_route_;
 		
+		ros::ServiceServer srv4getpath_;
 
 		string map_name_;
 		float map_origin_[3];
@@ -142,12 +145,17 @@ class PathProc{
 		bool DecomposeRoute(vector<int> &seg_list, vector<int> &check_nodes, int &sub_route_num);
 		void MakeNodeSegMap(vector<float> &vec_heading);
 		bool StdNavPath(vector<point2d_map> &nav_path);
+		bool ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPlan::Response & res);
 
 	private:
 		void Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &points_map);
 
 		void CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator);
 		void NavStateCallBack(const colibri_msgs::NavState::ConstPtr& nav_state);
+		bool NavPixValid(point2d_pix &pix_uv);
+		bool MapPose2NavNode(point2d_map & pose, int & rev_node_id);
+
+			
 
 };
 

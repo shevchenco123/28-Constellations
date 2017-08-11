@@ -63,6 +63,8 @@ PathProc::PathProc()
 	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/Coordinator", 1, &PathProc::CoordinatorCallBack, this);
 	sub_nav_state_ = nh_route_.subscribe<colibri_msgs::NavState>("/Nav_State", 1, &PathProc::NavStateCallBack, this);
 
+ 	srv4getpath_ = nh_route_.advertiseService("/move_base/make_plan", &PathProc::ExecGetPathSrv, this);
+
 }
 
 PathProc::~PathProc()
@@ -166,6 +168,28 @@ bool PathProc::DecomposeRoute(vector<int> &seg_list, vector<int> &check_nodes, i
 	
 }
 
+bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPlan::Response & res)
+{
+
+	point2d_map tmp_start,tmp_goal;
+	
+	tmp_start.x = req.start.pose.position.x;
+	tmp_start.y = req.start.pose.position.y;
+	tmp_goal.x = req.goal.pose.position.x;
+	tmp_goal.y = req.goal.pose.position.y;
+	cout<<"req start.x: "<<tmp_start.x<<endl;
+	cout<<"req start.y: "<<tmp_start.y<<endl;
+	cout<<"req goal.x: "<<tmp_goal.x<<endl;
+	cout<<"req goal.y: "<<tmp_goal.y<<endl;	
+
+
+	res.plan = this->plan_path_;
+
+	return true;
+	
+}
+
+
 bool PathProc::StdNavPath(vector<point2d_map> &nav_path)
 {
 	if(nav_path.empty())
@@ -198,6 +222,55 @@ bool PathProc::StdNavPath(vector<point2d_map> &nav_path)
 		return true;
 	}
 	
+}
+
+bool PathProc::MapPose2NavNode(point2d_map & pose, int & rev_node_id)
+{
+
+	point2d_pix tmp_uv;
+
+	tmp_uv.x =  (pose.x - map_origin_[0]) / map_resol_;
+	tmp_uv.y =  map_size_[1] - (pose.y - map_origin_[1]) / map_resol_;
+
+	if(NavPixValid(tmp_uv))
+	{
+		for(vector<seg_property>::iterator it; it != vec_seg_property_.end(); ++it)
+		{
+			int delta_u = abs((*it).end.x - tmp_uv.x);
+			int delta_v = abs((*it).end.y - tmp_uv.y);
+			if( (delta_u < 3) && (delta_v < 3))
+			{
+				rev_node_id = (*it).end_id;
+				return true;
+			}
+			else
+			{
+				cout <<" Can not find the nav node from the request info"<<endl;
+				rev_node_id = 255;
+				return false;
+			}
+		}
+		
+	}
+	else
+	{
+		rev_node_id = 255;
+		return false;
+	}
+
+	
+}
+
+bool PathProc::NavPixValid(point2d_pix &pix_uv)
+{
+	if(pix_uv.x >= map_size_[0] || pix_uv.x <= 0 || pix_uv.y >= map_size_[1] || pix_uv.y <= 0 )
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
 
