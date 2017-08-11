@@ -134,6 +134,7 @@ class PathProc{
 		
 		int basic_ctrl_;
 		nav_msgs::Path plan_path_;
+		int parsed_node_;
 
 		PathProc();
 		~PathProc();

@@ -59,6 +59,9 @@ PathProc::PathProc()
 		exit(-1);
 	}
 
+	parsed_node_ = 255;
+
+
 	pub_route_ = nh_route_.advertise<nav_msgs::Path>("/nav_path", 1);
 	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/Coordinator", 1, &PathProc::CoordinatorCallBack, this);
 	sub_nav_state_ = nh_route_.subscribe<colibri_msgs::NavState>("/Nav_State", 1, &PathProc::NavStateCallBack, this);
@@ -172,6 +175,7 @@ bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPla
 {
 
 	point2d_map tmp_start,tmp_goal;
+	bool parse_node_flag = false;
 	
 	tmp_start.x = req.start.pose.position.x;
 	tmp_start.y = req.start.pose.position.y;
@@ -181,9 +185,31 @@ bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPla
 	cout<<"req start.y: "<<tmp_start.y<<endl;
 	cout<<"req goal.x: "<<tmp_goal.x<<endl;
 	cout<<"req goal.y: "<<tmp_goal.y<<endl;	
+	
+	parse_node_flag = MapPose2NavNode(tmp_goal, parsed_node_);
+	
+	if(parse_node_flag == true)
+	{
+		route_list route;
+		route.target_id = parsed_node_;
+		route.target_heading = 0.0;
+		int micro_seg_num;
+		for(int j= 0; j < 9; j++)
+		{
+			route.seg_list.push_back(j);
+		}
+		
+		AddTargetNode2KneeNodes(route.target_id);
+		DecomposeRoute(route.seg_list, knee_nodes_, micro_seg_num);	
+		CatSeg2Route(route);	
+		StdNavPath(route_map_);
+		res.plan = this->plan_path_;
 
-
-	res.plan = this->plan_path_;
+	}
+	else
+	{
+		return false;
+	}
 
 	return true;
 	

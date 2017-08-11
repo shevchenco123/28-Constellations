@@ -46,7 +46,8 @@ int main(int argc, char *argv[])
 	pathProcObj.MakeNodeSegMap(pathProcObj.nodes_heading_);
 
 	pathProcObj.CalcAllPointsInSegs();
-	
+
+/*	
 	route_list route;
 	route.target_id = 9;
 	route.target_heading = 0.0;
@@ -60,7 +61,7 @@ int main(int argc, char *argv[])
 		
 	pathProcObj.CatSeg2Route(route);	
 
-	cout<<pathProcObj.map_name_<<endl;
+*/
 	int i = 0; 
 	while(ros::ok())
 	{
@@ -89,7 +90,7 @@ int main(int argc, char *argv[])
 		}
 		*/
 		
-		pathProcObj.StdNavPath(pathProcObj.route_map_);
+		//pathProcObj.StdNavPath(pathProcObj.route_map_);
 	  	pathProcObj.pub_route_.publish(pathProcObj.plan_path_);
 		ros::spinOnce();	  
 		loop_rate.sleep();
