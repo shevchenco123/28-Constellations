@@ -44,7 +44,6 @@ int main(int argc, char *argv[])
 	int sub_route_num = 0;
 
 	pathProcObj.MakeNodeSegMap(pathProcObj.nodes_heading_);
-
 	pathProcObj.CalcAllPointsInSegs();
 
 /*	

@@ -87,12 +87,14 @@ void PathProc::CalcAllPointsInSegs(void)
 	for (vector<seg_property>::iterator it = vec_seg_property_.begin(); it!=vec_seg_property_.end(); ++it)
 	{
 
+		segment tmp;
 		tmp.seg_id = (*it).seg_id;
 		tmp.start_id = (*it).start_id;
 		tmp.end_id = (*it).end_id;
 		CalcPixesInLine((*it).start, (*it).end, tmp.points_pix);
 		Pix2Map(tmp.points_pix, tmp.points_map);
 		vec_seg_.push_back(tmp);
+
 	}
 	
 }
@@ -157,6 +159,9 @@ bool PathProc::DecomposeRoute(vector<int> &seg_list, vector<int> &check_nodes, i
 		vector<int> ().swap(tmp_sub_route.seg_list);		
 	}
 
+	sub_route_vec_.clear();
+	vector<route_list> ().swap(sub_route_vec_);
+
 	int sub_num = sub_route_vec_.size(); 
 	for(int i = 1; i < sub_num; i++)
 	{
@@ -195,7 +200,7 @@ bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPla
 		route.target_id = parsed_node_;
 		route.target_heading = 0.0;
 		int micro_seg_num;
-		for(int j= 0; j < 9; j++)
+		for(int j= 0; j < parsed_node_; j++)
 		{
 			route.seg_list.push_back(j);
 		}
@@ -256,14 +261,17 @@ bool PathProc::MapPose2NavNode(point2d_map & pose, int & rev_node_id)
 {
 
 	point2d_pix tmp_uv;
+	vector<seg_property> tt(vec_seg_property_);
 
 	tmp_uv.x =  (pose.x - map_origin_[0]) / map_resol_;
 	tmp_uv.y =  map_size_[1] - (pose.y - map_origin_[1]) / map_resol_;
 
 	if(NavPixValid(tmp_uv))
 	{
-		for(vector<seg_property>::iterator it; it != vec_seg_property_.end(); ++it)
+		
+		for(vector<seg_property>::iterator it = tt.begin(); it != tt.end(); it++)
 		{
+
 			int delta_u = abs((*it).end.x - tmp_uv.x);
 			int delta_v = abs((*it).end.y - tmp_uv.y);
 			if( (delta_u < 3) && (delta_v < 3))
@@ -271,13 +279,12 @@ bool PathProc::MapPose2NavNode(point2d_map & pose, int & rev_node_id)
 				rev_node_id = (*it).end_id;
 				return true;
 			}
-			else
-			{
-				cout <<" Can not find the nav node from the request info"<<endl;
-				rev_node_id = 255;
-				return false;
-			}
+
 		}
+
+		cout <<" Can not find the nav node from the request info"<<endl;
+		rev_node_id = 255;
+		return false;
 		
 	}
 	else
@@ -423,6 +430,7 @@ bool BresenhamBasic(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &p
     int twoDy = 2 * dy;
 	int twoDyMinusDx = 2 * (dy - dx);
     int x,y;
+	int x_limit = end.x;
 	
 	point2d_pix tmp_point;
 
@@ -431,7 +439,7 @@ bool BresenhamBasic(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &p
 	{  
 	  x = end.x;  
 	  y = end.y;  
-	  end.x = start.x;
+	  x_limit = start.x;
 	  reverse_flag = true;
 	}  
 	else	
@@ -443,7 +451,7 @@ bool BresenhamBasic(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &p
 	tmp_point.y = y;
 	point_at_line.push_back(tmp_point);
 
-	while(x < end.x)	
+	while(x < x_limit)	
 	{  
 	  x++;	
 	  if(p<0)
