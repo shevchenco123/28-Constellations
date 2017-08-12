@@ -177,8 +177,6 @@ bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPla
 
 	point2d_map tmp_start,tmp_goal;
 	bool parse_node_flag = false;
-
-	req4path_flag = false;
 	
 	tmp_start.x = req.start.pose.position.x;
 	tmp_start.y = req.start.pose.position.y;

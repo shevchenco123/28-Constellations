@@ -209,6 +209,7 @@ int main(int argc, char **argv)
 	float tmp_zero_bnd = 20.0;
 	int rec_flag = 0;
 
+	float tilt_factor = 1.0; //cos(0) = 1.0 ; cos(3)=0.998630; cos(4)=0.997564; cos(5)=0.996195
     while (ros::ok())
     {
 
@@ -230,8 +231,8 @@ int main(int argc, char **argv)
 			{
 				if(0 == zero_cnt)
 				{
-					scan_msg.ranges[data.dist_len1-1-i] = data.dist1[i] * 0.001;  //built for lms1xxinv_node for cartographer 
-					gmapscan_msg.ranges[data.dist_len1-1-i] = data.dist1[i] * 0.001;
+					scan_msg.ranges[data.dist_len1-1-i] = data.dist1[i] * tilt_factor * 0.001;  //built for lms1xxinv_node for cartographer 
+					gmapscan_msg.ranges[data.dist_len1-1-i] = data.dist1[i] * tilt_factor * 0.001;
 				}
 				else
 				{

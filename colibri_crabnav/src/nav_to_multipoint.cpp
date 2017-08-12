@@ -354,6 +354,7 @@ int main(int argc, char* argv[])
 void PlannerCallback(planner *plannerObj, float* start_pos, float* goal_pos, bool *finish_flag)
 {		
 	plannerObj->ObtainPathArray(plannerObj->serviceClient, plannerObj->path_srv, start_pos, goal_pos, finish_flag);
+	cout<<"Timer to call planner..."<<endl;
 }
 
 void MySigintHandler(int sig)
