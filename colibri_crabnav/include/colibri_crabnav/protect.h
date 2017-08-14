@@ -130,7 +130,7 @@ class protector
 		ros::Subscriber	odom_sub4safe;
 
 		ros::Publisher security_pub4env;
-    colibri_msgs::EnvSecurity env_secure;
+    	colibri_msgs::EnvSecurity env_secure;
 
 		ros::Publisher security_pub4laser;
 		ros::Publisher security_pub4ultra;

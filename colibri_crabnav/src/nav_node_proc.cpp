@@ -58,6 +58,9 @@ NavNodeProc::NavNodeProc()
 		exit(-1);
 	}
 
+	test_var = 0;
+
+
 	cur_nav_node = 255;	//if node_id ==255 means no nav node to go shoule stop immediately
 	obtain_goal_flag = false;
 
@@ -104,10 +107,11 @@ void NavNodeProc::InitNodeAndSegMap(float *head_array, int &array_size)
 bool NavNodeProc::PubNavState(void)
 {
 
+	
 	colibri_msgs::NavState nav_sta;
 	nav_sta.header.stamp = ros::Time::now();
 	nav_sta.header.frame_id = "robot";
-	nav_sta.target_node = 1;
+	nav_sta.target_node = test_var;
 	nav_sta.target_heading = 90.0;
 	nav_sta.cur_seg = 0;
 	nav_sta.at_target_flag.data = false;
@@ -119,6 +123,7 @@ bool NavNodeProc::PubNavState(void)
 	nav_sta.cur_y = 0.0;
 	nav_sta.cur_yaw = -45.0;
 	nav_sta.err_code = 1;
+	test_var++;
 	
 	pub_nav_state_.publish(nav_sta);
 

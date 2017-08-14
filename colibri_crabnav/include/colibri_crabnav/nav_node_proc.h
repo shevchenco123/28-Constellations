@@ -114,6 +114,7 @@ class NavNodeProc{
 		
 		int basic_ctrl_;
 		nav_msgs::Path plan_path_;
+		int test_var;
 
 		NavNodeProc();
 		~NavNodeProc();
