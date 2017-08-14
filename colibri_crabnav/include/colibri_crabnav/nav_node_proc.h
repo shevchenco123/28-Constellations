@@ -120,6 +120,7 @@ class NavNodeProc{
 
 		void InitNodeAndSegMap(float *head_array, int &array_size);	
 		bool NavNode2NavPose();
+		bool PubNavState();
 
 	private:
 

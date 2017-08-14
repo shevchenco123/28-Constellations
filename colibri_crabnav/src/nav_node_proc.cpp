@@ -61,9 +61,9 @@ NavNodeProc::NavNodeProc()
 	cur_nav_node = 255;	//if node_id ==255 means no nav node to go shoule stop immediately
 	obtain_goal_flag = false;
 
-	pub_nav_state_ = nh_nav_node_.advertise<colibri_msgs::NavState>("/NavState", 1);
-	sub_coodinator_ = nh_nav_node_.subscribe<colibri_msgs::Coordinator>("/Coordinator", 1, &NavNodeProc::CoordinatorCallBack, this);
-	sub_node_id_ = nh_nav_node_.subscribe<colibri_msgs::NavNode>("/NavNode", 1, &NavNodeProc::NavNodeCallBack, this);
+	pub_nav_state_ = nh_nav_node_.advertise<colibri_msgs::NavState>("/nav_state", 1);
+	sub_coodinator_ = nh_nav_node_.subscribe<colibri_msgs::Coordinator>("/coordinator", 1, &NavNodeProc::CoordinatorCallBack, this);
+	sub_node_id_ = nh_nav_node_.subscribe<colibri_msgs::NavNode>("/nav_node", 1, &NavNodeProc::NavNodeCallBack, this);
 
 }
 
@@ -100,6 +100,31 @@ void NavNodeProc::InitNodeAndSegMap(float *head_array, int &array_size)
 	}
 
 }
+
+bool NavNodeProc::PubNavState(void)
+{
+
+	colibri_msgs::NavState nav_sta;
+	nav_sta.header.stamp = ros::Time::now();
+	nav_sta.header.frame_id = "robot";
+	nav_sta.target_node = 1;
+	nav_sta.target_heading = 90.0;
+	nav_sta.cur_seg = 0;
+	nav_sta.at_target_flag.data = false;
+	nav_sta.achieve_flag.data = false;
+	nav_sta.target_x = 1.0;
+	nav_sta.target_y = 1.0;
+	nav_sta.target_yaw = 45.0;
+	nav_sta.cur_x = 0.0;
+	nav_sta.cur_y = 0.0;
+	nav_sta.cur_yaw = -45.0;
+	nav_sta.err_code = 1;
+	
+	pub_nav_state_.publish(nav_sta);
+
+}
+
+
 
 bool NavNodeProc::NavNode2NavPose()
 {	

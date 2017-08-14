@@ -64,8 +64,8 @@ PathProc::PathProc()
 
 
 	pub_route_ = nh_route_.advertise<nav_msgs::Path>("/nav_path", 1);
-	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/Coordinator", 1, &PathProc::CoordinatorCallBack, this);
-	sub_nav_state_ = nh_route_.subscribe<colibri_msgs::NavState>("/NavState", 1, &PathProc::NavStateCallBack, this);
+	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/coordinator", 1, &PathProc::CoordinatorCallBack, this);
+	sub_nav_state_ = nh_route_.subscribe<colibri_msgs::NavState>("/nav_state", 1, &PathProc::NavStateCallBack, this);
 
  	srv4getpath_ = nh_route_.advertiseService("/move_base/make_plan", &PathProc::ExecGetPathSrv, this);
 

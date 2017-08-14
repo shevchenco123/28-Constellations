@@ -329,6 +329,7 @@ int main(int argc, char* argv[])
 			}
 
 			local4navObj.LimitPubTwist(local4navObj.apf_cmd_vel);
+			navNodeObj.PubNavState();
 
 
 			local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel);
