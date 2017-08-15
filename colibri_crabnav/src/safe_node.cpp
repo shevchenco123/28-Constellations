@@ -28,6 +28,10 @@ int main(int argc, char* argv[])
 	//int rec_max = 1800;
 	//int cnt = 0;
 
+	float width = 0.8;
+	float height = 3.0;
+
+	int mapnum = protectObj.Rect2Polar(width, height);
 
 	int laser_area_sts = 0;
 	int ultra_area_sts = 0;

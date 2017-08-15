@@ -5,6 +5,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
+#include <map>
 
 #include <fstream>
 #include <iomanip>
@@ -66,6 +67,9 @@
 #define ULTRA_CA_DEC  1.0
 #define ULTRA_ROT_RADIUS 0.4
 #define ULTRA_STOP_RADIUS 0.35
+
+#define SAFE_RECT_WIDTH 0.8
+#define SAFE_RECT_HEIGHT 3.0
 
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
@@ -137,6 +141,9 @@ class protector
 		colibri_msgs::SafeVel laser_safe_vel;
 		colibri_msgs::SafeVel ultra_safe_vel;
 
+		map<int, float> ang2rho;
+		int front_ang;
+
 		protector();
 		
 		~protector();
@@ -157,6 +164,9 @@ class protector
 
 		bool CalcLaserCA(float	&min_scan, int &min_scan_ang, int &steer, float *linear_safe, float* angular_safe, int &area_state);
 		bool CalcUltraCA(float &min_ultra, unsigned int &min_ultra_index, int &steer, float* linear_safe, float* angular_safe, int &area_state);
+		int Rect2Polar(float &width, float &height);
+		bool PointInRect(float &min_dis, int &min_ang);
+
 
 	private:
 		

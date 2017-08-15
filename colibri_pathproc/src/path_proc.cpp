@@ -381,6 +381,7 @@ void PathProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& co
 	cur_route_.seg_list.clear();
 	vector<int> ().swap(cur_route_.seg_list);
 	basic_ctrl_ = coordinator->basic_ctrl;
+	cout<<"basic_ctrl_: "<<basic_ctrl_<<endl;
 	cur_route_.target_id = coordinator->target_node;
 	cur_route_.target_heading = coordinator->target_heading;
 	seg_num = coordinator->route_segs_num;
@@ -388,6 +389,7 @@ void PathProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& co
 	{
 		cur_route_.seg_list.push_back(coordinator->segs_vector[i]);
 	}
+	cout<<"seg_num: "<<seg_num<<endl;
 }
 
 bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver_line)

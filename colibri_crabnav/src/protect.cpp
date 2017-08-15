@@ -370,6 +370,36 @@ bool protector::LocateInRecArea(float &rec_width, float &rec_height, float &x, f
 	}
 }
 
+int protector::Rect2Polar(float &width, float &height)
+{
+	float tmp_slope_dis = 0.0;
+	float tmp_w = width / 2.0;
+	float tmp_h = height;
+	front_ang = floor(RAD2DEG * atan2(tmp_w, tmp_h));
+	for(int i = 0; i < (90 - front_ang); i++)
+	{
+		tmp_slope_dis = (width / 2.0) / cos(i * DEG2RAD);
+		ang2rho.insert(pair<int, float>(i, tmp_slope_dis)); 
+	}
+	
+	for(int j = 90 - front_ang; j <= 90; j++)
+	{
+		tmp_slope_dis = height / cos(PI / 2.0 - j * DEG2RAD);
+		ang2rho.insert(pair<int, float>(j, tmp_slope_dis)); 
+	}
+
+	for(int k = 91; k <= 180; k++)
+	{
+		tmp_slope_dis = ang2rho[180 - k];
+		ang2rho.insert(pair<int, float>(k, tmp_slope_dis)); 
+	}
+
+	return ang2rho.size();
+
+}
+
+
+
 bool protector::CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_linear_vel)
 {
 	if(0 == linear_thd)
