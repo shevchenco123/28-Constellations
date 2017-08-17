@@ -28,25 +28,26 @@ int main(int argc, char* argv[])
 	//int rec_max = 1800;
 	//int cnt = 0;
 
-	float width = 0.8;
-	float height = 3.0;
-
-	int mapnum = protectObj.Rect2Polar(width, height);
+	int CNT = 3;
+	protectObj.InitRectPolarVec();
+	
 
 	int laser_area_sts = 0;
 	int ultra_area_sts = 0;
 	while (ros::ok())
 	{	
-		if(delay_cnt < DELAY_CNT_MAX)
+
+		if(delay_cnt < CNT)
 		{
 			delay_cnt++;
 			ros::spinOnce();
 			loop_rate.sleep();
 		}
 		
-		if(delay_cnt >= DELAY_CNT_MAX)
+		if(delay_cnt >= CNT)
 		{
-			protectObj.CalcMinDis4LaserScan(protectObj.scan4safty);	
+			protectObj.RectEncoder();
+			protectObj.CalcMinDis4LaserScan();	
 			cout<<"protectObj.min_scan: "<< protectObj.min_scan << endl;
 			cout<<"protectObj.min_scan_angle: "<< protectObj.min_scan_angle<< endl;
 			cout<<"protectObj.laser_prob: "<< protectObj.laser_unsafe_prob<< endl;

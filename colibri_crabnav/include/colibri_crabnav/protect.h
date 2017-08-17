@@ -6,10 +6,12 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <algorithm>
 
 #include <fstream>
 #include <iomanip>
 #include <ctime>
+#include <bitset>
 
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
@@ -71,6 +73,8 @@
 #define SAFE_RECT_WIDTH 0.8
 #define SAFE_RECT_HEIGHT 3.0
 
+#define SAFE_RECT_NUM 3
+
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
@@ -99,12 +103,20 @@ typedef enum
 	
 }enum_bearing;
 
+typedef struct st_rect
+{
+	float width;
+	float height;
+}rect;
+
+
 class protector
 {
 	public:
 		
 		float scan4safty[SCAN4SAFE_NUM];
 		float ultra_vec[ULTRA_NUM];
+		vector<float> vec_scan4safe;
 
 		float min_scan;
 		float min_ultra;
@@ -141,19 +153,23 @@ class protector
 		colibri_msgs::SafeVel laser_safe_vel;
 		colibri_msgs::SafeVel ultra_safe_vel;
 
-		map<int, float> ang2rho;
-		int front_ang;
+		rect rectangle[SAFE_RECT_NUM];
+		vector< map<int, float> > vec_rect_polar;
+		bitset<SAFE_RECT_NUM> rect_encoder;
+
 
 		protector();
 		
 		~protector();
 
 		void CalcMinDis4LaserScan(float* laser_vec);	
+		void CalcMinDis4LaserScan(void);
 		void CalcMinDis4Ultrosonic(float* ultra_vec);
 		
 		float IntegrateMultiInfo4Safety(enum_act4safe* advise_action);	
 		bool Detect4ExceptHighVel(float* v, float* vth);
 		bool StopMovingInForce(void);
+		void InitRectPolarVec(void);
 		
 		void Intg4EnvSecure(void);
 		bool CalcLaserSafeVelThd(float  &min_scan, int &min_scan_ang, int &steer, float *linear_safe, float* angular_safe);
@@ -164,13 +180,15 @@ class protector
 
 		bool CalcLaserCA(float	&min_scan, int &min_scan_ang, int &steer, float *linear_safe, float* angular_safe, int &area_state);
 		bool CalcUltraCA(float &min_ultra, unsigned int &min_ultra_index, int &steer, float* linear_safe, float* angular_safe, int &area_state);
-		int Rect2Polar(float &width, float &height);
-		bool PointInRect(float &min_dis, int &min_ang);
+		map<int, float> Rect2Polar(float &width, float &height);
+		bool PointInRect(map<int, float> &rec2polar);
+		int RectEncoder(void);
 
 
 	private:
 		
 		void ScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4safe);
+		void CrabScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4safe);
 		void UltraSafeCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra4safe);
 		void BumperSafeCallBack(const colibri_aiv::Bumper::ConstPtr& bumper4safe);
 		void OdomSafeCallBack(const nav_msgs::Odometry::ConstPtr& odom4safe);

@@ -2,8 +2,16 @@
 
 protector::protector()
 {
-	memset(scan4safty, 1.0, SCAN4SAFE_NUM);
-	memset(ultra_vec, 1.0, ULTRA_NUM);
+	for(int i = 0; i < SCAN4SAFE_NUM; i++)
+	{
+		scan4safty[i] = 20.0;
+	}
+	
+	for(int j = 0; j < ULTRA_NUM; j++)
+	{
+		ultra_vec[j] = 2.0;
+	}
+
 	bumper_signal = false;
 	
 	v = 0.0;
@@ -22,8 +30,18 @@ protector::protector()
 	min_index_scan = 105;
 	min_scan_angle = 90;
 	min_index_ultra = 0;	
+
+	vec_scan4safe.reserve(SCAN4SAFE_NUM);
+	vec_rect_polar.reserve(SAFE_RECT_NUM);
+
+	rectangle[0].width = 0.8;
+	rectangle[0].height = 0.5;
+	rectangle[1].width = 0.8;
+	rectangle[1].height = 1.6;
+	rectangle[2].width = 0.8;
+	rectangle[2].height = 3.0;
 	
-	scan_sub4safe = nh_safety.subscribe<sensor_msgs::LaserScan>("/scan", 1, &protector::ScanSafeCallBack, this);
+	scan_sub4safe = nh_safety.subscribe<sensor_msgs::LaserScan>("/scan", 1, &protector::CrabScanSafeCallBack, this);
 
 	ultra_sub4safe = nh_safety.subscribe<colibri_aiv::Ultrasonic>("/ultrasonic", 1, &protector::UltraSafeCallBack, this);
 	bumper_sub4safe = nh_safety.subscribe<colibri_aiv::Bumper>("/bumper", 1, &protector::BumperSafeCallBack, this);
@@ -76,6 +94,31 @@ void protector::CalcMinDis4LaserScan(float* laser_vec)
 	}
 
 }
+
+void protector::CalcMinDis4LaserScan(void)
+{
+	
+	vector<float>::iterator min_it = min_element(vec_scan4safe.begin(), vec_scan4safe.end());
+	
+	min_scan = *min_it;
+	min_index_scan = distance(vec_scan4safe.begin(), min_it);
+	min_scan_angle = min_index_scan - 15; //-15  is the laser safty start angle
+
+	if((*min_it) <= LASER_SAFE_MIN)
+	{
+		laser_unsafe_prob = 1.0;
+	}
+	else if((*min_it) <= LASER_SAFE_MAX)
+	{
+		laser_unsafe_prob = (LASER_SAFE_MAX - (*min_it)) / LASER_SAFE_MAX;
+	}
+	else
+	{
+		laser_unsafe_prob = 0.0;
+	}
+
+}
+
 
 /*	
 *   void CalcMinDis4Ultrosonic(float* ultra_vec) 
@@ -370,34 +413,59 @@ bool protector::LocateInRecArea(float &rec_width, float &rec_height, float &x, f
 	}
 }
 
-int protector::Rect2Polar(float &width, float &height)
+map<int, float> protector::Rect2Polar(float &width, float &height)
 {
+	map<int, float> rho;
 	float tmp_slope_dis = 0.0;
 	float tmp_w = width / 2.0;
 	float tmp_h = height;
-	front_ang = floor(RAD2DEG * atan2(tmp_w, tmp_h));
-	for(int i = 0; i < (90 - front_ang); i++)
+	int front_ang = floor(RAD2DEG * atan2(tmp_w, tmp_h));
+	for(int i = 0; i <= (90 - front_ang); i++)
 	{
 		tmp_slope_dis = (width / 2.0) / cos(i * DEG2RAD);
-		ang2rho.insert(pair<int, float>(i, tmp_slope_dis)); 
+		rho.insert(pair<int, float>(i, tmp_slope_dis)); 
 	}
 	
-	for(int j = 90 - front_ang; j <= 90; j++)
+	for(int j = 90 - front_ang + 1; j <= 90; j++)
 	{
 		tmp_slope_dis = height / cos(PI / 2.0 - j * DEG2RAD);
-		ang2rho.insert(pair<int, float>(j, tmp_slope_dis)); 
+		rho.insert(pair<int, float>(j, tmp_slope_dis)); 
 	}
 
 	for(int k = 91; k <= 180; k++)
 	{
-		tmp_slope_dis = ang2rho[180 - k];
-		ang2rho.insert(pair<int, float>(k, tmp_slope_dis)); 
+		tmp_slope_dis = rho[180 - k];
+		rho.insert(pair<int, float>(k, tmp_slope_dis)); 
 	}
 
-	return ang2rho.size();
+	return rho;
 
 }
 
+
+bool protector::PointInRect(map<int, float> &rec2polar)
+{
+	float tmp_diff = 0.0;
+	vector<float> differ;
+	for(int i = 0 ; i <= 180; i++)
+	{
+		tmp_diff = vec_scan4safe.at(i) - rec2polar[i];
+		differ.push_back(tmp_diff);
+	}
+
+	vector<float>::const_iterator min_it = min_element(differ.begin(), differ.end());
+
+	if(*min_it < - 0.001)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+
+}
 
 
 bool protector::CalcSafeLinearVel(float &ctrl_vel, float &linear_thd, float* safe_linear_vel)
@@ -653,6 +721,70 @@ void protector::ScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4sa
 	}
 
 }
+
+int protector::RectEncoder(void)
+{
+	int encoder = 0;
+
+	for(int i = 0; i < SAFE_RECT_NUM; i++)
+	{
+		map<int, float> tmp = vec_rect_polar[i];
+		bool in_rect_flag = PointInRect(tmp);
+		if(in_rect_flag)
+		{
+			rect_encoder.set(i);
+		}
+		else
+		{
+			rect_encoder.reset(i);
+		}
+		tmp.clear();
+	}
+
+	encoder = int (rect_encoder.to_ulong());
+
+	return encoder;
+
+}
+
+void protector::InitRectPolarVec(void)
+{
+	map<int, float> tmp_r2p;
+
+	for(int i = 0; i < SAFE_RECT_NUM; i++)
+	{
+		tmp_r2p = Rect2Polar(rectangle[i].width, rectangle[i].height);
+		vec_rect_polar.push_back(tmp_r2p);
+		tmp_r2p.clear();
+		map<int, float> ().swap(tmp_r2p);
+	}
+
+}
+
+
+void protector::CrabScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4safe)
+{
+	float tmp_scan = 20.0;
+	vec_scan4safe.clear();
+	vector<float> ().swap(vec_scan4safe);
+	
+	int j = 31;	//from laser ray at  -15deg starts : 31 = 15/0.5+1;
+	for(int i = 0; i < SCAN4SAFE_NUM; i++)
+	{
+		tmp_scan = scan4safe->ranges[j];
+		
+		if(tmp_scan <= 0.08)
+		{
+			tmp_scan = (0.2*scan4safe->ranges[j-4] + 0.3*scan4safe->ranges[j-1] + 0.3*scan4safe->ranges[j+1] + 0.2*scan4safe->ranges[j+4]) ;
+		}
+
+		vec_scan4safe.push_back(tmp_scan);
+		
+		j = j + 2; 
+	}
+
+}
+
 
 void protector::UltraSafeCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra4safe)
 {
