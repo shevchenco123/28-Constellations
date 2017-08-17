@@ -9,7 +9,7 @@ protector::protector()
 	
 	for(int j = 0; j < ULTRA_NUM; j++)
 	{
-		ultra_vec[j] = 2.0;
+		ultra_vec[j] = 3.0;
 	}
 
 	bumper_signal = false;
@@ -43,7 +43,7 @@ protector::protector()
 	
 	scan_sub4safe = nh_safety.subscribe<sensor_msgs::LaserScan>("/scan", 1, &protector::CrabScanSafeCallBack, this);
 
-	ultra_sub4safe = nh_safety.subscribe<colibri_aiv::Ultrasonic>("/ultrasonic", 1, &protector::UltraSafeCallBack, this);
+	ultra_sub4safe = nh_safety.subscribe<colibri_ultra::Ultrasonic>("/ultra_front", 1, &protector::UltraSafeCallBack, this);
 	bumper_sub4safe = nh_safety.subscribe<colibri_aiv::Bumper>("/bumper", 1, &protector::BumperSafeCallBack, this);
 	odom_sub4safe = nh_safety.subscribe<nav_msgs::Odometry>("/odom", 1, &protector::OdomSafeCallBack, this);
 
@@ -742,6 +742,7 @@ int protector::RectEncoder(void)
 	}
 
 	encoder = int (rect_encoder.to_ulong());
+	cout<<"laser encoder: "<< encoder <<endl;
 
 	return encoder;
 
@@ -786,17 +787,13 @@ void protector::CrabScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& sca
 }
 
 
-void protector::UltraSafeCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra4safe)
+void protector::UltraSafeCallBack(const colibri_ultra::Ultrasonic::ConstPtr& ultra4safe)
 {
-	ultra_vec[0] = (ultra4safe->ultrasonic1) / 100.0; //for front ultra unit cm to m
-	ultra_vec[1] = (ultra4safe->ultrasonic2) / 100.0;
-	ultra_vec[2] = (ultra4safe->ultrasonic3) / 100.0;
-	ultra_vec[3] = (ultra4safe->ultrasonic4) / 100.0;
+	ultra_vec[0] = (ultra4safe->ultra_1); //for front ultra unit cm to m
+	ultra_vec[1] = (ultra4safe->ultra_2);
+	ultra_vec[2] = (ultra4safe->ultra_3);
+	ultra_vec[3] = (ultra4safe->ultra_4);
 
-	ultra_vec[4] = (ultra4safe->ultrasonic5) / 100.0;	// for rear ultra
-	ultra_vec[5] = (ultra4safe->ultrasonic6) / 100.0;
-	ultra_vec[6] = (ultra4safe->ultrasonic7) / 100.0;
-	ultra_vec[7] = (ultra4safe->ultrasonic8) / 100.0;
 }
 
 void protector::BumperSafeCallBack(const colibri_aiv::Bumper::ConstPtr& bumper4safe)

@@ -42,6 +42,7 @@ find_package(catkin REQUIRED COMPONENTS
    NavState.msg
    Coordinator.msg
    NavNode.msg
+   Ultrasonic.msg
  )
 
 ## Generate services in the 'srv' folder

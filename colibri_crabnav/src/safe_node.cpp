@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 	//int rec_max = 1800;
 	//int cnt = 0;
 
-	int CNT = 3;
+	int CNT = 4;
 	protectObj.InitRectPolarVec();
 	
 

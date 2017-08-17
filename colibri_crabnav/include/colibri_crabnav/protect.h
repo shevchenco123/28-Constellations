@@ -21,6 +21,7 @@
 #include "colibri_ca.h"
 
 #include "colibri_aiv/Ultrasonic.h"
+#include "colibri_ultra/Ultrasonic.h"
 #include "colibri_aiv/Bumper.h"
 #include "colibri_msgs/EnvSecurity.h"
 #include "colibri_msgs/SafeVel.h"
@@ -189,7 +190,7 @@ class protector
 		
 		void ScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4safe);
 		void CrabScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4safe);
-		void UltraSafeCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra4safe);
+		void UltraSafeCallBack(const colibri_ultra::Ultrasonic::ConstPtr& ultra4safe);
 		void BumperSafeCallBack(const colibri_aiv::Bumper::ConstPtr& bumper4safe);
 		void OdomSafeCallBack(const nav_msgs::Odometry::ConstPtr& odom4safe);
 		void Polar2Decare(float  &min_scan, int &min_scan_ang,float &x, float &y);
