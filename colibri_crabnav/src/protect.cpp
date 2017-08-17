@@ -25,7 +25,7 @@ protector::protector()
 	ultra_unsafe_prob = 0.0;
 	
 	min_scan = 20.0;
-	min_ultra = 6.5;
+	min_ultra = 3.0;
 
 	min_index_scan = 105;
 	min_scan_angle = 90;
@@ -286,6 +286,51 @@ bool protector::CalcUltraSafeVelThd(float &min_ultra, unsigned int &min_ultra_in
 
 }
 
+bool protector::CalcCrabSafeVelThd(int &laser_encoder,float  &min_scan, int &min_scan_ang, float *linear_safe, float* angular_safe)
+{
+
+	switch (laser_encoder)
+	{
+		case 4:		// in 3m rectangle
+			*linear_safe = CRAB_MID_LINEAR_VEL;
+			*angular_safe = CRAB_MIN_ANGULAR_VEL;				
+			break;
+			
+		case 6:		//
+			*linear_safe = CRAB_MIN_LINEAR_VEL;
+			*angular_safe = CRAB_MIN_ANGULAR_VEL;	
+			break;
+			
+		case 7:		// in 0.5 rectangle
+			*linear_safe = CRAB_STOP_LINEAR_VEL;
+			*angular_safe = CRAB_STOP_ANGULAR_VEL;	
+			break;	
+			
+		case 0:
+			if(min_scan < 0.35 && (min_scan_ang > 180 || min_scan_ang < 0))
+			{
+				*linear_safe = CRAB_STOP_LINEAR_VEL;
+				*angular_safe = CRAB_STOP_ANGULAR_VEL;
+			}
+			else
+			{
+				*linear_safe = CRAB_MAX_LINEAR_VEL;
+				*angular_safe = CRAB_MID_ANGULAR_VEL;
+			}
+			break;
+			
+		default:
+			*linear_safe = CRAB_MID_LINEAR_VEL;
+			*angular_safe = CRAB_MID_ANGULAR_VEL;	
+			break;
+
+	}
+
+	return true;
+		
+}
+
+
 bool protector::CalcLaserCA(float	&min_scan, int &min_scan_ang, int &steer, float *linear_safe, float* angular_safe, int &area_state)
 {
 	float tmp_x = 0.0;
@@ -395,6 +440,131 @@ bool protector::CalcUltraCA(float &min_ultra, unsigned int &min_ultra_index, int
 
 }
 
+bool protector::CalcCrabUltraCA(range_finder & ultra, safe_state & safe_ultra)
+{
+	if(ultra.min_dis > ULTRA_CA_DEC)
+	{
+		safe_ultra.linear_up_vel = CRAB_MAX_LINEAR_VEL;
+		safe_ultra.angular_up_vel = CRAB_MAX_ANGULAR_VEL;
+		safe_ultra.steer = 0;
+		safe_ultra.area_state = 0;
+		return false;	
+	}
+	else if(ultra.min_dis > ULTRA_ROT_RADIUS)
+	{
+		safe_ultra.linear_up_vel = CRAB_MIN_LINEAR_VEL;
+		safe_ultra.angular_up_vel = CRAB_MID_ANGULAR_VEL;
+		safe_ultra.steer= 0;
+		safe_ultra.area_state = 1;
+	}
+	else if(ultra.min_dis > ULTRA_STOP_RADIUS)
+	{
+		safe_ultra.linear_up_vel = CRAB_STOP_LINEAR_VEL;
+		safe_ultra.angular_up_vel = CRAB_MIN_ANGULAR_VEL;
+		if(ultra.min_index == 1)
+		{
+			safe_ultra.steer = 1;
+		}
+		else if(ultra.min_index == 4)
+		{
+			safe_ultra.steer = -1;
+		}
+		else
+		{
+			safe_ultra.steer = 0;
+		}
+			
+		safe_ultra.area_state = 2;
+	}
+	else
+	{
+		safe_ultra.linear_up_vel = CRAB_STOP_LINEAR_VEL;
+		safe_ultra.angular_up_vel = CRAB_STOP_ANGULAR_VEL;
+		safe_ultra.steer = 0;
+		safe_ultra.area_state = 3;
+
+	}
+
+
+}
+
+
+bool protector::CalcCrabLaserCA(int &laser_encoder, range_finder & laser, safe_state & safe_laser)
+{
+
+	if(laser_encoder != 0)
+	{
+		switch(laser_encoder)
+		{
+			case 4: 	// in 3m rectangle
+				safe_laser.linear_up_vel= CRAB_MID_LINEAR_VEL;
+				safe_laser.angular_up_vel = CRAB_MID_ANGULAR_VEL;
+				safe_laser.area_state = 1;
+				safe_laser.steer = 0;
+				break;
+				
+			case 6: 	//
+				safe_laser.linear_up_vel= CRAB_MIN_LINEAR_VEL;
+				safe_laser.angular_up_vel = CRAB_MIN_ANGULAR_VEL;
+				safe_laser.area_state = 2;
+				safe_laser.steer = 0;
+				break;
+				
+			case 7: 	// in 0.5 rectangle
+				safe_laser.linear_up_vel= CRAB_STOP_LINEAR_VEL;
+				safe_laser.angular_up_vel = CRAB_STOP_ANGULAR_VEL;
+				safe_laser.area_state = 3;
+				safe_laser.steer = 0;
+				break;
+			default:
+				safe_laser.linear_up_vel= CRAB_STOP_LINEAR_VEL;
+				safe_laser.angular_up_vel = CRAB_STOP_ANGULAR_VEL;
+				safe_laser.area_state = 100;
+				safe_laser.steer = 0;			
+				break;
+
+		}
+
+		return true;
+
+	}
+	else
+	{
+		if(laser.min_dis < 0.35 && (laser.min_index > 180 || laser.min_index < 0))
+		{
+			safe_laser.linear_up_vel= CRAB_STOP_LINEAR_VEL;
+			safe_laser.angular_up_vel = CRAB_STOP_ANGULAR_VEL;
+			safe_laser.area_state = 4;
+			safe_laser.steer = 0;
+			return true;
+		}
+		else
+		{
+			safe_laser.linear_up_vel= CRAB_MAX_LINEAR_VEL;
+			safe_laser.angular_up_vel = CRAB_MAX_ANGULAR_VEL;
+			safe_laser.area_state = 0;
+			if(laser.min_index > 135)
+			{
+				safe_laser.steer = -1;
+			}
+			else if(laser.min_index < 45)
+			{
+				safe_laser.steer = 1;
+
+			}
+			else
+			{			
+				safe_laser.steer = 0;
+			}
+
+			return false;
+		}
+
+	}
+
+}
+
+
 void protector::Polar2Decare(float  &min_scan, int &min_scan_ang,float &x, float &y)
 {
 	x = min_scan * cos(min_scan_ang * DEG2RAD);
@@ -449,7 +619,7 @@ bool protector::PointInRect(map<int, float> &rec2polar)
 	vector<float> differ;
 	for(int i = 0 ; i <= 180; i++)
 	{
-		tmp_diff = vec_scan4safe.at(i) - rec2polar[i];
+		tmp_diff = vec_scan4safe.at(i+15) - rec2polar[i];
 		differ.push_back(tmp_diff);
 	}
 
@@ -695,7 +865,7 @@ void protector::Intg4EnvSecure(void)
 	}
 	else
 	{
-		env_secure.bumper_min_dis = 1.0;
+		env_secure.bumper_min_dis = 3.0;
 		env_secure.bumper_prob = 0.0;
 	}
 			
@@ -722,7 +892,7 @@ void protector::ScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4sa
 
 }
 
-int protector::RectEncoder(void)
+int protector::LaserRectEncoder(void)
 {
 	int encoder = 0;
 
@@ -742,7 +912,6 @@ int protector::RectEncoder(void)
 	}
 
 	encoder = int (rect_encoder.to_ulong());
-	cout<<"laser encoder: "<< encoder <<endl;
 
 	return encoder;
 

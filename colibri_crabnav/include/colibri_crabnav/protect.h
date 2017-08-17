@@ -32,19 +32,19 @@
 
 #define SCAN4SAFE_NUM 211	//obtain the  210 degree laser scan for resolution at 1 degree  from  (-15~195) degree
 #define LASER_SAFE_MIN	0.06	//static safe limit for laser blind area
-#define LASER_SAFE_MAX	2.0
+#define LASER_SAFE_MAX	3.0
 
 #define ULTRA_NUM	  8		//front 4 ultrasonic, ignore the back 4 ultrasonic
-#define ULTRA_SAFE_MIN	0.30
-#define ULTRA_SAFE_MAX	2.0
+#define ULTRA_SAFE_MIN	0.15
+#define ULTRA_SAFE_MAX	3.0
 
 #define UNSAFE_PROB		0.97 // >0.97 must stop
 #define LEVEL_1_PROB 	0.95 // >0.95 advise stop
 #define LEVEL_2_PROB 	0.85 // >0.85 turn for ca
 #define LEVEL_3_PROB 	0.35 // > 0.35 dec vel  ; <0.35 hold on the current state
 
-#define V_EXCPT_VAL   1.25
-#define VTH_EXCPT_VAL 0.785	// 45 deg/sec
+#define V_EXCPT_VAL   1.2
+#define VTH_EXCPT_VAL 1.57	// 90deg/sec
 
 #define LINEAR_SAFE_MAX 	0.15
 #define ANGULAR_SAFE_MAX 	0.2
@@ -67,15 +67,24 @@
 #define LASER_ROT_RADIUS 0.4
 #define LASER_STOP_RADIUS 0.3
 
-#define ULTRA_CA_DEC  1.0
+#define ULTRA_CA_DEC  2.0
 #define ULTRA_ROT_RADIUS 0.4
-#define ULTRA_STOP_RADIUS 0.35
+#define ULTRA_STOP_RADIUS 0.15
 
 #define SAFE_RECT_WIDTH 0.8
 #define SAFE_RECT_HEIGHT 3.0
 
 #define SAFE_RECT_NUM 3
 
+#define CRAB_MAX_LINEAR_VEL 0.8
+#define CRAB_MID_LINEAR_VEL 0.45
+#define CRAB_MIN_LINEAR_VEL 0.2
+#define CRAB_STOP_LINEAR_VEL 0.0
+
+#define CRAB_MAX_ANGULAR_VEL 0.785  //45deg/sec
+#define CRAB_MID_ANGULAR_VEL 0.4	//22.5deg/sec
+#define CRAB_MIN_ANGULAR_VEL 0.175  //10deg/sec
+#define CRAB_STOP_ANGULAR_VEL 0.0
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
@@ -109,6 +118,20 @@ typedef struct st_rect
 	float width;
 	float height;
 }rect;
+
+typedef struct st_range_finder
+{
+	float min_dis;
+	int min_index;
+}range_finder;
+
+typedef struct st_safe_state
+{
+	float linear_up_vel;
+	float angular_up_vel;
+	int steer;
+	int area_state;
+}safe_state;
 
 
 class protector
@@ -183,7 +206,10 @@ class protector
 		bool CalcUltraCA(float &min_ultra, unsigned int &min_ultra_index, int &steer, float* linear_safe, float* angular_safe, int &area_state);
 		map<int, float> Rect2Polar(float &width, float &height);
 		bool PointInRect(map<int, float> &rec2polar);
-		int RectEncoder(void);
+		int LaserRectEncoder(void);	
+	    bool CalcCrabSafeVelThd(int &laser_encoder,float  &min_scan, int &min_scan_ang, float *linear_safe, float* angular_safe);
+		bool CalcCrabUltraCA(range_finder & laser, safe_state & safe_laser);
+		bool CalcCrabLaserCA(int &laser_encoder, range_finder & laser, safe_state & safe_laser);
 
 
 	private:
