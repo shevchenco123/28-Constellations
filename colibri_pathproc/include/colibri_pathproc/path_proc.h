@@ -109,6 +109,7 @@ class PathProc{
 		ros::Subscriber sub_coodinator_;
 		ros::Subscriber sub_nav_state_;
 		ros::Publisher pub_route_;
+		ros::Publisher pub_marker_;
 		
 		ros::ServiceServer srv4getpath_;
 
