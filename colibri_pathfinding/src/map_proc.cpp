@@ -98,7 +98,8 @@ map_proc::map_proc()
 	{ 
 		doc["origin"][0] >> map_origin[0]; 
 		doc["origin"][1] >> map_origin[1]; 
-		doc["origin"][2] >> map_origin[2]; 
+		doc["origin"][2] >> map_origin[2];
+		cout<<map_origin[0]<<endl;
 	} catch (YAML::InvalidScalar) 
 	{ 
 		ROS_ERROR("The map does not contain an origin tag or it is invalid.");

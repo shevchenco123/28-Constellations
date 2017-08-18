@@ -1,21 +1,16 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(colibri_msgs)
+project(colibri_ultra)
 
-## Add support for C++11, supported in ROS Kinetic and newer
-# add_definitions(-std=c++11)
-set (CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}  -g ")
-set (CMAKE_VERBOSE_MAKEFILE ON)
+## Compile as C++11, supported in ROS Kinetic and newer
+# add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  nav_msgs
   roscpp
   rospy
-  sensor_msgs
   std_msgs
-  geometry_msgs
   message_generation
 )
 
@@ -28,21 +23,35 @@ find_package(catkin REQUIRED COMPONENTS
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
 # catkin_python_setup()
 
+################################################
+## Declare ROS messages, services and actions ##
+################################################
 
+## To declare and build messages, services or actions from within this
+## package, follow these steps:
+## * Let MSG_DEP_SET be the set of packages whose message types you use in
+##   your messages/services/actions (e.g. std_msgs, actionlib_msgs, ...).
+## * In the file package.xml:
+##   * add a build_depend tag for "message_generation"
+##   * add a build_depend and a run_depend tag for each package in MSG_DEP_SET
+##   * If MSG_DEP_SET isn't empty the following dependency has been pulled in
+##     but can be declared for certainty nonetheless:
+##     * add a run_depend tag for "message_runtime"
+## * In this file (CMakeLists.txt):
+##   * add "message_generation" and every package in MSG_DEP_SET to
+##     find_package(catkin REQUIRED COMPONENTS ...)
+##   * add "message_runtime" and every package in MSG_DEP_SET to
+##     catkin_package(CATKIN_DEPENDS ...)
+##   * uncomment the add_*_files sections below as needed
+##     and list every .msg/.srv/.action file to be processed
+##   * uncomment the generate_messages entry below
+##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
  add_message_files(
-   FILES
-   AngPotnEngy.msg
-   EnvSecurity.msg
-   RobotState.msg
-   SafeVel.msg
-   AuxInfo.msg
-   Ipc.msg
-   NavState.msg
-   Coordinator.msg
-   NavNode.msg
-   Ultrasonic.msg
+    FILES
+    Ultrasonic.msg
+#   Message2.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -63,7 +72,6 @@ find_package(catkin REQUIRED COMPONENTS
  generate_messages(
    DEPENDENCIES
    std_msgs
-   geometry_msgs
  )
 
 ################################################
@@ -97,13 +105,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES avoidence_msg
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+#  LIBRARIES colibri_ultra
+   CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
-   CATKIN_DEPENDS message_runtime
 )
-
-
 
 ###########
 ## Build ##
@@ -111,14 +116,14 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-# include_directories(include)
 include_directories(
+# include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/colibri_msgs.cpp
+#   src/${PROJECT_NAME}/colibri_ultra.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -129,7 +134,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/colibri_msgs_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/colibri_ultra_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -186,7 +191,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_colibri_msgs.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_colibri_ultra.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

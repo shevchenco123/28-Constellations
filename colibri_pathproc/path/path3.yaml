@@ -3,14 +3,12 @@ path:
   resolution: 0.050000
   origin: [-20.0, -4.027744, 0.000000]
   map_size: [747, 307]
-  seg_num: 5
+  seg_num: 4
   seg0_property: [0, 0, 1]
-  seg0_vector: [377, 206, 377, 234]
+  seg0_vector: [385, 121, 385, 221]
   seg1_property: [1, 1, 2]
-  seg1_vector: [377, 234, 459, 234]
+  seg1_vector: [385, 221, 499, 221]
   seg2_property: [2, 2, 3]
-  seg2_vector: [459, 234, 530, 234]
+  seg2_vector: [499, 221, 499, 90]
   seg3_property: [3, 3, 4]
-  seg3_vector: [530, 234, 530, 206]
-  seg4_property: [4, 4, 0]
-  seg4_vector: [530, 206, 377, 206]
+  seg3_vector: [499, 90, 582, 90]
