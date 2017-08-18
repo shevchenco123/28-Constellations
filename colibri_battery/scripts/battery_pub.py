@@ -13,7 +13,7 @@ B_v = ()
 Battery_send_num = []
 B_V_bat_cell = []
 B_Temp = []
-t = serial.Serial('/dev/battery', 9600)
+t = serial.Serial('/dev/ttyS5', 9600)
 t.close()
 
 

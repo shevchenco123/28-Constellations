@@ -96,11 +96,11 @@ int main( int argc, char *argv[] )
 	ros::Rate loop_rate(5);
 	
 	ofstream  path_node; 
-	path_node.open ("/home/colibri/clbri_ws/src/colibri_pathfinding/path/nodes.txt");
+	path_node.open ("/home/colibri/colibri_ws/src/colibri_pathfinding/path/nodes.txt");
 
 	image_transport::ImageTransport it(nh);
 	image_transport::Publisher pub = it.advertise("maps/image", 1);	
-	Mat image = imread("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/626_mdf.pgm", CV_LOAD_IMAGE_COLOR);
+	Mat image = imread("/home/colibri/colibri_ws/src/colibri_pathfinding/maps/626_mdf.pgm", CV_LOAD_IMAGE_COLOR);
 	if(image.empty())
 	{
 	 	cout<<"open error!"<<endl;
@@ -114,7 +114,7 @@ int main( int argc, char *argv[] )
 	erode( image, dilation_img, element );		
 	Mat gray_img;
 	cvtColor(dilation_img, gray_img, CV_BGR2GRAY);
-	imwrite("/home/colibri/clbri_ws/src/colibri_pathfinding/maps/Dilate_Img.pgm", gray_img);
+	imwrite("/home/colibri/colibri_ws/src/colibri_pathfinding/maps/Dilate_Img.pgm", gray_img);
 
 	sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", gray_img).toImageMsg();
 	sensor_msgs::ImagePtr ori_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", dilation_img).toImageMsg();
