@@ -1,0 +1,12 @@
+path:
+  image: 818floor.pgm
+  resolution: 0.050000
+  origin: [-20.353723, -5.455050, 0.000000]
+  map_size: [704, 309]
+  seg_num: 3
+  seg0_property: [0, 0, 1]
+  seg0_vector: [409, 201, 472, 201]
+  seg1_property: [1, 1, 2]
+  seg1_vector: [472, 201, 531, 201]
+  seg2_property: [2, 2, 3]
+  seg2_vector: [531, 201, 531, 94]
