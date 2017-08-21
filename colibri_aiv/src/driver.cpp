@@ -80,7 +80,7 @@ AIV_Driver::AIV_Driver()
 	GenerateCmd(req_bumper_stop, REQ_BUMPER, RSVD_VAL, FRAME_CMD_STOP, cmd_data);
 	GenerateCmd(req_vel_stop, REQ_VELOCITY, RSVD_VAL, FRAME_CMD_STOP, cmd_data);
 		
-	//DisplayFrame(req_ultra_start);
+	//DisplayFrame(send_twist);
 	
 	cartodom_x = -OFFSET_LASER_X;
 	cartodom_y = 0.0;
@@ -164,14 +164,15 @@ void AIV_Driver::GenerateCmd(unsigned char *cmd_name,unsigned char cmd,unsigned 
 void AIV_Driver::WriteToCom(const unsigned char * data)
 {
 	size_t len = write(pserialport, buffer(data, CONST_PROTOCOL_LEN), ec);
-	
-	//cout <<"send "<<len<<" Bytes:";
+	/*	
+	cout <<"send "<<len<<" Bytes:";
 	int i;
 	for(i = 0; i < CONST_PROTOCOL_LEN; i ++)
 	{
-		//printf(" %x", data[i]);	
+		printf(" %x", data[i]);	
 	}
-	//cout << endl;
+	cout << endl;
+	*/
 }
 
 
@@ -180,7 +181,14 @@ void AIV_Driver::ReadInfoProc(unsigned char buf[], boost::system::error_code ec,
 	//cout<<"callback read "<<bytes_transferred<<" bytes:";
 	unsigned char recv_data[CONST_PROTOCOL_LEN];
     memset(recv_data,0,CONST_PROTOCOL_LEN);
-		
+    /*
+	cout<<"recv orignal data: ";
+	for(int i = 0; i < CONST_PROTOCOL_LEN; i ++)
+	{
+		printf(" %x", recv_cache[i]);	
+	}	
+	cout<<endl;
+	*/
     if((recv_cache[31] == FRAME_START_1) && (recv_cache[0] == FRAME_START_2) && (recv_cache[1] == FRAME_RSVD))
 	{
         memcpy(recv_data, &recv_cache[31], 1);
@@ -608,11 +616,11 @@ bool AIV_Driver::InitSubandPub()
 {
 
 	ros::NodeHandle global_nh;	
-	twist_sub= global_nh.subscribe<geometry_msgs::Twist>("t_cmd_vel", 1, boost::bind(&AIV_Driver::TwistCallback, this, _1));
-	aux_sub= global_nh.subscribe<colibri_msgs::AuxInfo>("aux_info", 1, boost::bind(&AIV_Driver::AuxInfoCallback, this, _1));
+	twist_sub= global_nh.subscribe<geometry_msgs::Twist>("t_cmd_vel", 10, boost::bind(&AIV_Driver::TwistCallback, this, _1));
+	aux_sub= global_nh.subscribe<colibri_msgs::AuxInfo>("aux_info", 10, boost::bind(&AIV_Driver::AuxInfoCallback, this, _1));
 
 	ros::NodeHandle nh_cartodom;
-	cartodom_sub= global_nh.subscribe<cartodom::Cartodom>("cartodom", 1, boost::bind(&AIV_Driver::CartodomCallback, this, _1));
+	cartodom_sub= global_nh.subscribe<cartodom::Cartodom>("cartodom", 10, boost::bind(&AIV_Driver::CartodomCallback, this, _1));
 	
 	ros::NodeHandle nh_odom;
 	odom_pub = nh_odom.advertise<nav_msgs::Odometry>("odom", 10);

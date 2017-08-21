@@ -8,7 +8,7 @@ int main(int argc, char* argv[])
 	my_port.CreateThread(ReadDataThread);
 	
 	//my_port.SendCmd(my_port.enable_motor,AIV_Driver::enable_motor_finish);
-	//my_port.SendCmd(my_port.req_vel_start,AIV_Driver::req_vel_start_finish);
+	my_port.SendCmd(my_port.req_vel_start,AIV_Driver::req_vel_start_finish);
 
 	//my_port.SendCmd(my_port.req_encoder_start,AIV_Driver::req_encoder_start_finish);
 

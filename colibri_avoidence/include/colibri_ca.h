@@ -19,12 +19,12 @@
 
 using namespace std;
 
-#define ULTRA_RF
-#define EXT_LASER_RF
+//#define ULTRA_RF
+//#define EXT_LASER_RF
 //#define ORI_ULTRA_FUSION
 //#define ORI_EXT_FUSION
-#define ORI_EXT_ULTRA_FUSION
-//#define NO_FUSION
+//#define ORI_EXT_ULTRA_FUSION
+#define NO_FUSION
 
 #define NUM_RAY4CA 				181		//every degree for front semi-cirle
 #define ANGLE4CA_START 			0

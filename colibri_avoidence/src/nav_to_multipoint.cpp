@@ -12,11 +12,11 @@
 #include<signal.h>
 
 //#define ULTRA_CA_LIMIT
-#define LASER_CA_LIMIT
+//#define LASER_CA_LIMIT
 //#define ULTRA_CA_LIMIT
 
 //#define CA_LIMIT
-//#define NO_LIMIT
+#define NO_LIMIT
 
 bool node_shutdown  = false;
 int cnt_null_cmdvel = 0;
@@ -153,7 +153,7 @@ int main(int argc, char* argv[])
 			goal_inlaser_flag = local4navObj.CalcGoalDirOfLaserView(&tmp_laser2goal_yaw, &local4navObj.amcl_cur_state[2], &dir_goal_in_laser, &self_rotation_angle);
 
 			scan4caObj.CalcPhiParam(local4navObj.cur_robot_vel[0], dir_goal_in_laser);
-			scan4caObj.PubPfInfo4Dbg();
+			//scan4caObj.PubPfInfo4Dbg();
 
 			scan4caObj.CalcKrfTheta(scan4caObj.kp_phi_vec, scan4caObj.phi_start_vec, scan4caObj.phi_end_vec);
 			//scan4caObj.CalcCorrectedKrf();
