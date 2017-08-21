@@ -680,12 +680,12 @@ void scan_ca::CalcPhiParam(float vel_center, float& dir_goal_inlaser)
 
 	int range_num = 0;
 	float tmp_delta = 0.0;
+	float min_multi_range = 20.0;
 
 #ifdef ULTRA_RF	
 	float min_ultra_dis = 6.5;
 	int ultra_obs_coder = 0;
 	int ultra_strategy = 0;
-	float min_multi_range = 0.0;
 	min_ultra_dis = CalcMinUltraRange(); 
 	ultra_obs_coder = CalcUltraObsCoder(min_ultra_dis);
 	ultra_strategy = UltraCollisionFreeDeal(ultra_obs_coder);
