@@ -40,10 +40,15 @@ find_package(catkin REQUIRED COMPONENTS
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-include_directories(
-  ./include
-  ${catkin_INCLUDE_DIRS}
-)
+#include_directories(
+#  ./include
+#  ${catkin_INCLUDE_DIRS}
+#)
+
+include_directories( ${catkin_INCLUDE_DIRS} )
+INCLUDE_DIRECTORIES(/usr/local/include) 
+link_directories(/usr/local/lib)
+INCLUDE_DIRECTORIES(include/colibri_avoidence/)
 
 ## Declare a C++ library
 # add_library(colibri_avoidence
