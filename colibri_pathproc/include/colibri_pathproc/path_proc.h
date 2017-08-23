@@ -117,6 +117,7 @@ class PathProc{
 		
 		ros::ServiceServer srv4getpath_;
 
+		visualization_msgs::Marker  goalmark_list_;
 		string map_name_;
 		float map_origin_[3];
 		int map_size_[2];
@@ -144,6 +145,7 @@ class PathProc{
 
 		PathProc();
 		~PathProc();
+		void InitMarkers(void);
 		void ConfigNodesHeading(float *head_array, int &array_size);
 		void InitKneeNodes(int *node_array, int &array_size);
 		bool AddTargetNode2KneeNodes(int &target_node);
@@ -153,6 +155,7 @@ class PathProc{
 		void MakeNodeSegMap(vector<float> &vec_heading);
 		bool StdNavPath(vector<point2d_map> &nav_path);
 		bool ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPlan::Response & res);
+		int FillMarkerPose(route_list & route);
 
 	private:
 		void Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &points_map);

@@ -66,7 +66,7 @@ PathProc::PathProc()
 	pub_route_ = nh_route_.advertise<nav_msgs::Path>("/nav_path", 1);
 	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/coordinator", 1, &PathProc::CoordinatorCallBack, this);
 	sub_nav_state_ = nh_route_.subscribe<colibri_msgs::NavState>("/nav_state", 1, &PathProc::NavStateCallBack, this);
-
+	pub_marker_ = nh_route_.advertise<visualization_msgs::Marker>("waypoint_markers", 10);
  	srv4getpath_ = nh_route_.advertiseService("/move_base/make_plan", &PathProc::ExecGetPathSrv, this);
 
 }
@@ -74,6 +74,45 @@ PathProc::PathProc()
 PathProc::~PathProc()
 {
 
+}
+
+void PathProc::InitMarkers(void)
+{
+	goalmark_list_.ns       = "waypoints";
+	goalmark_list_.id       = 0;
+	goalmark_list_.type     = visualization_msgs::Marker::CUBE_LIST;
+	goalmark_list_.action   = visualization_msgs::Marker::ADD;
+	goalmark_list_.lifetime = ros::Duration();//0 is forever
+	goalmark_list_.scale.x  = 0.2;
+	goalmark_list_.scale.y  = 0.2;
+	goalmark_list_.color.r  = 1.0;
+	goalmark_list_.color.g  = 0.0;
+	goalmark_list_.color.b  = 0.0;
+	goalmark_list_.color.a  = 1.0;
+
+	goalmark_list_.header.frame_id = "map";
+	goalmark_list_.header.stamp = ros::Time::now();
+
+}
+
+int PathProc::FillMarkerPose(route_list & route)
+{
+
+	goalmark_list_.points.clear();
+	geometry_msgs::Pose subgoal_list;
+
+	for(vector<int>::iterator it = route.seg_list.begin(); it != route.seg_list.end(); ++it)
+	{
+		vector<segment>::iterator tmp_it = find_if(vec_seg_.begin(), vec_seg_.end(),FindX<int,segment>(*it));
+		if(tmp_it != vec_seg_.end())
+		{
+			subgoal_list.position.x = (*tmp_it).points_map.back().x;
+			subgoal_list.position.y = (*tmp_it).points_map.back().y;
+			subgoal_list.orientation.w = 1.0;
+			goalmark_list_.points.push_back(subgoal_list.position);
+		}
+	}
+	return goalmark_list_.points.size();
 }
 
 
