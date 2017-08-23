@@ -12,10 +12,8 @@
 
 #include<signal.h>
 
-//#define ULTRA_CA_LIMIT
 //#define LASER_CA_LIMIT
 //#define ULTRA_CA_LIMIT
-
 //#define CA_LIMIT
 #define NO_LIMIT
 
