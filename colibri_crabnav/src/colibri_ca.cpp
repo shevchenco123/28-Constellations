@@ -25,7 +25,7 @@ scan_ca::scan_ca()
 	memset(passfcn_vec, 0, NUM_RAY4CA);
 	max_passfcn_val = 0.0;
 
-	min_ultra = 6.5;
+	min_ultra = 3.0;
 	ultra_coder = 0;
 	min_laser = 20.0;
 	min_laser_dir = 90;
@@ -46,10 +46,10 @@ scan_ca::scan_ca()
 	wander = 0;
 	
 	scan_sub4ca = nh_ca.subscribe<sensor_msgs::LaserScan>("/scan", 1, &scan_ca::ScanCallBack, this);
-	ultra_sub4ca = nh_ca.subscribe<colibri_aiv::Ultrasonic>("/ultrasonic", 1, &scan_ca::UltraSonicCallBack,this);
+	ultra_sub4ca = nh_ca.subscribe<colibri_msgs::Ultrasonic>("/ultra_front", 1, &scan_ca::UltraSonicCallBack,this);
 	env_sub4safe = nh_ca.subscribe<colibri_msgs::EnvSecurity>("/env_secure", 1, &scan_ca::EnvSecurityCallBack,this);
-	apf_pub4mntr = nh_ca.advertise<colibri_msgs::AngPotnEngy>("/apf", 5);
-	rf_pub4mntr = nh_ca.advertise<colibri_msgs::AngPotnEngy>("/rf", 5);
+	//apf_pub4mntr = nh_ca.advertise<colibri_msgs::AngPotnEngy>("/apf", 5);
+	//rf_pub4mntr = nh_ca.advertise<colibri_msgs::AngPotnEngy>("/rf", 5);
 	pf_Pub4dbg = nh_ca.advertise<colibri_msgs::AngPotnEngy>("/pf_dbg", 5); 
 }
 
