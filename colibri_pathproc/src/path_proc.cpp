@@ -5,7 +5,7 @@ PathProc::PathProc()
 
 	//string path_name(taskpath);
 	string path_name;
-	path_name.assign("/home/colibri/colibri_ws/src/colibri_pathproc/path/path5.yaml");
+	path_name.assign("/home/colibri/colibri_ws/src/colibri_pathproc/path/path6.yaml");
 
 	ifstream fin_path(path_name.c_str());
 	if(fin_path.fail())
