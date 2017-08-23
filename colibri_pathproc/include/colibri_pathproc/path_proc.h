@@ -11,6 +11,7 @@
 #include <string.h>
 #include <map>
 #include <utility>
+#include <sstream>
 
 #include <ros/ros.h>
 
@@ -19,6 +20,8 @@
 #include "colibri_msgs/Coordinator.h"
 #include "colibri_msgs/NavState.h"
 #include "geometry_msgs/PoseStamped.h"
+#include <visualization_msgs/Marker.h>
+#include "geometry_msgs/Pose.h"
 
 #include <nav_msgs/GetPlan.h>
 
