@@ -246,7 +246,8 @@ bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPla
 		
 		AddTargetNode2KneeNodes(route.target_id);
 		DecomposeRoute(route.seg_list, knee_nodes_, micro_seg_num);	
-		CatSeg2Route(route);	
+		CatSeg2Route(route);
+		FillMarkerPose(route);
 		StdNavPath(route_map_);
 		res.plan = this->plan_path_;
 		req4path_flag = true;
