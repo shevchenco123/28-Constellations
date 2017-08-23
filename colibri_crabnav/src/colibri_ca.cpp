@@ -416,6 +416,20 @@ void scan_ca::UltraSonicCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra_
 
 }
 
+void scan_ca::UltraSonicCallBack(const colibri_msgs::Ultrasonic::ConstPtr& ultra_ca)
+{
+		ultra_dis[0] = ultra_ca->ultra_1; //for front ultra unit cm to m
+		ultra_dis[1] = ultra_ca->ultra_2;
+		ultra_dis[2] = ultra_ca->ultra_3;
+		ultra_dis[3] = ultra_ca->ultra_4;
+
+		for(int i = 0; i < NUM_RAY4CA; i++)
+		{		
+			ultra4ca[i] = 20.0;
+		}
+
+}
+
 void scan_ca::EnvSecurityCallBack(const colibri_msgs::EnvSecurity::ConstPtr& env)
 {
 	min_laser = env->laser_min_dis;

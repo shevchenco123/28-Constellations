@@ -164,6 +164,7 @@ class scan_ca
 	private:
 
 		void ScanCallBack(const sensor_msgs::LaserScan::ConstPtr& scan_ca);
+		void UltraSonicCallBack(const colibri_msgs::Ultrasonic::ConstPtr& ultra_ca);
 		void UltraSonicCallBack(const colibri_aiv::Ultrasonic::ConstPtr& ultra_ca);
 		void EnvSecurityCallBack(const colibri_msgs::EnvSecurity::ConstPtr& env);
 
