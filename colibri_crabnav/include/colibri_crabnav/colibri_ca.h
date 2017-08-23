@@ -144,6 +144,7 @@ class scan_ca
 		void CalcKrfTheta(float* ptrKp_phi_vector, int* ptrPhi_range_start, int* ptrPhi_range_end);	
 		void CalcPhiRange(int i, int range_num, int* ptrPhi_start, int* ptrPhi_end);
 		void CalcPassFcnAndFwdBnd(unsigned int flag, float* max_passfcn_val, float* ptrK_pg);
+		void CalcPassFcnWithoutRPF(float* max_passfcn_val, float* ptrK_pg, float* heading);
 		void CalcPassFcnAndBwdBnd(unsigned int flag, float* max_passfcn_val, float* ptrK_pg);
 		float CalcAdjDir(float* ptrPass_fcn_vector, float max_passfcn_val, int* fwd_bound, int* bwd_bound);
 		void CalcCorrectedKrf(void);

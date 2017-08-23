@@ -515,6 +515,23 @@ void scan_ca::CalcPassFcnAndFwdBnd(unsigned int flag, float* max_passfcn_val, fl
 
 }
 
+void scan_ca::CalcPassFcnWithoutRPF(float* max_passfcn_val, float* ptrK_pg, float* heading)
+{	
+	vector<float> tmp_apf;
+	
+	for(int j = 0; j < NUM_RAY4CA; j++) //from right to left search the max passfcn val  and the max passfcn's bound index should locate at left terminal
+	{
+
+		*(ptrK_pg + j) = D_M * kaf_vec[j] ;
+		tmp_apf.push_back(kaf_vec[j]);
+	}
+
+	std::vector<float>::iterator biggest = std::max_element(tmp_apf.begin(), tmp_apf.end());  
+	*heading = 90.0 - float(std::distance(tmp_apf.begin(), biggest));  
+	 
+	*max_passfcn_val = *biggest;
+}
+
 void scan_ca::CalcPassFcnAndBwdBnd(unsigned int flag, float* max_passfcn_val, float* ptrK_pg)
 {
 	float tmp_passfcn_value = 0.0;
