@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iomanip>
 #include <ctime>
+#include <algorithm>
 
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
@@ -13,6 +14,7 @@
 #include "colibri_msgs/AngPotnEngy.h"
 #include "colibri_aiv/Ultrasonic.h"
 #include "colibri_msgs/EnvSecurity.h"
+#include "colibri_msgs/Ultrasonic.h"
 
 #ifndef _COLIBRI_CA_H_
 #define _COLIBRI_CA_H_
