@@ -81,8 +81,7 @@ int main(int argc, char* argv[])
 	float ori_apf_angular = 0.0;
 	signal(SIGINT, MySigintHandler);
 
-	float heading[] = {0.0, 90.0, 0.0};
-	//float heading[] = {0.0, 90.0, 0.0, 90.0, 90.0, -90.0, -90.0, 0.0, 0.0};
+	float heading[] = {0.0, 0.0, 0.0, 90.0, 0.0, 90.0, 90.0, 0.0};
 	navNodeObj.InitNodeAndSegMap(heading, navNodeObj.segs_num_);
 
 	while(navNodeObj.obtain_goal_flag == false)
