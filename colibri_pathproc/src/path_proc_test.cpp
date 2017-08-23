@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
 
 	pathProcObj.MakeNodeSegMap(pathProcObj.nodes_heading_);
 	pathProcObj.CalcAllPointsInSegs();
+	pathProcObj.InitMarkers();
 
 /*	
 	route_list route;
@@ -94,6 +95,7 @@ int main(int argc, char *argv[])
 		if(pathProcObj.req4path_flag)
 		{
 			pathProcObj.pub_route_.publish(pathProcObj.plan_path_);
+			pathProcObj.pub_marker_.publish(pathProcObj.goalmark_list_);
 		}
 
 		ros::spinOnce();	  
