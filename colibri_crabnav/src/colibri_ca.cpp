@@ -83,7 +83,7 @@ void scan_ca::ScanCallBack(const sensor_msgs::LaserScan::ConstPtr& scan_ca)
 
 float scan_ca::CalcMinUltraRange(void)
 {
-	float min_ultra_dis = 6.5;
+	float min_ultra_dis = 3.0;
 	for(int i = 0; i < ULTRA4CA_NUM; i++)
 	{
 		if(min_ultra_dis > ultra_dis[i])
@@ -92,7 +92,7 @@ float scan_ca::CalcMinUltraRange(void)
 			if(min_ultra_dis < 0.05)		// if the min ultra dis less 5 cm means sth wrong		
 			{
 				cout << "min ultra dis is exception, check topic /ultrasonic: "<< ultra_dis[i] << endl;
-				min_ultra_dis = 6.5;	// for divide
+				min_ultra_dis = 3.0;	// for divide
 			}
 		}
 	}
