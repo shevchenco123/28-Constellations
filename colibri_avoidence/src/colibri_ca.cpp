@@ -690,7 +690,6 @@ void scan_ca::CalcPhiParam(float vel_center, float& dir_goal_inlaser)
 	ultra_obs_coder = CalcUltraObsCoder(min_ultra_dis);
 	ultra_strategy = UltraCollisionFreeDeal(ultra_obs_coder);
 	TrimUltraRange4CACoder(ultra_obs_coder, min_ultra_dis);
-#else
 	
 #endif
 
