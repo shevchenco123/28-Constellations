@@ -160,12 +160,8 @@ int main(int argc, char* argv[])
 			scan4caObj.PubPfInfo4Dbg();
 
 			scan4caObj.CalcKrfTheta(scan4caObj.kp_phi_vec, scan4caObj.phi_start_vec, scan4caObj.phi_end_vec);
-			//scan4caObj.CalcCorrectedKrf();
-			scan4caObj.CalcPassFcnAndFwdBnd(scan4caObj.wander, &scan4caObj.max_passfcn_val, scan4caObj.passfcn_vec);
-			scan4caObj.CalcPassFcnAndBwdBnd(scan4caObj.wander, &scan4caObj.max_passfcn_val, scan4caObj.passfcn_vec);
-
-			scan4caObj.angle_adj = scan4caObj.CalcAdjDir(scan4caObj.passfcn_vec,scan4caObj.max_passfcn_val, &scan4caObj.maxfcn_fwdbnd,&scan4caObj.maxfcn_bwdbnd);
-				
+			scan4caObj.CalcPassFcnWithoutRPF(&scan4caObj.max_passfcn_val, scan4caObj.passfcn_vec, &scan4caObj.angle_adj);
+			
 			scan4caObj.CalcAlarmInAPF();
 			
 			if(goal_inlaser_flag == true)
@@ -190,8 +186,7 @@ int main(int argc, char* argv[])
 			if(tmp_delta_dis >= GOAL_NGHBORHD)
 			{
 				cout<<"+++ Exe Ajust Dir Action : "<<endl;
-				ptr_action_cmd_t = actionObj.AdjustMovingDirAction(&local4navObj.amcl_cur_state[2], &dir_goal_in_laser, &tmp_robot2goal_yaw, &turn_adj_flag);
-				
+				ptr_action_cmd_t = actionObj.AdjustMovingDirAction(&local4navObj.amcl_cur_state[2], &dir_goal_in_laser, &tmp_robot2goal_yaw, &turn_adj_flag);			
 				cout<<"--- Exe Ajust Dir a Ctrl Circle"<<endl;
 			}
 			else
