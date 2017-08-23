@@ -555,4 +555,12 @@ bool CalcPixesInLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &
 
 }
 
+void int2str(int & i_val, string & str)
+{
+	stringstream stream;
+	stream << i_val;
+	str = stream.str();
+}
+
+
 
