@@ -720,7 +720,7 @@ void scan_ca::CalcPhiParam(float vel_center, float& dir_goal_inlaser)
 		delta_phi_vec[i] = asin(D_SF / min_multi_range) * RAD2DEG; //calc the phi ang obs influence range
 #endif
 
-#ifdef ORI_EXT_FUSION
+#ifdef ORI_EXTLASER_FUSION
 		min_multi_range = MIN(*(ptrScan4ca + i), add_obs4ca[i]);
 		delta_phi_vec[i] = asin(D_SF / min_multi_range) * RAD2DEG; //calc the phi ang obs influence range
 #endif
