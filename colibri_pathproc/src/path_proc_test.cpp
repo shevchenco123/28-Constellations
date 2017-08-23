@@ -31,15 +31,10 @@ int main(int argc, char *argv[])
 	int sp_nodes[] = {3, 5, 6};
 	float heading[] = {0.0, 0.0, 0.0, 90.0, 0.0, 90.0, 90.0, 0.0};
 
-//	int sp_nodes[] = {2, 4, 5, 6, 7};
-//	float heading[] = {0.0, 90.0, 0.0, 90.0, 90.0, -90.0, -90.0, 0.0, 0.0};
 
-
-//	int sp_nodes[] = {0, 1, 3};
 	int cnt_nodes = sizeof(sp_nodes) / sizeof(int);
 	pathProcObj.InitKneeNodes(sp_nodes, cnt_nodes);
 	
-//	float heading[] = {90.0, 0.0, 90.0, 90.0, 90.0};
 	pathProcObj.ConfigNodesHeading(heading, pathProcObj.segs_num_);
 
 	int sub_route_num = 0;
