@@ -13,7 +13,7 @@ ultrasonic_2 = []
 ultrasonic_3 = []
 ultrasonic_4 = []
 ultrasonic_send_str = []
-t = serial.Serial('/dev/ttyS4', 115200)
+t = serial.Serial('/dev/ttyS4', 9600)
 t.timeout = 1
 t.close()
 t.open()

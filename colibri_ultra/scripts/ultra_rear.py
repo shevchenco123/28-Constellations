@@ -13,7 +13,7 @@ ultrasonic_2 = []
 ultrasonic_3 = []
 ultrasonic_4 = []
 ultrasonic_send_str = []
-t = serial.Serial('/dev/ttyS3', 115200)
+t = serial.Serial('/dev/ttyS3', 9600)
 t.timeout = 1
 t.close()
 t.open()
@@ -32,9 +32,9 @@ def hexShow(argv):
 
 def ultrasonic_info():
 	global ultrasonic_1, ultrasonic_2, ultrasonic_3, ultrasonic_4
-	rospy.init_node('ultra_back_pub')
-	pub = rospy.Publisher('/ultra_back', Ultrasonic, queue_size=4)
-	rate = rospy.Rate(5)  # 10hz
+	rospy.init_node('ultra_rear_pub')
+	pub = rospy.Publisher('/ultra_rear', Ultrasonic, queue_size=4)
+	rate = rospy.Rate(10)  # 10hz
 	ultradata = Ultrasonic()
 
 	while not rospy.is_shutdown():
