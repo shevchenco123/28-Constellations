@@ -4,7 +4,7 @@ NavNodeProc::NavNodeProc()
 {
 
 	string path_name;
-	path_name.assign("/home/colibri/colibri_ws/src/colibri_crabnav/path/path5.yaml");
+	path_name.assign("/home/aiv-1/colibri_ws/src/colibri_crabnav/path/path5.yaml");
 
 	ifstream fin_path(path_name.c_str());
 	if(fin_path.fail())
