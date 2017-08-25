@@ -28,7 +28,7 @@
 using namespace std;
 extern string taskpath;
 
-//#define MANUAL_PATH
+#define MANUAL_PATH
 
 #ifdef HAVE_NEW_YAMLCPP
 // The >> operator disappeared in yaml-cpp 0.5, so this function is
