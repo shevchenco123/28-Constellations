@@ -3,9 +3,13 @@
 PathProc::PathProc()
 {
 
-	//string path_name(taskpath);
+#ifndef MANUAL_PATH
+	string path_name(taskpath);
+
+#else
 	string path_name;
 	path_name.assign("/home/aiv-1/colibri_ws/src/colibri_pathproc/path/path6.yaml");
+#endif
 
 	ifstream fin_path(path_name.c_str());
 	if(fin_path.fail())
@@ -14,8 +18,8 @@ PathProc::PathProc()
 		exit(-1);
 	}
 
-	try 
 	YAML::Node doc_path = YAML::Load(fin_path);
+	try 
 	{ 
 
 		doc_path["path"]["image"] >> map_name_;
@@ -61,7 +65,8 @@ PathProc::PathProc()
 
 	parsed_node_ = 255;
 	req4path_flag = false;
-
+	cout<<"Load map: "<<map_name_<<endl;
+	cout<<"Path Segment Num: "<<segs_num_<<endl;
 
 	pub_route_ = nh_route_.advertise<nav_msgs::Path>("/nav_path", 1);
 	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/coordinator", 1, &PathProc::CoordinatorCallBack, this);

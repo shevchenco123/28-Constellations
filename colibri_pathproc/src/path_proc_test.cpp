@@ -15,8 +15,12 @@ int main(int argc, char *argv[])
 	ros::init(argc, argv, "pathproc_test_node");
 	ros::NodeHandle nh;
 	
-	ros::Rate loop_rate(10); 
-	//taskpath.assign(argv[1]);
+	ros::Rate loop_rate(10);
+	
+#ifndef MANUAL_PATH
+	taskpath.assign(argv[1]);
+	cout<<"Load YAML Name: "<<taskpath<<endl;
+#endif
 
 	PathProc pathProcObj;
 
