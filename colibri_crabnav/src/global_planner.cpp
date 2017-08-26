@@ -171,6 +171,48 @@ int planner::CalcGravatonFromPath(vector<path_point> &path_array, vector<path_de
 
 }
 
+
+bool planner::PrunePath(vector<path_point> &path_pruned_array, vector<path_point> &path_array, float* cur_robot_state)
+{
+	float tmp_delta_x = 0.0;
+	float tmp_delta_y = 0.0;
+	float tmp_dis = 0.0;
+	vector<float> vec_delta_dis;
+	int prune_index = 0;
+	path_pruned_array.clear();
+	
+	if(!path_array.empty())
+	{
+		for(vector<path_point>::iterator it = path_array.begin(); it != path_array.end(); ++it)
+		{
+			tmp_delta_x = (*it).x - *(cur_robot_state);
+			tmp_delta_y = (*it).y - *(cur_robot_state + 1);
+			tmp_dis = sqrt(pow(tmp_delta_x, 2) + pow(tmp_delta_y, 2));
+			vec_delta_dis.push_back(tmp_dis); 		
+		}
+
+		vector<float>::iterator min_it = min_element(vec_delta_dis.begin(), vec_delta_dis.end());
+		
+		prune_index = distance(vec_delta_dis.begin(), min_it);
+		
+		for(int i = prune_index; i < path_array.size(); i++)
+		{
+			path_pruned_array.push_back(path_array.at(i));
+
+		}
+
+		return true;
+	}
+	else
+	{
+		path_pruned_array.assign(path_array.begin(), path_array.end());
+		return false;		
+	}
+
+
+}
+
+
 bool planner::ExecMonoPlanAndGravaton(planner&plannerObj,float* start_pos, float* goal_pos, unsigned int &start_index, unsigned int &gravaton_index)
 {
 	bool obtain_path = false;

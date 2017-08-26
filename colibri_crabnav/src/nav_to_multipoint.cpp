@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
 		
 		if(delay_cnt >= DELAY_CNT_MAX)
 		{
-			ROS_INFO("------ start ------");
+			ROS_INFO("+++++++++ start +++++++++");
 
 			//--------------------------  Calc gravaton for nav ------------------------------
 			if(*timer_finish == true)	// Path plan timer OK
@@ -127,12 +127,14 @@ int main(int argc, char* argv[])
 				replan_flag = true;
 			}
 			else
-			{						
+			{	
+				plannerObj.PrunePath(plannerObj.path_pruned_array, plannerObj.path_array, local4navObj.amcl_cur_state);
 				// If path replan or robot at gravaton but not in approaching target goal, calc a new gravaton in the existed planned path
-				if((at_gravaton_flag == true && local4navObj.approaching_flag == false)||(replan_flag == true))
+				if((at_gravaton_flag == true && local4navObj.approaching_flag == false)||(replan_flag == true))	
 				{
-					plannerObj.CalcPath2RobotDeltaDis(plannerObj.path_array, local4navObj.amcl_cur_state);
-					index4gravaton = plannerObj.CalcGravatonFromPath(plannerObj.path_array, plannerObj.path2robot_array, index4gravaton, plannerObj.gravaton, exist_gravaton_flag);
+					
+					plannerObj.CalcPath2RobotDeltaDis(plannerObj.path_pruned_array, local4navObj.amcl_cur_state);
+					index4gravaton = plannerObj.CalcGravatonFromPath(plannerObj.path_pruned_array, plannerObj.path2robot_array, index4gravaton, plannerObj.gravaton, exist_gravaton_flag);
 					at_gravaton_flag = false;
 					replan_flag = false;
 				}
@@ -160,13 +162,25 @@ int main(int argc, char* argv[])
 
 			scan4caObj.CalcKrfTheta(scan4caObj.kp_phi_vec, scan4caObj.phi_start_vec, scan4caObj.phi_end_vec);
 			scan4caObj.CalcPassFcnWithoutRPF(&scan4caObj.max_passfcn_val, scan4caObj.passfcn_vec, &scan4caObj.angle_adj);
+
+			cout<<"plannerObj.gravaton.x: " << plannerObj.gravaton.x <<endl;
+			cout<<"plannerObj.gravaton.y: " << plannerObj.gravaton.y <<endl;
+			cout<<"local4navObj.amcl_cur_state.x: " << local4navObj.amcl_cur_state[0] <<endl;
+			cout<<"local4navObj.amcl_cur_state.y: " << local4navObj.amcl_cur_state[0] <<endl;
+
+			cout<<"dir_goal_in_laser: " << dir_goal_in_laser <<endl;
 			
+			cout<<"scan4caObj.max_passfcn_val: " << scan4caObj.max_passfcn_val <<endl;
+			cout<<"scan4caObj.angle_adj: " << scan4caObj.angle_adj <<endl;
+			
+			cout<<"goal_inlaser_flag: " << goal_inlaser_flag <<endl;		
+
 			scan4caObj.CalcAlarmInAPF();
 			
 			if(goal_inlaser_flag == true)
 			{
 				ori_apf_linear = (V_MAX - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
-				ori_apf_angular = scan4caObj.angle_adj / 200.0;
+				ori_apf_angular = scan4caObj.angle_adj / 300.0;
 
 				local4navObj.apf_ctrl_output[0] = local4navObj.LinearVelFilter(&ori_apf_linear, &local4navObj.cur_robot_vel[0]);
 				local4navObj.apf_ctrl_output[1] = local4navObj.AngularVelFilter(&ori_apf_angular, &local4navObj.cur_robot_vel[1]);
@@ -184,9 +198,7 @@ int main(int argc, char* argv[])
 			
 			if(tmp_delta_dis >= GOAL_NGHBORHD)
 			{
-				cout<<"+++ Exe Ajust Dir Action : "<<endl;
 				ptr_action_cmd_t = actionObj.AdjustMovingDirAction(&local4navObj.amcl_cur_state[2], &dir_goal_in_laser, &tmp_robot2goal_yaw, &turn_adj_flag);			
-				cout<<"--- Exe Ajust Dir a Ctrl Circle"<<endl;
 			}
 			else
 			{
@@ -334,7 +346,7 @@ int main(int argc, char* argv[])
 
 			ros::spinOnce();
 			loop_rate.sleep();
-			ROS_INFO("------- end --------");
+			ROS_INFO("----------------- end -----------------");
 		}
 
 

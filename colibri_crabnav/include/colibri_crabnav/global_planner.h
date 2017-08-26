@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <ctime>
 #include <unistd.h>
+#include <algorithm>
 
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
@@ -29,9 +30,9 @@
 
 #define GOAL_NUM	10
 #define GOAL_TOLLERANCE	0.5
-#define GRAVATON_RADIUS 1.2		// gravation in path array distance to robot 
+#define GRAVATON_RADIUS 1.6		// gravation in path array distance to robot 
 
-#define PLAN_INTERVAL 3.0	
+#define PLAN_INTERVAL 2.0	
 
 using namespace std;
 
@@ -72,6 +73,7 @@ class planner
 		vector<path_delta> path2robot_array;
 
 		path_point gravaton;
+		vector<path_point> path_pruned_array;		
 
 		planner();
 		~planner();
@@ -84,6 +86,8 @@ class planner
 		int CalcGravatonFromPath(vector<path_point> &path_array, vector<path_delta> &path2robot_array, unsigned int & search_start, path_point &gravation, bool &exist_gravaton);
 
 		bool ExecMonoPlanAndGravaton(planner &plannerObj, float* start_pos, float* goal_pos, unsigned int &start_index,unsigned int &gravaton_index);
+		bool PrunePath(vector<path_point> &path_pruned_array, vector<path_point> &path_array, float* cur_robot_state);
+
 	
 	private:
 		
