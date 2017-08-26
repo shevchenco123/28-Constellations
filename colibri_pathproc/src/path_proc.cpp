@@ -254,6 +254,19 @@ bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPla
 		CatSeg2Route(route);
 		FillMarkerPose(route);
 		StdNavPath(route_map_);
+
+#ifdef REC_PATH
+		for(vector<point2d_map>::iterator it = route_map_.begin(); it != route_map_.end(); ++it)
+		{
+			file1 << fixed << setprecision(4) << (*it).x;
+			file1 << '\t';
+			file1 << fixed << setprecision(4) << (*it).y;
+			file1 << endl;	
+		}
+
+		file1.close();	
+#endif
+
 		res.plan = this->plan_path_;
 		req4path_flag = true;
 

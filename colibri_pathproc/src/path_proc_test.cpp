@@ -2,12 +2,14 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <fstream>
 
 #include "path_proc.h"
 
 
 using namespace std;
 string taskpath;
+ofstream  file1; 
 
 int main(int argc, char *argv[])
 {
@@ -62,6 +64,11 @@ int main(int argc, char *argv[])
 	pathProcObj.CatSeg2Route(route);	
 
 */
+
+#ifdef REC_PATH
+	file1.open ("route.txt");
+#endif
+
 	int i = 0; 
 	while(ros::ok())
 	{
