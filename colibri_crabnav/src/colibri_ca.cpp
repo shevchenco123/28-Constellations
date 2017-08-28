@@ -527,7 +527,7 @@ void scan_ca::CalcPassFcnWithoutRPF(float* max_passfcn_val, float* ptrK_pg, floa
 	}
 
 	std::vector<float>::iterator biggest = std::max_element(tmp_apf.begin(), tmp_apf.end());  
-	*heading = 90.0 - float(std::distance(tmp_apf.begin(), biggest));  
+	*heading = float(std::distance(tmp_apf.begin(), biggest)) - 90.0;  
 	 
 	*max_passfcn_val = D_M * (*biggest);
 }
