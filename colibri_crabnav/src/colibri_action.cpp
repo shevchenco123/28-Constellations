@@ -256,6 +256,55 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos,float* 
 
 }
 
+
+float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, unsigned int* finish_flag)
+{ 
+	float delta_dis_puv = 1.0;		//distance per unit value
+	float delta_yaw_puv = 0.0;
+	float delta_x = *goal_pos - *cur_pos;
+	float delta_y = *(goal_pos + 1) - *(cur_pos + 1);
+
+	delta_dis_puv = sqrt(pow(delta_x, 2) + pow(delta_y, 2))/GOAL_NGHBORHD;
+	delta_yaw_puv = 0.0;
+
+	//action4cmd_vel[0] = APPROACH_V_MAX * SigmoidFunction(1, &delta_dis_puv);
+	//action4cmd_vel[1] = APPROACH_VTH_MAX * SigmoidFunction(1, &delta_yaw_puv);
+	if(delta_dis_puv > 0.5)
+	{
+		action4cmd_vel[0] = APPROACH_V_MAX * delta_dis_puv;
+	}
+	else
+	{
+		action4cmd_vel[0] = APPROACH_V_MAX * SigmoidFunction(1, &delta_dis_puv);
+	}
+
+	action4cmd_vel[1] = APPROACH_VTH_MAX * delta_yaw_puv;
+	
+	if(delta_dis_puv > 0.042)	 // 0.1 m  / GOAL_NGHBORHD = 10 /120 = 0.084
+	{
+		*finish_flag = 0;
+	}
+	else
+	{
+		cout<<"Complete the approaching process"<<endl;
+		action4cmd_vel[0] = 0.0;
+		action4cmd_vel[1] = 0.0;
+		*finish_flag = 1;
+	}
+
+	if(action4cmd_vel[0] < 0.008) //if vel so small should stop it 
+	{
+		action4cmd_vel[0] = 0.0;
+		action4cmd_vel[1] = 0.0;
+		*finish_flag = 1;
+	}
+
+	
+	return action4cmd_vel;
+
+}
+
+
 float* nav_action::ApproachingGravatonAction(float* current_pos, float* current_vel, float* gravaton_pos, float* current_laser2gravaton_angle, unsigned int complete_flag)
 {
 

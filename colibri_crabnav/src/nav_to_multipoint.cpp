@@ -180,7 +180,7 @@ int main(int argc, char* argv[])
 			if(goal_inlaser_flag == true)
 			{
 				ori_apf_linear = (V_MAX - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
-				ori_apf_angular = scan4caObj.angle_adj / 100.0;
+				ori_apf_angular = scan4caObj.angle_adj / 200.0;
 
 				local4navObj.apf_ctrl_output[0] = local4navObj.LinearVelFilter(&ori_apf_linear, &local4navObj.cur_robot_vel[0]);
 				local4navObj.apf_ctrl_output[1] = local4navObj.AngularVelFilter(&ori_apf_angular, &local4navObj.cur_robot_vel[1]);
@@ -214,13 +214,41 @@ int main(int argc, char* argv[])
 				}
 				else
 				{
-					ptr_action_cmd_t = actionObj.ApproachingGoalAction(&local4navObj.amcl_cur_state[0], &local4navObj.goal_state[0], &dir_goal_in_laser,&micro_adj_flag);
+					ptr_action_cmd_t = actionObj.ApproachingGoalAction(&local4navObj.amcl_cur_state[0], &local4navObj.goal_state[0],&micro_adj_flag);
 				}
 
 			}
-						
+/*						
 			//local4navObj.position_OK_flag = local4navObj.ReachGoalPositionOK(&tmp_delta_dis);
+			static float tt_angle = 0.0;
+			static unsigned int tt_adjdir_flag = 0;
+			static int rec_angle_flag = 0;
 
+			if(micro_adj_flag == 1)
+			{
+				if(rec_angle_flag == 0)
+				{
+					tt_angle = local4navObj.amcl_cur_state[2] + 90.0;
+					rec_angle_flag = 1;
+				}
+
+				ptr_action_cmd_t = actionObj.StillRotatingAction(&local4navObj.amcl_cur_state[2], &tt_angle, &tt_adjdir_flag);
+				if(tt_adjdir_flag == 1)
+				{
+					*ptr_action_cmd_t = 0.0;
+					*(ptr_action_cmd_t + 1) = 0.0;
+					cout<<" ~~~ Goal Completed and Adjust OK ... "<<endl;
+				}
+			}
+			else
+			{
+				tt_angle = 0.0;
+				tt_adjdir_flag = 0;
+				rec_angle_flag = 0;
+
+			}
+			
+*/
 			local4navObj.SatuateCmdVel(ptr_action_cmd_t,ptr_action_cmd_t + 1);
 
 			local4navObj.apf_cmd_vel.linear.x = *ptr_action_cmd_t;

@@ -41,6 +41,7 @@ class nav_action
 		float* AdjustMovingDirAction(float* cur_yaw, float* goal_in_laser, float* robot2goal, unsigned int* finish_flag);
 
 		float* ApproachingGoalAction(float* cur_pos, float* goal_pos,float* cur_laser2goal_angle, unsigned int* finish_flag);
+		float* ApproachingGoalAction(float* cur_pos, float* goal_pos, unsigned int* finish_flag);
 		float* ApproachingGravatonAction(float* cur_pos, float* cur_vel, float* gravaton_pos,float* cur_laser2gravation_angle, unsigned int finish_flag);
 
 		bool ReachGravatonOK(float *cur_pos, float *cur_gravaton,float &delta_dis);
