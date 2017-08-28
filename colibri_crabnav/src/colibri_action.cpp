@@ -292,7 +292,7 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, unsign
 		*finish_flag = 1;
 	}
 
-	if(action4cmd_vel[0] < 0.008) //if vel so small should stop it 
+	if(action4cmd_vel[0] < 0.009) //if vel so small should stop it 
 	{
 		action4cmd_vel[0] = 0.0;
 		action4cmd_vel[1] = 0.0;
