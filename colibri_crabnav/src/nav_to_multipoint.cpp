@@ -22,6 +22,10 @@ int cnt_null_cmdvel = 0;
 static int rot_escape_flag = 0;
 static int rec_obs_dir	= 90;
 
+unsigned int micro_adj_flag = 0;
+unsigned int adjdir_flag = 0;
+
+
 void PlannerCallback(planner *plannerObj, float* start_pos, float* goal_pos, bool *finish_flag);
 void MySigintHandler(int sig);
 int main(int argc, char* argv[])
@@ -51,7 +55,7 @@ int main(int argc, char* argv[])
 
 	float tmp_action_cmd_t[2] = {0.0, 0.0};
 	float* ptr_action_cmd_t = tmp_action_cmd_t;
-	unsigned int micro_adj_flag = 0;
+
 
 	unsigned int adj_flag = 0;
 	
@@ -71,8 +75,7 @@ int main(int argc, char* argv[])
 	bool at_gravaton_flag = false;
 	bool exist_gravaton_flag = false;
 	bool replan_flag = false;
-	bool seg_adjdir_flag = false;
-
+	
 	float rt_r2g_dis = 100.0;
 
 	ros::Rate loop_rate(10);		// Set control  freq at 10 hz
@@ -206,7 +209,7 @@ int main(int argc, char* argv[])
 			
 			}
 			
-			if(turn_adj_flag == 1 && seg_adjdir_flag == false && micro_adj_flag == 0)
+			if(turn_adj_flag == 1 && micro_adj_flag == 0)
 			{
 				if(local4navObj.approaching_flag == false)
 				{
@@ -223,7 +226,6 @@ int main(int argc, char* argv[])
 						
 			//local4navObj.position_OK_flag = local4navObj.ReachGoalPositionOK(&tmp_delta_dis);
 			float tt_angle = 90.0;
-			unsigned int adjdir_flag = 0;
 
 			if(micro_adj_flag == 1)
 			{
@@ -236,7 +238,6 @@ int main(int argc, char* argv[])
 					cout<<" ~~~ Goal Completed and Adjust OK ... "<<endl;	
 					cout<<"tt_angle: " << tt_angle <<endl;
 					cout<<"local4navObj.amcl_cur_state[2]: " << local4navObj.amcl_cur_state[2] <<endl;
-					seg_adjdir_flag = true;
 					
 					navNodeObj.robot_nav_state.achieve_flag.data =  true;			
 				}
@@ -347,6 +348,11 @@ int main(int argc, char* argv[])
 			cout<<"pub_angular_z: " << local4navObj.apf_cmd_vel.angular.z <<endl;
 
 			scan4caObj.ResetMaxPassValCnt();
+			if(navNodeObj.clr_achieve_target_ == 1)
+			{
+				micro_adj_flag = 0;
+				adjdir_flag = 0;
+			}
 
 
 			ros::spinOnce();
