@@ -64,6 +64,21 @@ NavNodeProc::NavNodeProc()
 	cur_nav_node = 255;	//if node_id ==255 means no nav node to go shoule stop immediately
 	obtain_goal_flag = false;
 
+	robot_nav_state.header.stamp = ros::Time::now();
+	robot_nav_state.header.frame_id = "robot";
+	robot_nav_state.target_node = 1;
+	robot_nav_state.target_heading = 0.0;
+	robot_nav_state.cur_seg = 0;
+	robot_nav_state.at_target_flag.data = false;
+	robot_nav_state.achieve_flag.data = false;
+	robot_nav_state.target_x = 0.0;
+	robot_nav_state.target_y = 0.0;
+	robot_nav_state.target_yaw = 0.0;
+	robot_nav_state.cur_x = 0.0;
+	robot_nav_state.cur_y = 0.0;
+	robot_nav_state.cur_yaw = 0.0;
+	robot_nav_state.err_code = 0;
+
 	pub_nav_state_ = nh_nav_node_.advertise<colibri_msgs::NavState>("/nav_state", 1);
 	sub_coodinator_ = nh_nav_node_.subscribe<colibri_msgs::Coordinator>("/coordinator", 1, &NavNodeProc::CoordinatorCallBack, this);
 	sub_node_id_ = nh_nav_node_.subscribe<colibri_msgs::NavNode>("/nav_node", 1, &NavNodeProc::NavNodeCallBack, this);
@@ -111,18 +126,18 @@ bool NavNodeProc::PubNavState(void)
 	colibri_msgs::NavState nav_sta;
 	nav_sta.header.stamp = ros::Time::now();
 	nav_sta.header.frame_id = "robot";
-	nav_sta.target_node = test_var;
-	nav_sta.target_heading = 90.0;
-	nav_sta.cur_seg = 0;
-	nav_sta.at_target_flag.data = false;
-	nav_sta.achieve_flag.data = false;
-	nav_sta.target_x = 1.0;
-	nav_sta.target_y = 1.0;
-	nav_sta.target_yaw = 45.0;
-	nav_sta.cur_x = 0.0;
-	nav_sta.cur_y = 0.0;
-	nav_sta.cur_yaw = -45.0;
-	nav_sta.err_code = 1;
+	nav_sta.target_node = robot_nav_state.target_node;
+	nav_sta.target_heading = robot_nav_state.target_heading;
+	nav_sta.cur_seg = test_var;
+	nav_sta.at_target_flag.data = robot_nav_state.at_target_flag.data ;;
+	nav_sta.achieve_flag.data = robot_nav_state.achieve_flag.data;
+	nav_sta.target_x = robot_nav_state.target_x;
+	nav_sta.target_y = robot_nav_state.target_y;
+	nav_sta.target_yaw = robot_nav_state.target_yaw;
+	nav_sta.cur_x = robot_nav_state.cur_x;
+	nav_sta.cur_y = robot_nav_state.cur_y;
+	nav_sta.cur_yaw = robot_nav_state.cur_yaw;
+	nav_sta.err_code = robot_nav_state.err_code;
 	test_var++;
 	
 	pub_nav_state_.publish(nav_sta);
