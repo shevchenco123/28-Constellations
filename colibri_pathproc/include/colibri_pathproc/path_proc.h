@@ -108,6 +108,8 @@ bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver
 bool BresenhamBasic(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
 bool CalcPixesInLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
 
+static int sub_seg_index = 0;
+
 class PathProc{
 
 	public:

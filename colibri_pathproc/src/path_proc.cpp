@@ -1,5 +1,7 @@
 #include "path_proc.h"
 
+
+
 PathProc::PathProc()
 {
 
@@ -65,6 +67,20 @@ PathProc::PathProc()
 
 	parsed_node_ = 255;
 	req4path_flag = false;
+
+	robot_nav_state_.target_node = 0;
+	robot_nav_state_.target_heading = 0.0;
+	robot_nav_state_.cur_seg = 0;
+	robot_nav_state_.at_target_flag.data = false;
+	robot_nav_state_.achieve_flag.data = false;
+	robot_nav_state_.target.x = 0.0;
+	robot_nav_state_.target.y = 0.0;
+	robot_nav_state_.target.yaw = 0.0;
+	robot_nav_state_.robot.x = 0.0;
+	robot_nav_state_.robot.y = 0.0;
+	robot_nav_state_.robot.yaw = 0.0;
+	robot_nav_state_.err_code = 0;
+
 	cout<<"Load map: "<<map_name_<<endl;
 	cout<<"Path Segment Num: "<<segs_num_<<endl;
 
@@ -243,7 +259,8 @@ bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPla
 		route_list route;
 		route.target_id = parsed_node_;
 		route.target_heading = 0.0;
-		int micro_seg_num;
+		int micro_seg_num = 1;
+
 		for(int j= 0; j < parsed_node_; j++)
 		{
 			route.seg_list.push_back(j);
@@ -251,9 +268,27 @@ bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPla
 		
 		AddTargetNode2KneeNodes(route.target_id);
 		DecomposeRoute(route.seg_list, knee_nodes_, micro_seg_num);
-		CatSeg2Route(route);
-		FillMarkerPose(route);
+		
+		if(micro_seg_num != 1)
+		{
+			if(robot_nav_state_.achieve_flag.data == true)
+			{
+				sub_seg_index++;
+			}
+			else
+			{
+				CatSeg2Route(sub_route_vec_[sub_seg_index]);
+			}
+			
+		}
+		else
+		{
+			CatSeg2Route(route);
+			
+		}
 		StdNavPath(route_map_);
+		FillMarkerPose(route);
+
 
 #ifdef REC_PATH
 		for(vector<point2d_map>::iterator it = route_map_.begin(); it != route_map_.end(); ++it)
