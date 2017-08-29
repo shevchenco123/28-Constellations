@@ -139,7 +139,7 @@ class PathProc{
 		vector<int> knee_nodes_;
 		vector<float> nodes_heading_;
 
-		nav_state robot_nav_state;
+		nav_state robot_nav_state_;
 		
 		int basic_ctrl_;
 		nav_msgs::Path plan_path_;

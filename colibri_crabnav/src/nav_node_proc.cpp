@@ -129,7 +129,7 @@ bool NavNodeProc::PubNavState(void)
 	nav_sta.target_node = robot_nav_state.target_node;
 	nav_sta.target_heading = robot_nav_state.target_heading;
 	nav_sta.cur_seg = test_var;
-	nav_sta.at_target_flag.data = robot_nav_state.at_target_flag.data ;;
+	nav_sta.at_target_flag.data = robot_nav_state.at_target_flag.data;
 	nav_sta.achieve_flag.data = robot_nav_state.achieve_flag.data;
 	nav_sta.target_x = robot_nav_state.target_x;
 	nav_sta.target_y = robot_nav_state.target_y;

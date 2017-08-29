@@ -216,19 +216,20 @@ int main(int argc, char* argv[])
 				else
 				{
 					ptr_action_cmd_t = actionObj.ApproachingGoalAction(&local4navObj.amcl_cur_state[0], &local4navObj.goal_state[0],&micro_adj_flag);
+					
 				}
 
 			}
 						
 			//local4navObj.position_OK_flag = local4navObj.ReachGoalPositionOK(&tmp_delta_dis);
 			float tt_angle = 90.0;
-			static unsigned int tt_adjdir_flag = 0;
+			unsigned int adjdir_flag = 0;
 
 			if(micro_adj_flag == 1)
 			{
 
-				ptr_action_cmd_t = actionObj.StillRotatingAction(&local4navObj.amcl_cur_state[2], &tt_angle, &tt_adjdir_flag);
-				if(tt_adjdir_flag == 1)
+				ptr_action_cmd_t = actionObj.StillRotatingAction(&local4navObj.amcl_cur_state[2], &tt_angle, &adjdir_flag);
+				if(adjdir_flag == 1)
 				{
 					*ptr_action_cmd_t = 0.0;
 					*(ptr_action_cmd_t + 1) = 0.0;
@@ -236,9 +237,21 @@ int main(int argc, char* argv[])
 					cout<<"tt_angle: " << tt_angle <<endl;
 					cout<<"local4navObj.amcl_cur_state[2]: " << local4navObj.amcl_cur_state[2] <<endl;
 					seg_adjdir_flag = true;
+					
+					navNodeObj.robot_nav_state.achieve_flag.data =  true;			
 				}
+				else
+				{
+					navNodeObj.robot_nav_state.achieve_flag.data =	false;	
+				}
+				navNodeObj.robot_nav_state.at_target_flag.data = true;
 			}
-
+			else
+			{
+				navNodeObj.robot_nav_state.at_target_flag.data = false;
+			}
+			
+		
 
 			local4navObj.SatuateCmdVel(ptr_action_cmd_t,ptr_action_cmd_t + 1);
 
@@ -318,6 +331,13 @@ int main(int argc, char* argv[])
 			}
 
 			local4navObj.LimitPubTwist(local4navObj.apf_cmd_vel);
+
+			navNodeObj.robot_nav_state.target_x = local4navObj.goal_state[0]; 
+			navNodeObj.robot_nav_state.target_y = local4navObj.goal_state[1];
+			navNodeObj.robot_nav_state.target_yaw = local4navObj.goal_state[2];
+			navNodeObj.robot_nav_state.cur_x = local4navObj.amcl_cur_state[0];
+			navNodeObj.robot_nav_state.cur_y = local4navObj.amcl_cur_state[1];
+			navNodeObj.robot_nav_state.cur_yaw = local4navObj.amcl_cur_state[2];
 			navNodeObj.PubNavState();
 
 

@@ -250,7 +250,7 @@ bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPla
 		}
 		
 		AddTargetNode2KneeNodes(route.target_id);
-		DecomposeRoute(route.seg_list, knee_nodes_, micro_seg_num);	
+		DecomposeRoute(route.seg_list, knee_nodes_, micro_seg_num);
 		CatSeg2Route(route);
 		FillMarkerPose(route);
 		StdNavPath(route_map_);
@@ -418,18 +418,18 @@ bool PathProc::AddTargetNode2KneeNodes(int &target_node)
 
 void PathProc::NavStateCallBack(const colibri_msgs::NavState::ConstPtr& nav_state)
 {
-	robot_nav_state.target_node = nav_state->target_node;
-	robot_nav_state.target_heading = nav_state->cur_seg;
-	robot_nav_state.cur_seg = nav_state->cur_seg;
-	robot_nav_state.at_target_flag = nav_state->at_target_flag;
-	robot_nav_state.achieve_flag = nav_state->achieve_flag;
-	robot_nav_state.target.x = nav_state->target_x;
-	robot_nav_state.target.y = nav_state->target_y;
-	robot_nav_state.target.yaw = nav_state->target_yaw;
-	robot_nav_state.robot.x = nav_state->cur_x;
-	robot_nav_state.robot.y = nav_state->cur_y;
-	robot_nav_state.robot.yaw = nav_state->cur_yaw;
-	robot_nav_state.err_code = nav_state->err_code;
+	robot_nav_state_.target_node = nav_state->target_node;
+	robot_nav_state_.target_heading = nav_state->cur_seg;
+	robot_nav_state_.cur_seg = nav_state->cur_seg;
+	robot_nav_state_.at_target_flag = nav_state->at_target_flag;
+	robot_nav_state_.achieve_flag = nav_state->achieve_flag;
+	robot_nav_state_.target.x = nav_state->target_x;
+	robot_nav_state_.target.y = nav_state->target_y;
+	robot_nav_state_.target.yaw = nav_state->target_yaw;
+	robot_nav_state_.robot.x = nav_state->cur_x;
+	robot_nav_state_.robot.y = nav_state->cur_y;
+	robot_nav_state_.robot.yaw = nav_state->cur_yaw;
+	robot_nav_state_.err_code = nav_state->err_code;
 
 }
 
