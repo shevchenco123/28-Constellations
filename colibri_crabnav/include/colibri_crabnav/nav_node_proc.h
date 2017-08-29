@@ -18,6 +18,7 @@
 #include "std_msgs/Bool.h"
 #include "colibri_msgs/Coordinator.h"
 #include "colibri_msgs/NavState.h"
+#include "colibri_msgs/RobotCmd.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "colibri_msgs/NavNode.h"
 
@@ -93,7 +94,7 @@ class NavNodeProc{
 	public:
 
 		ros::NodeHandle nh_nav_node_;
-		ros::Subscriber sub_coodinator_;
+		ros::Subscriber sub_robot_cmd_;
 		ros::Subscriber sub_node_id_;
 		ros::Publisher pub_nav_state_;
 
@@ -113,6 +114,10 @@ class NavNodeProc{
 		bool obtain_goal_flag;
 		
 		int basic_ctrl_;
+		int clr_at_target_;
+		int clr_achieve_target_;
+		int target_node_;
+		
 		nav_msgs::Path plan_path_;
 		int test_var;
 
@@ -125,7 +130,7 @@ class NavNodeProc{
 
 	private:
 
-		void CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator);
+		void RobotCmdCallBack(const colibri_msgs::RobotCmd::ConstPtr& cmd);
 		void NavNodeCallBack(const colibri_msgs::NavNode::ConstPtr& node);
 		void Quaternion2Yaw(const geometry_msgs::PoseStamped &pose, float &yaw);
 

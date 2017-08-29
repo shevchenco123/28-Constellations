@@ -79,8 +79,13 @@ NavNodeProc::NavNodeProc()
 	robot_nav_state.cur_yaw = 0.0;
 	robot_nav_state.err_code = 0;
 
+	basic_ctrl_ = 0;
+	clr_at_target_ = 0;
+	clr_achieve_target_ = 0;
+	target_node_ = 0;
+
 	pub_nav_state_ = nh_nav_node_.advertise<colibri_msgs::NavState>("/nav_state", 1);
-	sub_coodinator_ = nh_nav_node_.subscribe<colibri_msgs::Coordinator>("/coordinator", 1, &NavNodeProc::CoordinatorCallBack, this);
+	sub_robot_cmd_ = nh_nav_node_.subscribe<colibri_msgs::RobotCmd>("/robot_cmd", 1, &NavNodeProc::RobotCmdCallBack, this);
 	sub_node_id_ = nh_nav_node_.subscribe<colibri_msgs::NavNode>("/nav_node", 1, &NavNodeProc::NavNodeCallBack, this);
 
 }
@@ -180,11 +185,13 @@ bool NavNodeProc::NavNode2NavPose()
 }
 
 
-void NavNodeProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator)
+void NavNodeProc::RobotCmdCallBack(const colibri_msgs::RobotCmd::ConstPtr& cmd)
 {
 
-	basic_ctrl_ = coordinator->basic_ctrl;
-	
+	basic_ctrl_ = int (cmd->basic_ctrl);
+	clr_at_target_ = int (cmd->clr_at_target);
+	clr_achieve_target_ = int (cmd->clr_achieve_target);
+	target_node_ = int (cmd->target_node);
 }
 
 void NavNodeProc::Quaternion2Yaw(const geometry_msgs::PoseStamped &pose, float &yaw)
