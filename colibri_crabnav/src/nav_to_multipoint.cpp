@@ -206,7 +206,7 @@ int main(int argc, char* argv[])
 
 			}
 			
-			if(turn_adj_flag == 1 && seg_adjdir_flag == false)
+			if(turn_adj_flag == 1 && seg_adjdir_flag == false && micro_adj_flag == 0)
 			{
 				if(local4navObj.approaching_flag == false)
 				{
@@ -221,7 +221,7 @@ int main(int argc, char* argv[])
 			}
 						
 			//local4navObj.position_OK_flag = local4navObj.ReachGoalPositionOK(&tmp_delta_dis);
-			float tt_angle = 90.0;
+			float tt_angle = 135.0;
 			static unsigned int tt_adjdir_flag = 0;
 
 			if(micro_adj_flag == 1)
@@ -232,8 +232,7 @@ int main(int argc, char* argv[])
 				{
 					*ptr_action_cmd_t = 0.0;
 					*(ptr_action_cmd_t + 1) = 0.0;
-					cout<<" ~~~ Goal Completed and Adjust OK ... "<<endl;
-					
+					cout<<" ~~~ Goal Completed and Adjust OK ... "<<endl;	
 					cout<<"tt_angle: " << tt_angle <<endl;
 					cout<<"local4navObj.amcl_cur_state[2]: " << local4navObj.amcl_cur_state[2] <<endl;
 					seg_adjdir_flag = true;
