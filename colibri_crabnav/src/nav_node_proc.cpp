@@ -149,6 +149,56 @@ bool NavNodeProc::PubNavState(void)
 
 }
 
+bool NavNodeProc::NavPose2NavNode(point2d_map & pose, int & rev_node_id)
+{
+
+	point2d_pix tmp_uv;
+	vector<seg_property> tmp(vec_seg_property_);
+
+	tmp_uv.x =  (pose.x - map_origin_[0]) / map_resol_;
+	tmp_uv.y =  map_size_[1] - (pose.y - map_origin_[1]) / map_resol_;
+
+	if(NavPixValid(tmp_uv))
+	{
+		
+		for(vector<seg_property>::iterator it = tmp.begin(); it != tmp.end(); it++)
+		{
+
+			int delta_u = abs((*it).end.x - tmp_uv.x);
+			int delta_v = abs((*it).end.y - tmp_uv.y);
+			if( (delta_u < 3) && (delta_v < 3))
+			{
+				rev_node_id = (*it).end_id;
+				return true;
+			}
+
+		}
+
+		cout <<" Can not find the nav node from the request info"<<endl;
+		rev_node_id = 255;
+		return false;
+		
+	}
+	else
+	{
+		rev_node_id = 255;
+		return false;
+	}
+
+	
+}
+
+bool NavNodeProc::NavPixValid(point2d_pix &pix_uv)
+{
+	if(pix_uv.x >= map_size_[0] || pix_uv.x <= 0 || pix_uv.y >= map_size_[1] || pix_uv.y <= 0 )
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
 
 
 bool NavNodeProc::NavNode2NavPose()
