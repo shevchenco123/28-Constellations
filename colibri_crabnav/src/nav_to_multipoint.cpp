@@ -262,7 +262,6 @@ int main(int argc, char* argv[])
 			
 			cout<<"tmp_delta_dis: " << tmp_delta_dis <<endl;
 			
-			//cout<<"local4navObj.laser_safe_velocity.steer:"<< local4navObj.laser_safe_velocity.steer<< endl;
 			cout<<"rt_r2g_dis: " << rt_r2g_dis <<endl;
 
 			float tmp_linear = local4navObj.apf_cmd_vel.linear.x;
