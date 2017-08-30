@@ -24,6 +24,7 @@ static int rec_obs_dir	= 90;
 
 unsigned int micro_adj_flag = 0;
 unsigned int adjdir_flag = 0;
+float route_end[2] = {10.0, 10.0};
 
 
 void PlannerCallback(planner *plannerObj, float* start_pos, float* goal_pos, bool *finish_flag);
@@ -197,7 +198,7 @@ int main(int argc, char* argv[])
 							
 			local4navObj.SatuateCmdVel(local4navObj.apf_ctrl_output, local4navObj.apf_ctrl_output+1);
 
-			local4navObj.CalcEuclidDistance(local4navObj.amcl_cur_state, navNodeObj.cur_goal, rt_r2g_dis);	// rt_r2g_dis(robot2goal) is different from tmp_delta_dis(robot2gravaton)	
+			local4navObj.CalcEuclidDistance(local4navObj.amcl_cur_state, route_end, rt_r2g_dis);	// rt_r2g_dis(robot2goal) is different from tmp_delta_dis(robot2gravaton)	
 			local4navObj.approaching_flag = local4navObj.ReachApprochingAreaOK(&rt_r2g_dis);
 			
 			if(tmp_delta_dis >= GOAL_NGHBORHD)
@@ -218,7 +219,7 @@ int main(int argc, char* argv[])
 				}
 				else
 				{
-					ptr_action_cmd_t = actionObj.ApproachingGoalAction(&local4navObj.amcl_cur_state[0], &local4navObj.goal_state[0],&micro_adj_flag);
+					ptr_action_cmd_t = actionObj.ApproachingGoalAction(&local4navObj.amcl_cur_state[0], &route_end[0],&micro_adj_flag);
 					
 				}
 
@@ -346,14 +347,23 @@ int main(int argc, char* argv[])
 			
 			cout<<"pub_linear_x: " << local4navObj.apf_cmd_vel.linear.x <<endl;
 			cout<<"pub_angular_z: " << local4navObj.apf_cmd_vel.angular.z <<endl;
+			cout<<"micro_adj_flag: " << micro_adj_flag<<endl;
+			cout<<"adjdir_flag: " << adjdir_flag <<endl;
+			cout<<"route_end[0]: " << route_end[0]<<endl;
+			cout<<"route_end[1]: " << route_end[1] <<endl;
+			cout<<"local4navObj.goal_state[0]: " << local4navObj.goal_state[0]<<endl;
+			cout<<"local4navObj.goal_state[1]: " << local4navObj.goal_state[1]<<endl;
+
+
 
 			scan4caObj.ResetMaxPassValCnt();
+			/*
 			if(navNodeObj.clr_achieve_target_ == 1)
 			{
 				micro_adj_flag = 0;
 				adjdir_flag = 0;
 			}
-
+			*/
 
 			ros::spinOnce();
 			loop_rate.sleep();
@@ -370,6 +380,9 @@ int main(int argc, char* argv[])
 void PlannerCallback(planner *plannerObj, float* start_pos, float* goal_pos, bool *finish_flag)
 {		
 	plannerObj->ObtainPathArray(plannerObj->serviceClient, plannerObj->path_srv, start_pos, goal_pos, finish_flag);
+	route_end[0] = plannerObj->path_array.back().x;
+	route_end[1] = plannerObj->path_array.back().y;
+		
 	cout<<"Timer to call planner..."<<endl;
 }
 

@@ -19,6 +19,7 @@
 #include "std_msgs/Bool.h"
 #include "colibri_msgs/Coordinator.h"
 #include "colibri_msgs/NavState.h"
+#include "colibri_msgs/RobotCmd.h"
 #include "geometry_msgs/PoseStamped.h"
 #include <visualization_msgs/Marker.h>
 #include "geometry_msgs/Pose.h"
@@ -119,10 +120,13 @@ class PathProc{
 		ros::Subscriber sub_nav_state_;
 		ros::Publisher pub_route_;
 		ros::Publisher pub_marker_;
+		ros::Publisher pub_robot_cmd_;
 		
 		ros::ServiceServer srv4getpath_;
 
 		visualization_msgs::Marker  goalmark_list_;
+		colibri_msgs::RobotCmd robot_cmd_;
+		
 		string map_name_;
 		float map_origin_[3];
 		int map_size_[2];
@@ -161,6 +165,8 @@ class PathProc{
 		bool StdNavPath(vector<point2d_map> &nav_path);
 		bool ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPlan::Response & res);
 		int FillMarkerPose(route_list & route);
+		void FillRobotCmd(void);
+
 
 	private:
 		void Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &points_map);

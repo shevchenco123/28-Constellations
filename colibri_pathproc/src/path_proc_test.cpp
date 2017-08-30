@@ -96,12 +96,16 @@ int main(int argc, char *argv[])
 			i = 0;
 		}
 		*/
-		
+
+		pathProcObj.FillRobotCmd();
 		//pathProcObj.StdNavPath(pathProcObj.route_map_);
 		if(pathProcObj.req4path_flag)
 		{
 			pathProcObj.pub_route_.publish(pathProcObj.plan_path_);
 			pathProcObj.pub_marker_.publish(pathProcObj.goalmark_list_);
+			pathProcObj.pub_robot_cmd_.publish(pathProcObj.robot_cmd_);
+			cout<<"robot_nav_state_.at_target_flag: "<<pathProcObj.robot_nav_state_.at_target_flag<<endl;
+			cout<<"robot_nav_state_.achieve_flag: "<<pathProcObj.robot_nav_state_.achieve_flag<<endl;
 		}
 
 		ros::spinOnce();	  

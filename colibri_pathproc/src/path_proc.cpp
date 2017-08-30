@@ -81,6 +81,15 @@ PathProc::PathProc()
 	robot_nav_state_.robot.yaw = 0.0;
 	robot_nav_state_.err_code = 0;
 
+	robot_cmd_.target_node = 0;
+	robot_cmd_.clr_at_target = 0;
+	robot_cmd_.clr_achieve_target = 0;
+	robot_cmd_.basic_ctrl = 0;
+
+
+	cur_route_.target_id = 0;
+	cur_route_.target_heading = 0.0;
+
 	cout<<"Load map: "<<map_name_<<endl;
 	cout<<"Path Segment Num: "<<segs_num_<<endl;
 
@@ -89,6 +98,7 @@ PathProc::PathProc()
 	sub_nav_state_ = nh_route_.subscribe<colibri_msgs::NavState>("/nav_state", 1, &PathProc::NavStateCallBack, this);
 	pub_marker_ = nh_route_.advertise<visualization_msgs::Marker>("waypoint_markers", 10);
  	srv4getpath_ = nh_route_.advertiseService("/move_base/make_plan", &PathProc::ExecGetPathSrv, this);
+	pub_robot_cmd_ = nh_route_.advertise<colibri_msgs::RobotCmd>("/robot_cmd", 1);
 
 }
 
@@ -135,6 +145,26 @@ int PathProc::FillMarkerPose(route_list & route)
 	}
 	return goalmark_list_.points.size();
 }
+
+void PathProc::FillRobotCmd(void)
+{
+	robot_cmd_.header.stamp = ros::Time::now();
+	robot_cmd_.header.frame_id = "robot";
+	robot_cmd_.target_node = cur_route_.target_id ;
+	
+	if(robot_nav_state_.at_target_flag.data == true)
+	{
+		robot_cmd_.clr_at_target = 1;
+	}
+	else
+	{
+		robot_cmd_.clr_at_target = 0;
+
+	}
+
+	robot_cmd_.basic_ctrl = basic_ctrl_;
+}
+
 
 
 /* Calc the bresham line pix coordinate from all existed segs to fill in segment struct vec_seg_*/
@@ -197,6 +227,9 @@ void PathProc::CatSeg2Route(route_list &route)
 /* Calc the sub segs from a known seg_list which is the whole route from hostpc and decompose it into sub_route_vec_*/
 bool PathProc::DecomposeRoute(vector<int> &seg_list, vector<int> &check_nodes, int &sub_route_num)
 {
+	sub_route_vec_.clear();
+	vector<route_list> ().swap(sub_route_vec_);
+
 	vector<int> remain_segs(seg_list);
 	route_list tmp_sub_route;
 	sub_route_num = 0;
@@ -219,8 +252,6 @@ bool PathProc::DecomposeRoute(vector<int> &seg_list, vector<int> &check_nodes, i
 		vector<int> ().swap(tmp_sub_route.seg_list);		
 	}
 
-	sub_route_vec_.clear();
-	vector<route_list> ().swap(sub_route_vec_);
 
 	int sub_num = sub_route_vec_.size(); 
 	for(int i = 1; i < sub_num; i++)
@@ -274,15 +305,26 @@ bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPla
 			if(robot_nav_state_.achieve_flag.data == true)
 			{
 				sub_seg_index++;
+				robot_cmd_.clr_achieve_target = 1;
 			}
 			else
 			{
+				robot_cmd_.clr_achieve_target = 0;
 				CatSeg2Route(sub_route_vec_[sub_seg_index]);
 			}
 			
 		}
 		else
 		{
+			if(robot_nav_state_.achieve_flag.data == true)
+			{
+				robot_cmd_.clr_achieve_target = 1;
+			}
+			else
+			{
+				robot_cmd_.clr_achieve_target = 0;
+			}
+
 			CatSeg2Route(route);
 			
 		}
@@ -456,8 +498,8 @@ void PathProc::NavStateCallBack(const colibri_msgs::NavState::ConstPtr& nav_stat
 	robot_nav_state_.target_node = nav_state->target_node;
 	robot_nav_state_.target_heading = nav_state->cur_seg;
 	robot_nav_state_.cur_seg = nav_state->cur_seg;
-	robot_nav_state_.at_target_flag = nav_state->at_target_flag;
-	robot_nav_state_.achieve_flag = nav_state->achieve_flag;
+	robot_nav_state_.at_target_flag.data = nav_state->at_target_flag.data;
+	robot_nav_state_.achieve_flag.data = nav_state->achieve_flag.data;
 	robot_nav_state_.target.x = nav_state->target_x;
 	robot_nav_state_.target.y = nav_state->target_y;
 	robot_nav_state_.target.yaw = nav_state->target_yaw;
@@ -474,7 +516,6 @@ void PathProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& co
 	cur_route_.seg_list.clear();
 	vector<int> ().swap(cur_route_.seg_list);
 	basic_ctrl_ = coordinator->basic_ctrl;
-	cout<<"basic_ctrl_: "<<basic_ctrl_<<endl;
 	cur_route_.target_id = coordinator->target_node;
 	cur_route_.target_heading = coordinator->target_heading;
 	seg_num = coordinator->route_segs_num;
