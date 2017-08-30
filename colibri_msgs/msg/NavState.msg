@@ -2,8 +2,8 @@ Header header
 int8 target_node
 float32 target_heading
 int8 cur_seg
-std_msgs/Bool at_target_flag
-std_msgs/Bool achieve_flag
+bool at_target_flag
+bool achieve_flag
 float32 target_x
 float32 target_y
 float32 target_yaw

@@ -71,8 +71,8 @@ PathProc::PathProc()
 	robot_nav_state_.target_node = 0;
 	robot_nav_state_.target_heading = 0.0;
 	robot_nav_state_.cur_seg = 0;
-	robot_nav_state_.at_target_flag.data = false;
-	robot_nav_state_.achieve_flag.data = false;
+	robot_nav_state_.at_target_flag = false;
+	robot_nav_state_.achieve_flag = false;
 	robot_nav_state_.target.x = 0.0;
 	robot_nav_state_.target.y = 0.0;
 	robot_nav_state_.target.yaw = 0.0;
@@ -152,7 +152,7 @@ void PathProc::FillRobotCmd(void)
 	robot_cmd_.header.frame_id = "robot";
 	robot_cmd_.target_node = cur_route_.target_id ;
 	
-	if(robot_nav_state_.at_target_flag.data == true)
+	if(robot_nav_state_.at_target_flag == true)
 	{
 		robot_cmd_.clr_at_target = 1;
 	}
@@ -302,21 +302,30 @@ bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPla
 		
 		if(micro_seg_num != 1)
 		{
-			if(robot_nav_state_.achieve_flag.data == true)
+			if(robot_nav_state_.achieve_flag && (inc_seg_flag == false))
 			{
 				sub_seg_index++;
+				inc_seg_flag = true;
 				robot_cmd_.clr_achieve_target = 1;
+				robot_nav_state_.achieve_flag = false;
 			}
 			else
 			{
 				robot_cmd_.clr_achieve_target = 0;
-				CatSeg2Route(sub_route_vec_[sub_seg_index]);
+				
 			}
+			if(sub_seg_index >= micro_seg_num)
+			{
+				sub_seg_index = micro_seg_num - 1; 
+				cout<<"Exception sub_seg_index "<<endl;
+			}
+
+			CatSeg2Route(sub_route_vec_[sub_seg_index]);
 			
 		}
 		else
 		{
-			if(robot_nav_state_.achieve_flag.data == true)
+			if(robot_nav_state_.achieve_flag)
 			{
 				robot_cmd_.clr_achieve_target = 1;
 			}
@@ -498,8 +507,8 @@ void PathProc::NavStateCallBack(const colibri_msgs::NavState::ConstPtr& nav_stat
 	robot_nav_state_.target_node = nav_state->target_node;
 	robot_nav_state_.target_heading = nav_state->cur_seg;
 	robot_nav_state_.cur_seg = nav_state->cur_seg;
-	robot_nav_state_.at_target_flag.data = nav_state->at_target_flag.data;
-	robot_nav_state_.achieve_flag.data = nav_state->achieve_flag.data;
+	robot_nav_state_.at_target_flag = nav_state->at_target_flag;
+	robot_nav_state_.achieve_flag = nav_state->achieve_flag;
 	robot_nav_state_.target.x = nav_state->target_x;
 	robot_nav_state_.target.y = nav_state->target_y;
 	robot_nav_state_.target.yaw = nav_state->target_yaw;

@@ -203,7 +203,7 @@ int main(int argc, char* argv[])
 			
 			if(tmp_delta_dis >= GOAL_NGHBORHD)
 			{
-				ptr_action_cmd_t = actionObj.AdjustMovingDirAction(&local4navObj.amcl_cur_state[2], &dir_goal_in_laser, &tmp_robot2goal_yaw, &turn_adj_flag);			
+				//ptr_action_cmd_t = actionObj.AdjustMovingDirAction(&local4navObj.amcl_cur_state[2], &dir_goal_in_laser, &tmp_robot2goal_yaw, &turn_adj_flag);			
 			}
 			else
 			{
@@ -240,17 +240,17 @@ int main(int argc, char* argv[])
 					cout<<"tt_angle: " << tt_angle <<endl;
 					cout<<"local4navObj.amcl_cur_state[2]: " << local4navObj.amcl_cur_state[2] <<endl;
 					
-					navNodeObj.robot_nav_state.achieve_flag.data =  true;			
+					navNodeObj.robot_nav_state_.achieve_flag = true;			
 				}
 				else
 				{
-					navNodeObj.robot_nav_state.achieve_flag.data =	false;	
+					navNodeObj.robot_nav_state_.achieve_flag = false;	
 				}
-				navNodeObj.robot_nav_state.at_target_flag.data = true;
+				navNodeObj.robot_nav_state_.at_target_flag = true;
 			}
 			else
 			{
-				navNodeObj.robot_nav_state.at_target_flag.data = false;
+				navNodeObj.robot_nav_state_.at_target_flag = false;
 			}
 			
 		
@@ -334,12 +334,12 @@ int main(int argc, char* argv[])
 
 			local4navObj.LimitPubTwist(local4navObj.apf_cmd_vel);
 
-			navNodeObj.robot_nav_state.target_x = local4navObj.goal_state[0]; 
-			navNodeObj.robot_nav_state.target_y = local4navObj.goal_state[1];
-			navNodeObj.robot_nav_state.target_yaw = local4navObj.goal_state[2];
-			navNodeObj.robot_nav_state.cur_x = local4navObj.amcl_cur_state[0];
-			navNodeObj.robot_nav_state.cur_y = local4navObj.amcl_cur_state[1];
-			navNodeObj.robot_nav_state.cur_yaw = local4navObj.amcl_cur_state[2];
+			navNodeObj.robot_nav_state_.target_x = local4navObj.goal_state[0]; 
+			navNodeObj.robot_nav_state_.target_y = local4navObj.goal_state[1];
+			navNodeObj.robot_nav_state_.target_yaw = local4navObj.goal_state[2];
+			navNodeObj.robot_nav_state_.cur_x = local4navObj.amcl_cur_state[0];
+			navNodeObj.robot_nav_state_.cur_y = local4navObj.amcl_cur_state[1];
+			navNodeObj.robot_nav_state_.cur_yaw = local4navObj.amcl_cur_state[2];
 			navNodeObj.PubNavState();
 
 
@@ -357,13 +357,13 @@ int main(int argc, char* argv[])
 
 
 			scan4caObj.ResetMaxPassValCnt();
-			/*
+			
 			if(navNodeObj.clr_achieve_target_ == 1)
 			{
 				micro_adj_flag = 0;
 				adjdir_flag = 0;
 			}
-			*/
+			
 
 			ros::spinOnce();
 			loop_rate.sleep();

@@ -81,8 +81,8 @@ typedef struct st_nav_state{
 	int target_node;
 	int target_heading;
 	int cur_seg;
-	std_msgs::Bool at_target_flag;
-	std_msgs::Bool achieve_flag;
+	bool at_target_flag;
+	bool achieve_flag;
 	pose target;
 	pose robot;
 	int err_code;
@@ -110,6 +110,7 @@ bool BresenhamBasic(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &p
 bool CalcPixesInLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
 
 static int sub_seg_index = 0;
+static bool inc_seg_flag = false;
 
 class PathProc{
 

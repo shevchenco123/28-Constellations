@@ -61,23 +61,23 @@ NavNodeProc::NavNodeProc()
 	test_var = 0;
 
 
-	cur_nav_node = 255;	//if node_id ==255 means no nav node to go shoule stop immediately
+	cur_nav_node_ = 255;	//if node_id ==255 means no nav node to go shoule stop immediately
 	obtain_goal_flag = false;
 
-	robot_nav_state.header.stamp = ros::Time::now();
-	robot_nav_state.header.frame_id = "robot";
-	robot_nav_state.target_node = 1;
-	robot_nav_state.target_heading = 0.0;
-	robot_nav_state.cur_seg = 0;
-	robot_nav_state.at_target_flag.data = false;
-	robot_nav_state.achieve_flag.data = false;
-	robot_nav_state.target_x = 0.0;
-	robot_nav_state.target_y = 0.0;
-	robot_nav_state.target_yaw = 0.0;
-	robot_nav_state.cur_x = 0.0;
-	robot_nav_state.cur_y = 0.0;
-	robot_nav_state.cur_yaw = 0.0;
-	robot_nav_state.err_code = 0;
+	robot_nav_state_.header.stamp = ros::Time::now();
+	robot_nav_state_.header.frame_id = "robot";
+	robot_nav_state_.target_node = 1;
+	robot_nav_state_.target_heading = 0.0;
+	robot_nav_state_.cur_seg = 0;
+	robot_nav_state_.at_target_flag = false;
+	robot_nav_state_.achieve_flag = false;
+	robot_nav_state_.target_x = 0.0;
+	robot_nav_state_.target_y = 0.0;
+	robot_nav_state_.target_yaw = 0.0;
+	robot_nav_state_.cur_x = 0.0;
+	robot_nav_state_.cur_y = 0.0;
+	robot_nav_state_.cur_yaw = 0.0;
+	robot_nav_state_.err_code = 0;
 
 	basic_ctrl_ = 0;
 	clr_at_target_ = 0;
@@ -98,7 +98,7 @@ NavNodeProc::~NavNodeProc()
 
 void NavNodeProc::NavNodeCallBack(const colibri_msgs::NavNode::ConstPtr& node)
 {
-	cur_nav_node = int (node->node_id);
+	cur_nav_node_ = int (node->node_id);
 	NavNode2NavPose();
 
 }
@@ -131,18 +131,18 @@ bool NavNodeProc::PubNavState(void)
 	colibri_msgs::NavState nav_sta;
 	nav_sta.header.stamp = ros::Time::now();
 	nav_sta.header.frame_id = "robot";
-	nav_sta.target_node = robot_nav_state.target_node;
-	nav_sta.target_heading = robot_nav_state.target_heading;
+	nav_sta.target_node = robot_nav_state_.target_node;
+	nav_sta.target_heading = robot_nav_state_.target_heading;
 	nav_sta.cur_seg = test_var;
-	nav_sta.at_target_flag.data = robot_nav_state.at_target_flag.data;
-	nav_sta.achieve_flag.data = robot_nav_state.achieve_flag.data;
-	nav_sta.target_x = robot_nav_state.target_x;
-	nav_sta.target_y = robot_nav_state.target_y;
-	nav_sta.target_yaw = robot_nav_state.target_yaw;
-	nav_sta.cur_x = robot_nav_state.cur_x;
-	nav_sta.cur_y = robot_nav_state.cur_y;
-	nav_sta.cur_yaw = robot_nav_state.cur_yaw;
-	nav_sta.err_code = robot_nav_state.err_code;
+	nav_sta.at_target_flag = robot_nav_state_.at_target_flag;
+	nav_sta.achieve_flag = robot_nav_state_.achieve_flag;
+	nav_sta.target_x = robot_nav_state_.target_x;
+	nav_sta.target_y = robot_nav_state_.target_y;
+	nav_sta.target_yaw = robot_nav_state_.target_yaw;
+	nav_sta.cur_x = robot_nav_state_.cur_x;
+	nav_sta.cur_y = robot_nav_state_.cur_y;
+	nav_sta.cur_yaw = robot_nav_state_.cur_yaw;
+	nav_sta.err_code = robot_nav_state_.err_code;
 	test_var++;
 	
 	pub_nav_state_.publish(nav_sta);
@@ -153,10 +153,10 @@ bool NavNodeProc::PubNavState(void)
 
 bool NavNodeProc::NavNode2NavPose()
 {	
-	if(cur_nav_node != 255)
+	if(cur_nav_node_ != 255)
 	{
 		point2d_pix tmp_end_pix;
-		vector<seg_property>::iterator it = find_if(vec_seg_property_.begin(), vec_seg_property_.end(),FindX<int,seg_property>(cur_nav_node));
+		vector<seg_property>::iterator it = find_if(vec_seg_property_.begin(), vec_seg_property_.end(),FindX<int,seg_property>(cur_nav_node_));
 		if(it != vec_seg_property_.end())
 		{
 			tmp_end_pix = (*it).end;
