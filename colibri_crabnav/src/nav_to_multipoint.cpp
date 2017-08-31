@@ -86,7 +86,8 @@ int main(int argc, char* argv[])
 	float ori_apf_angular = 0.0;
 	signal(SIGINT, MySigintHandler);
 
-	float heading[] = {0.0, 0.0, 90.0, 0.0, 179.0, -90.0, 0.0};
+	//float heading[] = {0.0, 0.0, 90.0, 0.0, 179.0, -90.0, 0.0};
+	float heading[] = {0.0, 0.0, 90.0, 0.0, 179.0, 0.0, -90.0, 0.0};
 	point2d_map route_terminator = {0.0, 0.0};
 	int route_terminator_node = 0;
 	navNodeObj.InitNodeAndSegMap(heading, navNodeObj.segs_num_);
@@ -187,7 +188,7 @@ int main(int argc, char* argv[])
 			if(goal_inlaser_flag == true)
 			{
 				ori_apf_linear = (V_MAX - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
-				ori_apf_angular = scan4caObj.angle_adj / 200.0;
+				ori_apf_angular = scan4caObj.angle_adj / 120.0;
 
 				local4navObj.apf_ctrl_output[0] = local4navObj.LinearVelFilter(&ori_apf_linear, &local4navObj.cur_robot_vel[0]);
 				local4navObj.apf_ctrl_output[1] = local4navObj.AngularVelFilter(&ori_apf_angular, &local4navObj.cur_robot_vel[1]);

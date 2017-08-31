@@ -10,7 +10,7 @@ PathProc::PathProc()
 
 #else
 	string path_name;
-	path_name.assign("/home/aiv-1/colibri_ws/src/colibri_pathproc/path/path6.yaml");
+	path_name.assign("/home/aiv-2/colibri_ws/src/colibri_pathproc/path/path7.yaml");
 #endif
 
 	ifstream fin_path(path_name.c_str());

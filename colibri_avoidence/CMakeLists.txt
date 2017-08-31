@@ -55,6 +55,8 @@ INCLUDE_DIRECTORIES(include/colibri_avoidence/)
 #   src/${PROJECT_NAME}/colibri_avoidence.cpp
 # )
 
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../../devel/lib/colibri_avoidence/)
+
 ## Declare a C++ executable
  add_executable(colibri_ca_node src/colibri_ca_node.cpp src/colibri_ca.cpp )
  target_link_libraries(colibri_ca_node

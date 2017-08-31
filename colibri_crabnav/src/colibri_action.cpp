@@ -117,7 +117,7 @@ float* nav_action::StillRotatingAction(float* cur_yaw, float* ref_yaw, unsigned 
 	yaw_delta = (*ref_yaw - *cur_yaw);
 	yaw_delta_puv = (*ref_yaw - *cur_yaw)/180.0;
 	action4cmd_vel[0] = 0.0;
-	action4cmd_vel[1] = 1.1 * yaw_delta_puv;	
+	action4cmd_vel[1] = 1.2 * yaw_delta_puv;	
 
 	if(abs(yaw_delta) <= ROTATION_TOLERANCE)
 	{
@@ -280,7 +280,7 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, unsign
 
 	action4cmd_vel[1] = APPROACH_VTH_MAX * delta_yaw_puv;
 	
-	if(delta_dis_puv > 0.042)	 // 0.1 m  / GOAL_NGHBORHD = 10 /120 = 0.084
+	if(delta_dis_puv > 0.06)	 // 0.1 m  / GOAL_NGHBORHD = 10 /120 = 0.084
 	{
 		*finish_flag = 0;
 	}

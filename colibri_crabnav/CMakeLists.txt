@@ -30,7 +30,7 @@ endif(NEW_YAMLCPP_FOUND)
 ################################################
 
 
-
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../../devel/lib/colibri_crabnav/)
 
 
 ###########

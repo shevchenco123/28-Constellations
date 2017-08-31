@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 	tmp_end.x = 40;
 	tmp_end.y = 10;	
 
-	int sp_nodes[] = {3, 5, 6};
+	int sp_nodes[] = {3, 5, 7};
 	float heading[] = {0.0, 0.0, 0.0, 90.0, 0.0, 90.0, 90.0, 0.0};
 
 
