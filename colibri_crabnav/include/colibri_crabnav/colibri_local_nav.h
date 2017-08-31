@@ -22,7 +22,7 @@
 
 #define	INFLATE_FACTOR		1.5
 
-#define APPROACH_V_MAX		0.4
+#define APPROACH_V_MAX		0.45
 #define APPROACH_VTH_MAX	0.5
 
 class local_nav

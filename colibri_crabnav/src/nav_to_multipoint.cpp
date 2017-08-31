@@ -86,7 +86,9 @@ int main(int argc, char* argv[])
 	float ori_apf_angular = 0.0;
 	signal(SIGINT, MySigintHandler);
 
-	float heading[] = {0.0, 0.0, 0.0, 90.0, 0.0, 90.0, 90.0, 0.0};
+	float heading[] = {0.0, 0.0, 90.0, 0.0, 179.0, -90.0, 0.0};
+	point2d_map route_terminator = {0.0, 0.0};
+	int route_terminator_node = 0;
 	navNodeObj.InitNodeAndSegMap(heading, navNodeObj.segs_num_);
 
 	while(navNodeObj.obtain_goal_flag == false)
@@ -219,15 +221,27 @@ int main(int argc, char* argv[])
 				}
 				else
 				{
-					ptr_action_cmd_t = actionObj.ApproachingGoalAction(&local4navObj.amcl_cur_state[0], &route_end[0],&micro_adj_flag);
+					ptr_action_cmd_t = actionObj.ApproachingGoalAction(&local4navObj.amcl_cur_state[0], &route_end[0], &micro_adj_flag);
 					
 				}
 
 			}
 						
-			//local4navObj.position_OK_flag = local4navObj.ReachGoalPositionOK(&tmp_delta_dis);
-			float tt_angle = 90.0;
+			float tt_angle;
+			route_terminator.x = route_end[0];
+			route_terminator.y = route_end[1];
+			if(navNodeObj.NavPose2NavNode(route_terminator, route_terminator_node))
+			{
+				tt_angle = navNodeObj.node_head_map_[route_terminator_node];
+				navNodeObj.robot_nav_state_.target_node = route_terminator_node;
+			}
+			else
+			{
+				tt_angle = 0.0;
+				navNodeObj.robot_nav_state_.target_node = 255;
+			}
 
+		
 			if(micro_adj_flag == 1)
 			{
 
@@ -236,9 +250,7 @@ int main(int argc, char* argv[])
 				{
 					*ptr_action_cmd_t = 0.0;
 					*(ptr_action_cmd_t + 1) = 0.0;
-					cout<<" ~~~ Goal Completed and Adjust OK ... "<<endl;	
-					cout<<"tt_angle: " << tt_angle <<endl;
-					cout<<"local4navObj.amcl_cur_state[2]: " << local4navObj.amcl_cur_state[2] <<endl;
+					cout<<" ~~~ Goal Completed and Adjust OK ... "<<endl;
 					
 					navNodeObj.robot_nav_state_.achieve_flag = true;			
 				}
@@ -253,9 +265,10 @@ int main(int argc, char* argv[])
 				navNodeObj.robot_nav_state_.at_target_flag = false;
 			}
 			
-		
+			cout<<"tt_angle: " << tt_angle <<endl;
+			cout<<"local4navObj.amcl_cur_state[2]: " << local4navObj.amcl_cur_state[2] <<endl;	
 
-			local4navObj.SatuateCmdVel(ptr_action_cmd_t,ptr_action_cmd_t + 1);
+			local4navObj.SatuateCmdVel(ptr_action_cmd_t, ptr_action_cmd_t + 1);
 
 			local4navObj.apf_cmd_vel.linear.x = *ptr_action_cmd_t;
 			local4navObj.apf_cmd_vel.angular.z = *(ptr_action_cmd_t + 1);
@@ -380,8 +393,7 @@ void PlannerCallback(planner *plannerObj, float* start_pos, float* goal_pos, boo
 {		
 	plannerObj->ObtainPathArray(plannerObj->serviceClient, plannerObj->path_srv, start_pos, goal_pos, finish_flag);
 	route_end[0] = plannerObj->path_array.back().x;
-	route_end[1] = plannerObj->path_array.back().y;
-		
+	route_end[1] = plannerObj->path_array.back().y;	
 	cout<<"Timer to call planner..."<<endl;
 }
 

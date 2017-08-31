@@ -66,7 +66,7 @@ NavNodeProc::NavNodeProc()
 
 	robot_nav_state_.header.stamp = ros::Time::now();
 	robot_nav_state_.header.frame_id = "robot";
-	robot_nav_state_.target_node = 1;
+	robot_nav_state_.target_node = 0;
 	robot_nav_state_.target_heading = 0.0;
 	robot_nav_state_.cur_seg = 0;
 	robot_nav_state_.at_target_flag = false;

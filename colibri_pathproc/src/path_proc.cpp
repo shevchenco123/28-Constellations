@@ -504,6 +504,8 @@ bool PathProc::AddTargetNode2KneeNodes(int &target_node)
 
 void PathProc::NavStateCallBack(const colibri_msgs::NavState::ConstPtr& nav_state)
 {
+	static int last_target_node = 0;
+	
 	robot_nav_state_.target_node = nav_state->target_node;
 	robot_nav_state_.target_heading = nav_state->cur_seg;
 	robot_nav_state_.cur_seg = nav_state->cur_seg;
@@ -516,6 +518,15 @@ void PathProc::NavStateCallBack(const colibri_msgs::NavState::ConstPtr& nav_stat
 	robot_nav_state_.robot.y = nav_state->cur_y;
 	robot_nav_state_.robot.yaw = nav_state->cur_yaw;
 	robot_nav_state_.err_code = nav_state->err_code;
+
+	if(last_target_node != robot_nav_state_.target_node)
+	{
+		inc_seg_flag = false;
+	}
+
+	last_target_node = robot_nav_state_.target_node;
+	cout<<"inc_seg_flag : "<<inc_seg_flag<<endl;
+	
 
 }
 
