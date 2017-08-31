@@ -16,7 +16,7 @@
 #define ROTATION_TOLERANCE 		3.0		//+/-5 degree
 #define ROTATION_TOLERANCE4CL	6.0		//closed loop rotate control
 
-#define OFFSET_LASER2ROBOT		0.3442	// in x dir
+#define OFFSET_LASER2ROBOT		0.335	// in x dir for new aiv , old one is 0.3443
 
 #define GOAL_NGHBORHD		0.8		//robot diagonal radius lenth = 0.5
 
