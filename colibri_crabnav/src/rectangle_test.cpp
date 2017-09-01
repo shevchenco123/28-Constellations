@@ -18,6 +18,7 @@
 #include "colibri_msgs/NavState.h"
 #include "colibri_msgs/Coordinator.h"
 #include "colibri_msgs/RobotCmd.h"
+#include "colibri_msgs/NavNode.h"
 
 #include "nav_node_proc.h"
 
@@ -40,6 +41,9 @@ int main(int argc, char* argv[])
 	ros::Subscriber sub4NavState;
 	ros::Publisher pub4Coordinator;
 	ros::Publisher pub4Robot_cmd;
+	ros::Publisher pub4NavNode;
+
+	colibri_msgs::NavNode cur_node;
 
 	NavNodeProc nodeObj;
 
@@ -49,11 +53,13 @@ int main(int argc, char* argv[])
 	sub4NavState = nh_test.subscribe<colibri_msgs::NavState>("/nav_state", 5, NavStateCallback);
 	pub4Coordinator = nh_test.advertise<colibri_msgs::Coordinator>("/coordinator", 1);
 	pub4Robot_cmd = nh_test.advertise<colibri_msgs::RobotCmd>("/robot_cmd", 1);
+	pub4NavNode = nh_test.advertise<colibri_msgs::NavNode>("/nav_node", 1);
 
 	ros::Rate loop_rate(10);
 
 	vector<coordinator>::iterator it = nodeObj.exist_route_.begin();
 
+	bool send_nav_node = false;
 	while(ros::ok())
 	{
 		// obatain init nav state 
@@ -62,12 +68,18 @@ int main(int argc, char* argv[])
 		   // go to n5
 		   //else
 
-		FillCoordinator(*it);	
+		FillCoordinator(*it);
+	
 
-		++it;
-		if(it == nodeObj.exist_route_.end())
+		if(send_nav_node == false)
 		{
-			it = nodeObj.exist_route_.begin();
+			cur_node.node_id = it->target_node;
+			pub4NavNode.publish(cur_node);
+			send_nav_node = true;
+		}
+		else
+		{
+
 		}
 
 		pub4Coordinator.publish(coordintor);
@@ -155,4 +167,5 @@ void SetSuccessiveRoute(const int & start_id, const int & end_id, coordinator & 
 {
 
 }
+
 
