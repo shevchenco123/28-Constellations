@@ -27,14 +27,7 @@ colibri_msgs::RobotCmd robot_cmd;
 
 #define MAX_SEG_NUM 50
 
-typedef struct st_coordinator
-{
-	int basic_ctrl;
-	int target_node;
-	float target_heading;
-	int route_seg_num;
-	int seg_array[MAX_SEG_NUM];
-}coordinator;
+
 
 void FillCoordinator(const coordinator & coord);
 void NavStateCallback(const colibri_msgs::NavState::ConstPtr & nav_state);

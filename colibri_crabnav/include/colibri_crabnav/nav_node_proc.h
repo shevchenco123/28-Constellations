@@ -28,6 +28,9 @@
 using namespace std;
 extern string taskpath;
 
+#define MAX_SEG_NUM 50
+
+
 #ifdef HAVE_NEW_YAMLCPP
 // The >> operator disappeared in yaml-cpp 0.5, so this function is
 // added to provide support for code written under the yaml-cpp 0.3 API.
@@ -88,6 +91,14 @@ typedef struct st_seg_prop{
 	point2d_pix end;
 }seg_property;
 
+typedef struct st_coordinator
+{
+	int basic_ctrl;
+	int target_node;
+	float target_heading;
+	int route_seg_num;
+	int seg_array[MAX_SEG_NUM];
+}coordinator;
 
 class NavNodeProc{
 
