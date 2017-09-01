@@ -19,36 +19,21 @@
 #include "colibri_msgs/Coordinator.h"
 #include "colibri_msgs/RobotCmd.h"
 
-typedef struct st_pose{
-	float x;
-	float y;
-	float yaw;
-}pose;
-
-typedef struct st_nav_state{
-	int target_node;
-	int target_heading;
-	int cur_seg;
-	bool at_target_flag;
-	bool achieve_flag;
-	pose target;
-	pose robot;
-	int err_code;
-}nav_state;
+#include "nav_node_proc.h"
 
 nav_state cur_nav_state;
 colibri_msgs::Coordinator coodinator;
 colibri_msgs::RobotCmd robot_cmd;
 
-
-
-void NavStateCallback(const colibri_msgs::NavState::Constptr & nav_state);
+void NavStateCallback(const colibri_msgs::NavState::ConstPtr & nav_state);
 int main(int argc, char* argv[])
 {
-	ros::Handle nh_test;
+	ros::NodeHandle nh_test;
 	ros::Subscriber sub4NavState;
 	ros::Publisher pub4Coordinator;
 	ros::Publisher pub4Robot_cmd;
+
+	NavNodeProc nodeObj;
 
 	sub4NavState = nh_test.subscribe<colibri_msgs::NavState>("/nav_state", 5, NavStateCallback);
 	pub4Coordinator = nh_test.advertise<colibri_msgs::Coordinator>("/coordinator", 1);
@@ -57,6 +42,15 @@ int main(int argc, char* argv[])
 	ros::Rate loop_rate(10);
 	while(ros::ok())
 	{
+		// obatain init nav state 
+		// cmd to n1
+		// if reach n1 ok
+		   // go to n5
+		   //else
+
+		
+		ros::spinOnce();
+		loop_rate.sleep();
 
 	}
 
@@ -84,19 +78,19 @@ void Init(void)
 	cur_nav_state.achieve_flag = false;
 
 }
-void NavStateCallback(const colibri_msgs::NavState::Constptr & nav_state)
+void NavStateCallback(const colibri_msgs::NavState::ConstPtr & nav_state)
 {
 	cur_nav_state.target_node = nav_state->target_node;
 	cur_nav_state.target_heading = nav_state->target_heading;
 	
 	cur_nav_state.cur_seg = nav_state->cur_seg;
-	cur_nav_state.robot.x = nav_state->robot.x;
-	cur_nav_state.robot.y = nav_state->robot.y;
-	cur_nav_state.robot.yaw = nav_state->robot.yaw;
+	cur_nav_state.robot.x = nav_state->cur_x;
+	cur_nav_state.robot.y = nav_state->cur_y;
+	cur_nav_state.robot.yaw = nav_state->cur_yaw;
 	
-	cur_nav_state.target.x = nav_state->robot.yaw;
-	cur_nav_state.target.y = nav_state->robot.yaw;
-	cur_nav_state.target.yaw = nav_state->robot.yaw; 
+	cur_nav_state.target.x = nav_state->target_x;
+	cur_nav_state.target.y = nav_state->target_y;
+	cur_nav_state.target.yaw = nav_state->target_yaw; 
 	
 	cur_nav_state.err_code = nav_state->err_code;
 
@@ -105,4 +99,14 @@ void NavStateCallback(const colibri_msgs::NavState::Constptr & nav_state)
 
 }
 
+
+void FillCoordinator(void)
+{
+
+}
+
+void FillRobotCmd(void)
+{
+
+}
 

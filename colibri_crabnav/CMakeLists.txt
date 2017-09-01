@@ -62,4 +62,8 @@ INCLUDE_DIRECTORIES(include/colibri_crabnav/)
    ${catkin_LIBRARIES}
  )
 
+ add_executable(node_test src/rectangle_test.cpp src/nav_node_proc.cpp)
+ target_link_libraries(node_test yaml-cpp
+   ${catkin_LIBRARIES}
+ )
 

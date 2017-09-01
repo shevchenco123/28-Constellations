@@ -73,8 +73,8 @@ typedef struct st_nav_state{
 	int target_node;
 	int target_heading;
 	int cur_seg;
-	std_msgs::Bool at_target_flag;
-	std_msgs::Bool achieve_flag;
+	bool at_target_flag;
+	bool achieve_flag;
 	pose target;
 	pose robot;
 	int err_code;
