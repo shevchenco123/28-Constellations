@@ -108,6 +108,8 @@ class NavNodeProc{
 		map<int, int> seg_node_map_;
 		map<int, float> node_head_map_;
 
+		vector<float> seg_heading_;
+
 		colibri_msgs::NavState robot_nav_state_;
 		int cur_nav_node_;
 		float cur_goal[POS_DIM];
