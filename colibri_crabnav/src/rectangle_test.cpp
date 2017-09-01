@@ -22,7 +22,7 @@
 #include "nav_node_proc.h"
 
 nav_state cur_nav_state;
-colibri_msgs::Coordinator coodinator;
+colibri_msgs::Coordinator coordintor;
 colibri_msgs::RobotCmd robot_cmd;
 
 #define MAX_SEG_NUM 50
@@ -34,6 +34,8 @@ void NavStateCallback(const colibri_msgs::NavState::ConstPtr & nav_state);
 
 int main(int argc, char* argv[])
 {
+	ros::init(argc, argv, "existed_route_node");
+
 	ros::NodeHandle nh_test;
 	ros::Subscriber sub4NavState;
 	ros::Publisher pub4Coordinator;
@@ -42,12 +44,16 @@ int main(int argc, char* argv[])
 	NavNodeProc nodeObj;
 
 	nodeObj.InitNodeAndSegMap(nodeObj.segs_num_);
+	nodeObj.LoadExistedRoute();
 
 	sub4NavState = nh_test.subscribe<colibri_msgs::NavState>("/nav_state", 5, NavStateCallback);
 	pub4Coordinator = nh_test.advertise<colibri_msgs::Coordinator>("/coordinator", 1);
 	pub4Robot_cmd = nh_test.advertise<colibri_msgs::RobotCmd>("/robot_cmd", 1);
 
 	ros::Rate loop_rate(10);
+
+	vector<coordinator>::iterator it = nodeObj.exist_route_.begin();
+
 	while(ros::ok())
 	{
 		// obatain init nav state 
@@ -56,10 +62,19 @@ int main(int argc, char* argv[])
 		   // go to n5
 		   //else
 
-		
+		FillCoordinator(*it);	
+
+		++it;
+		if(it == nodeObj.exist_route_.end())
+		{
+			it = nodeObj.exist_route_.begin();
+		}
+
+		pub4Coordinator.publish(coordintor);
+
 		ros::spinOnce();
 		loop_rate.sleep();
-
+		
 	}	
 	
 	return 0;
@@ -107,19 +122,19 @@ void NavStateCallback(const colibri_msgs::NavState::ConstPtr & nav_state)
 
 void FillCoordinator(const coordinator & coord)
 {
-	coodinator.header.stamp = ros::Time::now();
-	coodinator.header.frame_id = "robot";
-	coodinator.basic_ctrl = coord.basic_ctrl;
-	coodinator.target_node = coord.target_node;
-	coodinator.target_heading = coord.target_heading;
-	coodinator.route_segs_num = coord.route_seg_num;
+	coordintor.header.stamp = ros::Time::now();
+	coordintor.header.frame_id = "robot";
+	coordintor.basic_ctrl = coord.basic_ctrl;
+	coordintor.target_node = coord.target_node;
+	coordintor.target_heading = coord.target_heading;
+	coordintor.route_segs_num = coord.route_seg_num;
 	for(int i = 0; i < coord.route_seg_num; i++)
 	{
-		coodinator.segs_vector[0] = coord.seg_array[i];
+		coordintor.segs_vector[i] = coord.seg_array[i];
 	}
 	for(int j = coord.route_seg_num; j < MAX_SEG_NUM; j++)
 	{
-		coodinator.segs_vector[j] = 255;	// the remain null seg set to be an invalid value 255
+		coordintor.segs_vector[j] = 255;	// the remain null seg set to be an invalid value 255
 	}	
 		
 }
