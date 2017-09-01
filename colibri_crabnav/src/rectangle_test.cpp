@@ -35,6 +35,8 @@ int main(int argc, char* argv[])
 
 	NavNodeProc nodeObj;
 
+	nodeObj.InitNodeAndSegMap(nodeObj.segs_num_);
+
 	sub4NavState = nh_test.subscribe<colibri_msgs::NavState>("/nav_state", 5, NavStateCallback);
 	pub4Coordinator = nh_test.advertise<colibri_msgs::Coordinator>("/coordinator", 1);
 	pub4Robot_cmd = nh_test.advertise<colibri_msgs::RobotCmd>("/robot_cmd", 1);

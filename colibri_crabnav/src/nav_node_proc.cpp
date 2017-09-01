@@ -133,6 +133,27 @@ void NavNodeProc::InitNodeAndSegMap(float *head_array, int &array_size)
 
 }
 
+void NavNodeProc::InitNodeAndSegMap(int &array_size)
+{
+
+	int j = 0;
+	for(vector<seg_property>::iterator it = vec_seg_property_.begin(); it != vec_seg_property_.end(); ++it)
+	{
+		node_seg_map_.insert(make_pair((*it).end_id, (*it).seg_id));
+		node_head_map_.insert(pair<int, float>((*it).end_id, seg_heading_[j]));
+		seg_node_map_.insert(make_pair((*it).seg_id, (*it).end_id));
+		j++;
+		if(j > array_size)
+		{
+			cout<<"Horriable, the pointer go out of the range..."<<endl;
+			break;
+		}
+		
+	}
+
+}
+
+
 bool NavNodeProc::PubNavState(void)
 {
 

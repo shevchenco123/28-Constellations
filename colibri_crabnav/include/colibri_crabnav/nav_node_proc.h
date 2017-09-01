@@ -126,7 +126,8 @@ class NavNodeProc{
 		NavNodeProc();
 		~NavNodeProc();
 
-		void InitNodeAndSegMap(float *head_array, int &array_size);	
+		void InitNodeAndSegMap(float *head_array, int &array_size);
+		void InitNodeAndSegMap(int &array_size);
 		bool NavNode2NavPose();
 		bool PubNavState();
 		bool NavPose2NavNode(point2d_map & pose, int & rev_node_id);
