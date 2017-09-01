@@ -104,13 +104,74 @@ NavNodeProc::~NavNodeProc()
 
 }
 
-bool NavNodeProc::LoadExistedRoute(void)
+void NavNodeProc::LoadExistedRoute(void)
 {
+
+	string route_name;
+	route_name.assign("/home/aiv-2/colibri_ws/src/colibri_crabnav/config/tasklist/dbg_route.yaml");
+
+	ifstream fin_path(route_name.c_str());
+	if(fin_path.fail())
+	{
+		cout<<"existed route yaml file can not open in parse the yaml argv in proc"<<endl;
+		exit(-1);
+	}
+
+	YAML::Node doc_existed_route = YAML::Load(fin_path);
+	try 
+	{ 
+
+		doc_existed_route["route"]["route_num"] >> exist_route_num_;
+		exist_route_.reserve(exist_route_num_);
+		
+		string route_target_name;
+		string route_seg_name;
+		stringstream sstr_num; 
+		string num2str;
+		float tmp_heading = 0.0;
+		seg_property tmp_seg_prop;
+		int seg_array[50];
+		for(int route_index = 0; route_index < exist_route_num_; route_index++)
+		{
+			coordinator tmp;
+			tmp.basic_ctrl = 0;
+			sstr_num << route_index;
+		    num2str = sstr_num.str();
+			route_target_name = "route" + num2str+ "_target_node";
+			route_seg_name = "route" + num2str+ "_seg_vec";
+			
+			doc_existed_route["route"][route_target_name][0] >> tmp.target_node;
+			doc_existed_route["route"][route_target_name][1] >> tmp.route_seg_num;
+			doc_existed_route["route"][route_target_name][2] >> tmp.target_heading;
+
+			int i = 0;
+			while(i < MAX_SEG_NUM)
+			{
+				if(i < tmp.route_seg_num)
+				{
+					doc_existed_route["route"][route_seg_name][i] >> tmp[i];
+				}
+				else
+				{
+					tmp[i] = 255;
+				}
+				i++;
+			}
+		
+			exist_route_.push_back(tmp);
+			sstr_num.str("");
+		}
+	
+	}
+	catch (YAML::InvalidScalar) 
+	{ 
+		cout<<"The existed route yaml does not contain an origin tag or it is invalid."<<endl;
+		exit(-1);
+	}
 
 
 
 }
-
 
 void NavNodeProc::NavNodeCallBack(const colibri_msgs::NavNode::ConstPtr& node)
 {

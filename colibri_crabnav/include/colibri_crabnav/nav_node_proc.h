@@ -135,11 +135,12 @@ class NavNodeProc{
 		int test_var;
 
 		vector<coordinator> exist_route_;
+		int exist_route_num_;
 
 		NavNodeProc();
 		~NavNodeProc();
 
-		bool LoadExistedRoute(void);
+		void LoadExistedRoute(void);
 		void InitNodeAndSegMap(float *head_array, int &array_size);
 		void InitNodeAndSegMap(int &array_size);
 		bool NavNode2NavPose();
