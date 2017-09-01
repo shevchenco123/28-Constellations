@@ -18,13 +18,13 @@ path:
   seg3_heading: 0
   seg4_property: [4, 4, 5]
   seg4_vector: [524, 432, 524, 387]
-  seg4_heading: 90
+  seg4_heading: 179
   seg5_property: [5, 5, 6]
   seg5_vector: [524, 387, 460, 387]
   seg5_heading: 0
   seg6_property: [6, 6, 7]
   seg6_vector: [460, 387, 385, 387]
-  seg6_heading: 90
+  seg6_heading: -90
   seg7_property: [7, 7, 8]
   seg7_vector: [385, 387, 385, 438]
   seg7_heading: 0

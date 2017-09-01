@@ -145,6 +145,7 @@ class PathProc{
 
 		vector<int> knee_nodes_;
 		vector<float> nodes_heading_;
+		vector<float> segs_heading_;
 
 		nav_state robot_nav_state_;
 		

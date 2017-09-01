@@ -35,15 +35,18 @@ PathProc::PathProc()
 		
 		string seg_prop_name;
 		string seg_terminal_name;
+		string seg_heading_name;
 		stringstream sstr_num; 
 		string num2str;
+		float tmp_heading = 0.0;
 		seg_property tmp_seg_prop;
 		for(int seg_index = 0; seg_index < segs_num_; seg_index++)
 		{
 			sstr_num << seg_index;
 		    num2str = sstr_num.str();
-			seg_prop_name = "seg" + num2str+ "_property";
-			seg_terminal_name = "seg" + num2str+ "_vector";
+			seg_prop_name = "seg" + num2str + "_property";
+			seg_terminal_name = "seg" + num2str + "_vector";
+			seg_heading_name = "seg" + num2str + "_heading";
 		
 			doc_path["path"][seg_prop_name][0] >> tmp_seg_prop.seg_id;
 			doc_path["path"][seg_prop_name][1] >> tmp_seg_prop.start_id;
@@ -53,6 +56,10 @@ PathProc::PathProc()
 			doc_path["path"][seg_terminal_name][1] >> tmp_seg_prop.start.y;
 			doc_path["path"][seg_terminal_name][2] >> tmp_seg_prop.end.x;
 			doc_path["path"][seg_terminal_name][3] >> tmp_seg_prop.end.y;
+
+			doc_path["path"][seg_heading_name] >> tmp_heading;
+
+			segs_heading_.push_back(tmp_heading);
 
 			vec_seg_property_.push_back(tmp_seg_prop);
 			sstr_num.str("");
