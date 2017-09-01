@@ -134,9 +134,12 @@ class NavNodeProc{
 		nav_msgs::Path plan_path_;
 		int test_var;
 
+		vector<coordinator> exist_route_;
+
 		NavNodeProc();
 		~NavNodeProc();
 
+		bool LoadExistedRoute(void);
 		void InitNodeAndSegMap(float *head_array, int &array_size);
 		void InitNodeAndSegMap(int &array_size);
 		bool NavNode2NavPose();

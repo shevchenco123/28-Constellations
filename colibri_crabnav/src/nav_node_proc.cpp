@@ -104,6 +104,13 @@ NavNodeProc::~NavNodeProc()
 
 }
 
+bool NavNodeProc::LoadExistedRoute(void)
+{
+
+
+
+}
+
 
 void NavNodeProc::NavNodeCallBack(const colibri_msgs::NavNode::ConstPtr& node)
 {
