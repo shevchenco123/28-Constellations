@@ -25,7 +25,20 @@ nav_state cur_nav_state;
 colibri_msgs::Coordinator coodinator;
 colibri_msgs::RobotCmd robot_cmd;
 
+#define MAX_SEG_NUM 50
+
+typedef struct st_coordinator
+{
+	int basic_ctrl;
+	int target_node;
+	float target_heading;
+	int route_seg_num;
+	int seg_array[MAX_SEG_NUM];
+}coordinator;
+
+void FillCoordinator(const coordinator & coord);
 void NavStateCallback(const colibri_msgs::NavState::ConstPtr & nav_state);
+
 int main(int argc, char* argv[])
 {
 	ros::NodeHandle nh_test;
@@ -102,13 +115,33 @@ void NavStateCallback(const colibri_msgs::NavState::ConstPtr & nav_state)
 }
 
 
-void FillCoordinator(void)
+void FillCoordinator(const coordinator & coord)
 {
-
+	coodinator.header.stamp = ros::Time::now();
+	coodinator.header.frame_id = "robot";
+	coodinator.basic_ctrl = coord.basic_ctrl;
+	coodinator.target_node = coord.target_node;
+	coodinator.target_heading = coord.target_heading;
+	coodinator.route_segs_num = coord.route_seg_num;
+	for(int i = 0; i < coord.route_seg_num; i++)
+	{
+		coodinator.segs_vector[0] = coord.seg_array[i];
+	}
+	for(int j = coord.route_seg_num; j < MAX_SEG_NUM; j++)
+	{
+		coodinator.segs_vector[j] = coord.seg_array[j];
+	}	
+		
 }
 
 void FillRobotCmd(void)
 {
+	robot_cmd.header.stamp = ros::Time::now();
+	robot_cmd.header.frame_id = "robot";
+	robot_cmd.target_node = 0;
+	robot_cmd.clr_at_target = 0;
+	robot_cmd.clr_achieve_target = 0;
+	robot_cmd.basic_ctrl = 0;
 
 }
 
