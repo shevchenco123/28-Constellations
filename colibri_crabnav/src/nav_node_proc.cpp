@@ -149,11 +149,11 @@ void NavNodeProc::LoadExistedRoute(void)
 			{
 				if(i < tmp.route_seg_num)
 				{
-					doc_existed_route["route"][route_seg_name][i] >> tmp[i];
+					doc_existed_route["route"][route_seg_name][i] >> tmp.seg_array[i];
 				}
 				else
 				{
-					tmp[i] = 255;
+					tmp.seg_array[i] = 255;
 				}
 				i++;
 			}
