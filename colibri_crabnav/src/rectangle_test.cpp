@@ -67,10 +67,7 @@ int main(int argc, char* argv[])
 		ros::spinOnce();
 		loop_rate.sleep();
 
-	}
-
-	
-	
+	}	
 	
 	return 0;
 }
@@ -129,7 +126,7 @@ void FillCoordinator(const coordinator & coord)
 	}
 	for(int j = coord.route_seg_num; j < MAX_SEG_NUM; j++)
 	{
-		coodinator.segs_vector[j] = coord.seg_array[j];
+		coodinator.segs_vector[j] = 255;	// the remain null seg set to be an invalid value 255
 	}	
 		
 }
@@ -142,6 +139,12 @@ void FillRobotCmd(void)
 	robot_cmd.clr_at_target = 0;
 	robot_cmd.clr_achieve_target = 0;
 	robot_cmd.basic_ctrl = 0;
+
+}
+
+// this is only used for a series continuous node to construct the route without jump
+void SetSuccessiveRoute(const int & start_id, const int & end_id, coordinator & coord_out) 
+{
 
 }
 
