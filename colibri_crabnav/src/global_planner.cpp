@@ -1,5 +1,7 @@
 #include "global_planner.h"
 
+static int rec_path_cnt = 0;
+
 planner::planner()
 {
 
@@ -36,6 +38,8 @@ planner::planner()
 	gravaton.yaw = 0.0;
 
 	sub4nav_path = nh_planner.subscribe<nav_msgs::Path>("/nav_path", 1, &planner::SubNavPathCallback, this);
+	get_path_flag = false;
+	time_to_refresh = false;
 
 }
 
@@ -236,6 +240,40 @@ bool planner::ExecMonoPlanAndGravaton(planner&plannerObj,float* start_pos, float
 
 void planner::SubNavPathCallback(const nav_msgs::Path::ConstPtr & path)
 {
+	path_array.clear();
+	vector<path_point> ().swap(path_array);
+
+	path_point tmp_path_point;
+	geometry_msgs::PoseStamped tmp_point;
+
+	if (path->poses.empty() == false) 
+	{
+		ForEach(const geometry_msgs::PoseStamped &p, path->poses)
+		{
+			tmp_path_point.x = p.pose.position.x;
+			tmp_path_point.y = p.pose.position.y;
+
+			tmp_point.pose.orientation = p.pose.orientation;		
+			Quaternion2Yaw(tmp_point, tmp_path_point.yaw);
+
+			path_array.push_back(tmp_path_point);
+
+		}
+		get_path_flag = true;
+		rec_path_cnt++;
+		if(rec_path_cnt >= GET_MAX_PATH_CNT) // every 100ms to get a path 
+		{
+			rec_path_cnt = 0;
+			time_to_refresh = true;
+		}
+	}
+	else
+	{
+		ROS_WARN("Got Empty Plan in Subscrib /nav_path...");
+		get_path_flag = false;
+	}
+	
+
 
 }
 

@@ -32,7 +32,8 @@
 #define GOAL_TOLLERANCE	0.5
 #define GRAVATON_RADIUS 1.2		// gravation in path array distance to robot 
 
-#define PLAN_INTERVAL 2.0	
+#define PLAN_INTERVAL 2.0
+#define GET_MAX_PATH_CNT 30
 
 using namespace std;
 
@@ -76,6 +77,9 @@ class planner
 		vector<path_point> path_pruned_array;
 
 		ros::Subscriber sub4nav_path;
+		bool get_path_flag;
+		bool time_to_refresh;
+
 
 
 		planner();

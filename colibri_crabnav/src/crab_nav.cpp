@@ -26,7 +26,6 @@ unsigned int micro_adj_flag = 0;
 unsigned int adjdir_flag = 0;
 float route_end[2] = {10.0, 10.0};
 
-
 void PlannerCallback(planner *plannerObj, float* start_pos, float* goal_pos, bool *finish_flag);
 void MySigintHandler(int sig);
 int main(int argc, char* argv[])
@@ -67,8 +66,6 @@ int main(int argc, char* argv[])
 	ros::Timer planner_timer;
 	bool finish_plan = false;
 
-	bool tmp_timer_finish =false;
-	bool *timer_finish = &tmp_timer_finish;
 
 	static unsigned int index4gravaton = 0; 
 
@@ -90,16 +87,6 @@ int main(int argc, char* argv[])
 	int route_terminator_node = 0;
 	navNodeObj.InitNodeAndSegMap(navNodeObj.segs_num_);
 
-	while(navNodeObj.obtain_goal_flag == false)
-	{
-		ros::spinOnce();
-		loop_rate.sleep();
-	}
-	
-	local4navObj.goal_state[0] = navNodeObj.cur_goal[0];	// Extract the Rviz goal for nav
-	local4navObj.goal_state[1] = navNodeObj.cur_goal[1];
-	local4navObj.goal_state[2] = navNodeObj.cur_goal[2];	
-
 	while (ros::ok())
 	{	
 			
@@ -115,9 +102,9 @@ int main(int argc, char* argv[])
 			ROS_INFO("+++++++++ start +++++++++");
 
 			//--------------------------  Calc gravaton for nav ------------------------------
-			if(*timer_finish == true)	// Path plan timer OK
+			if(plannerObj.time_to_refresh == true)	// Path plan timer OK
 			{
-				*timer_finish = false;
+				plannerObj.time_to_refresh = false;
 				index4gravaton = 0;
 				replan_flag = true;
 			}
@@ -158,18 +145,6 @@ int main(int argc, char* argv[])
 			scan4caObj.CalcKrfTheta(scan4caObj.kp_phi_vec, scan4caObj.phi_start_vec, scan4caObj.phi_end_vec);
 			scan4caObj.CalcPassFcnWithoutRPF(&scan4caObj.max_passfcn_val, scan4caObj.passfcn_vec, &scan4caObj.angle_adj);
 
-			cout<<"plannerObj.gravaton.x: " << plannerObj.gravaton.x <<endl;
-			cout<<"plannerObj.gravaton.y: " << plannerObj.gravaton.y <<endl;
-			cout<<"local4navObj.amcl_cur_state.x: " << local4navObj.amcl_cur_state[0] <<endl;
-			cout<<"local4navObj.amcl_cur_state.y: " << local4navObj.amcl_cur_state[0] <<endl;
-
-			cout<<"dir_goal_in_laser: " << dir_goal_in_laser <<endl;
-			
-			cout<<"scan4caObj.max_passfcn_val: " << scan4caObj.max_passfcn_val <<endl;
-			cout<<"scan4caObj.angle_adj: " << scan4caObj.angle_adj <<endl;
-			
-			cout<<"goal_inlaser_flag: " << goal_inlaser_flag <<endl;		
-
 			scan4caObj.CalcAlarmInAPF();
 			
 			if(goal_inlaser_flag == true)
@@ -190,16 +165,7 @@ int main(int argc, char* argv[])
 
 			local4navObj.CalcEuclidDistance(local4navObj.amcl_cur_state, route_end, rt_r2g_dis);	// rt_r2g_dis(robot2goal) is different from tmp_delta_dis(robot2gravaton)	
 			local4navObj.approaching_flag = local4navObj.ReachApprochingAreaOK(&rt_r2g_dis);
-			
-			if(tmp_delta_dis >= GOAL_NGHBORHD)
-			{
-				//ptr_action_cmd_t = actionObj.AdjustMovingDirAction(&local4navObj.amcl_cur_state[2], &dir_goal_in_laser, &tmp_robot2goal_yaw, &turn_adj_flag);			
-			}
-			else
-			{
-			
-			}
-			
+						
 			if(turn_adj_flag == 1 && micro_adj_flag == 0)
 			{
 				if(local4navObj.approaching_flag == false)
@@ -228,8 +194,7 @@ int main(int argc, char* argv[])
 				tt_angle = 0.0;
 				navNodeObj.robot_nav_state_.target_node = 255;
 			}
-
-		
+	
 			if(micro_adj_flag == 1)
 			{
 
@@ -252,24 +217,15 @@ int main(int argc, char* argv[])
 			{
 				navNodeObj.robot_nav_state_.at_target_flag = false;
 			}
-			
-			cout<<"tt_angle: " << tt_angle <<endl;
-			cout<<"local4navObj.amcl_cur_state[2]: " << local4navObj.amcl_cur_state[2] <<endl;	
 
 			local4navObj.SatuateCmdVel(ptr_action_cmd_t, ptr_action_cmd_t + 1);
 
 			local4navObj.apf_cmd_vel.linear.x = *ptr_action_cmd_t;
 			local4navObj.apf_cmd_vel.angular.z = *(ptr_action_cmd_t + 1);
 			
-			cout<<"tmp_delta_dis: " << tmp_delta_dis <<endl;
-			
-			cout<<"rt_r2g_dis: " << rt_r2g_dis <<endl;
-
 			float tmp_linear = local4navObj.apf_cmd_vel.linear.x;
 			float tmp_angluar = local4navObj.apf_cmd_vel.angular.z;
 
-			cout<<"tmp_linear: " << tmp_linear <<endl;
-			cout<<"tmp_angluar: " << tmp_angluar <<endl;
 
 #ifdef LASER_CA_LIMIT
 
@@ -342,20 +298,8 @@ int main(int argc, char* argv[])
 			navNodeObj.robot_nav_state_.cur_yaw = local4navObj.amcl_cur_state[2];
 			navNodeObj.PubNavState();
 
-
 			local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel);
 			
-			cout<<"pub_linear_x: " << local4navObj.apf_cmd_vel.linear.x <<endl;
-			cout<<"pub_angular_z: " << local4navObj.apf_cmd_vel.angular.z <<endl;
-			cout<<"micro_adj_flag: " << micro_adj_flag<<endl;
-			cout<<"adjdir_flag: " << adjdir_flag <<endl;
-			cout<<"route_end[0]: " << route_end[0]<<endl;
-			cout<<"route_end[1]: " << route_end[1] <<endl;
-			cout<<"local4navObj.goal_state[0]: " << local4navObj.goal_state[0]<<endl;
-			cout<<"local4navObj.goal_state[1]: " << local4navObj.goal_state[1]<<endl;
-
-
-
 			scan4caObj.ResetMaxPassValCnt();
 			
 			if(navNodeObj.clr_achieve_target_ == 1)
@@ -364,13 +308,11 @@ int main(int argc, char* argv[])
 				adjdir_flag = 0;
 			}
 			
-
 			ros::spinOnce();
 			loop_rate.sleep();
+			
 			ROS_INFO("----------------- end -----------------");
 		}
-
-
 		
 	}
 
