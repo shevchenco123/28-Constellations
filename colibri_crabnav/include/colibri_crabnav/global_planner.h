@@ -73,7 +73,9 @@ class planner
 		vector<path_delta> path2robot_array;
 
 		path_point gravaton;
-		vector<path_point> path_pruned_array;		
+		vector<path_point> path_pruned_array;
+
+		nav_msgs::Path plan_path_;
 
 		planner();
 		~planner();

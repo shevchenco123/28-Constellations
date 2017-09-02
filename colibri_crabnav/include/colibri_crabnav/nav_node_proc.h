@@ -131,7 +131,6 @@ class NavNodeProc{
 		int clr_achieve_target_;
 		int target_node_;
 		
-		nav_msgs::Path plan_path_;
 		int test_var;
 
 		vector<coordinator> exist_route_;
