@@ -4,27 +4,27 @@ path:
   origin: [-16.394622,-5.382439,0.000000]
   map_size: [779, 593]
   seg_num: 8
-  seg0_property: [0, 0, 1]
+  seg0_property: [1, 0, 1]
   seg0_vector: [329, 486, 385, 486]
   seg0_heading: 0
-  seg1_property: [1, 1, 2]
+  seg1_property: [2, 1, 2]
   seg1_vector: [385, 486, 458, 486]
   seg1_heading: 0
-  seg2_property: [2, 2, 3]
+  seg2_property: [3, 2, 3]
   seg2_vector: [458, 486, 524, 486]
   seg2_heading: 90
-  seg3_property: [3, 3, 4]
+  seg3_property: [4, 3, 4]
   seg3_vector: [524, 486, 524, 432]
   seg3_heading: 0
-  seg4_property: [4, 4, 5]
+  seg4_property: [5, 4, 5]
   seg4_vector: [524, 432, 524, 387]
   seg4_heading: 179
-  seg5_property: [5, 5, 6]
+  seg5_property: [6, 5, 6]
   seg5_vector: [524, 387, 460, 387]
   seg5_heading: 0
-  seg6_property: [6, 6, 7]
+  seg6_property: [7, 6, 7]
   seg6_vector: [460, 387, 385, 387]
   seg6_heading: -90
-  seg7_property: [7, 7, 8]
+  seg7_property: [8, 7, 8]
   seg7_vector: [385, 387, 385, 438]
   seg7_heading: 0

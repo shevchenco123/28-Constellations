@@ -30,6 +30,9 @@ using namespace std;
 extern string taskpath;
 extern ofstream  file1; 
 
+extern bool get_coordinator_flag;
+
+
 #define MANUAL_PATH
 //#define REC_PATH
 
@@ -164,11 +167,13 @@ class PathProc{
 		void CatSeg2Route(route_list &route);
 		bool DecomposeRoute(vector<int> &seg_list, vector<int> &check_nodes, int &sub_route_num);
 		void MakeNodeSegMap(vector<float> &vec_heading);
+		void MakeNodeSegMap(void);
 		bool StdNavPath(vector<point2d_map> &nav_path);
 		bool ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPlan::Response & res);
 		int FillMarkerPose(route_list & route);
 		void FillRobotCmd(void);
-
+		void HandleRecvRoute(void);	
+		
 
 	private:
 		void Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &points_map);

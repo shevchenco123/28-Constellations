@@ -60,3 +60,7 @@ INCLUDE_DIRECTORIES(include/colibri_pathproc)
 add_executable(pathproc_node src/path_proc_test.cpp src/path_proc.cpp)
 target_link_libraries(pathproc_node yaml-cpp ${catkin_LIBRARIES})
 
+
+add_executable(path_handle_node src/path_handle.cpp src/path_proc.cpp)
+target_link_libraries(path_handle_node yaml-cpp ${catkin_LIBRARIES})
+

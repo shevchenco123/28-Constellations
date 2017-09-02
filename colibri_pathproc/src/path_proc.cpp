@@ -1,6 +1,6 @@
 #include "path_proc.h"
 
-
+bool get_coordinator_flag = false; 
 
 PathProc::PathProc()
 {
@@ -101,7 +101,7 @@ PathProc::PathProc()
 	cout<<"Path Segment Num: "<<segs_num_<<endl;
 
 	pub_route_ = nh_route_.advertise<nav_msgs::Path>("/nav_path", 1);
-	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/coordinator", 1, &PathProc::CoordinatorCallBack, this);
+	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/coordinator", 5, &PathProc::CoordinatorCallBack, this);
 	sub_nav_state_ = nh_route_.subscribe<colibri_msgs::NavState>("/nav_state", 1, &PathProc::NavStateCallBack, this);
 	pub_marker_ = nh_route_.advertise<visualization_msgs::Marker>("waypoint_markers", 10);
  	srv4getpath_ = nh_route_.advertiseService("/move_base/make_plan", &PathProc::ExecGetPathSrv, this);
@@ -472,6 +472,19 @@ void PathProc::MakeNodeSegMap(vector<float> &vec_heading)
 	}
 }
 
+void PathProc::MakeNodeSegMap(void)
+{
+	int i = 0;
+	for(vector<seg_property>::iterator it = vec_seg_property_.begin(); it != vec_seg_property_.end(); ++it)
+	{
+		node_seg_map_.insert(pair<int, int>((*it).end_id, (*it).seg_id));
+		seg_node_map_.insert(pair<int, int>((*it).seg_id, (*it).end_id));
+		node_heading_map_.insert(pair<int, float>((*it).end_id, segs_heading_[i]));
+		i++;
+	}
+}
+
+
 void PathProc::ConfigNodesHeading(float *head_array, int &array_size)
 {
 	nodes_heading_.clear();
@@ -551,6 +564,58 @@ void PathProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& co
 		cur_route_.seg_list.push_back(coordinator->segs_vector[i]);
 	}
 	cout<<"seg_num: "<<seg_num<<endl;
+
+	HandleRecvRoute();
+	get_coordinator_flag = true;
+}
+
+void PathProc::HandleRecvRoute(void)
+{
+	int micro_seg_num = 1;
+
+	AddTargetNode2KneeNodes(cur_route_.target_id);
+	DecomposeRoute(cur_route_.seg_list, knee_nodes_, micro_seg_num);
+	
+	if(micro_seg_num != 1)
+	{
+		if(robot_nav_state_.achieve_flag && (inc_seg_flag == false))
+		{
+			sub_seg_index++;
+			inc_seg_flag = true;
+			robot_cmd_.clr_achieve_target = 1;
+			robot_nav_state_.achieve_flag = false;
+		}
+		else
+		{
+			robot_cmd_.clr_achieve_target = 0;
+			
+		}
+		if(sub_seg_index >= micro_seg_num)
+		{
+			sub_seg_index = micro_seg_num - 1; 
+			cout<<"Exception sub_seg_index "<<endl;
+		}
+
+		CatSeg2Route(sub_route_vec_[sub_seg_index]);
+		
+	}
+	else
+	{
+		if(robot_nav_state_.achieve_flag)
+		{
+			robot_cmd_.clr_achieve_target = 1;
+		}
+		else
+		{
+			robot_cmd_.clr_achieve_target = 0;
+		}
+
+		CatSeg2Route(cur_route_);
+		
+	}
+	StdNavPath(route_map_);
+	FillMarkerPose(cur_route_);
+
 }
 
 bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver_line)
