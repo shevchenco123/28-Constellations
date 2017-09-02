@@ -75,7 +75,8 @@ class planner
 		path_point gravaton;
 		vector<path_point> path_pruned_array;
 
-		nav_msgs::Path plan_path_;
+		ros::Subscriber sub4nav_path;
+
 
 		planner();
 		~planner();
@@ -89,6 +90,7 @@ class planner
 
 		bool ExecMonoPlanAndGravaton(planner &plannerObj, float* start_pos, float* goal_pos, unsigned int &start_index,unsigned int &gravaton_index);
 		bool PrunePath(vector<path_point> &path_pruned_array, vector<path_point> &path_array, float* cur_robot_state);
+		void SubNavPathCallback(const nav_msgs::Path::ConstPtr & path);
 
 	
 	private:

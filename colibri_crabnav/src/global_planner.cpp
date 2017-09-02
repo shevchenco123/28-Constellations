@@ -35,6 +35,8 @@ planner::planner()
 	gravaton.y = 0.0;
 	gravaton.yaw = 0.0;
 
+	sub4nav_path = nh_planner.subscribe<nav_msgs::Path>("/nav_path", 1, &planner::SubNavPathCallback, this);
+
 }
 
 planner::~planner()
@@ -230,6 +232,11 @@ bool planner::ExecMonoPlanAndGravaton(planner&plannerObj,float* start_pos, float
 	cout<<"init gravaton_index : "<<gravaton_index<<endl;
 
 	return obtain_path;
+}
+
+void planner::SubNavPathCallback(const nav_msgs::Path::ConstPtr & path)
+{
+
 }
 
 
