@@ -174,7 +174,7 @@ int main(int argc, char* argv[])
 			cout<<"plannerObj.gravaton.x: " << plannerObj.gravaton.x <<endl;
 			cout<<"plannerObj.gravaton.y: " << plannerObj.gravaton.y <<endl;
 			cout<<"local4navObj.amcl_cur_state.x: " << local4navObj.amcl_cur_state[0] <<endl;
-			cout<<"local4navObj.amcl_cur_state.y: " << local4navObj.amcl_cur_state[0] <<endl;
+			cout<<"local4navObj.amcl_cur_state.y: " << local4navObj.amcl_cur_state[1] <<endl;
 
 			cout<<"dir_goal_in_laser: " << dir_goal_in_laser <<endl;
 			

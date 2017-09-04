@@ -259,6 +259,9 @@ void planner::SubNavPathCallback(const nav_msgs::Path::ConstPtr & path)
 			path_array.push_back(tmp_path_point);
 
 		}
+		route_end[0] = path_array.back().x;
+		route_end[1] = path_array.back().y;	
+
 		get_path_flag = true;
 		rec_path_cnt++;
 		if(rec_path_cnt >= GET_MAX_PATH_CNT) // every 100ms to get a path 

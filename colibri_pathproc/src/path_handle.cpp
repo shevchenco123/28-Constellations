@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
 	PathProc pathProcObj;
 
-	int sp_nodes[] = {3, 5, 7};
+	int sp_nodes[] = {3, 4, 11, 12, 14, 15, 16, 17, 33, 20, 21, 22, 28, 30, 31, 23, 25, 26};
 
 	int cnt_nodes = sizeof(sp_nodes) / sizeof(int);
 	pathProcObj.InitKneeNodes(sp_nodes, cnt_nodes);

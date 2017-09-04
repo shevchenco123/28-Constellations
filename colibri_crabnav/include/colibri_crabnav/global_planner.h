@@ -35,6 +35,9 @@
 #define PLAN_INTERVAL 2.0
 #define GET_MAX_PATH_CNT 30
 
+extern float route_end[2];
+
+
 using namespace std;
 
 typedef struct st_path_point

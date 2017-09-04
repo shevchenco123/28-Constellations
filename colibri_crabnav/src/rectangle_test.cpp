@@ -58,7 +58,6 @@ int main(int argc, char* argv[])
 	ros::Rate loop_rate(10);
 
 	vector<coordinator>::iterator it = nodeObj.exist_route_.begin();
-	it++;
 	bool send_nav_node = false;
 	while(ros::ok())
 	{

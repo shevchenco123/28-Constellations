@@ -4,7 +4,7 @@ NavNodeProc::NavNodeProc()
 {
 
 	string path_name;
-	path_name.assign("/home/aiv-2/colibri_ws/src/colibri_crabnav/path/path7.yaml");
+	path_name.assign("/home/aiv-4/colibri_ws/src/colibri_crabnav/path/903_path.yaml");
 
 	ifstream fin_path(path_name.c_str());
 	if(fin_path.fail())
@@ -108,7 +108,7 @@ void NavNodeProc::LoadExistedRoute(void)
 {
 
 	string route_name;
-	route_name.assign("/home/aiv-2/colibri_ws/src/colibri_crabnav/config/tasklist/dbg_route.yaml");
+	route_name.assign("/home/aiv-4/colibri_ws/src/colibri_crabnav/config/tasklist/903_dbg_route.yaml");
 
 	ifstream fin_path(route_name.c_str());
 	if(fin_path.fail())

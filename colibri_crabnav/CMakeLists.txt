@@ -45,22 +45,17 @@ INCLUDE_DIRECTORIES(/usr/local/include)
 link_directories(/usr/local/lib)
 INCLUDE_DIRECTORIES(include/colibri_crabnav/)
 
- add_executable(nav_rvizsinglegoal src/nav_to_point.cpp src/task_mgr.cpp src/global_planner.cpp src/colibri_action.cpp src/colibri_local_nav.cpp 
-    src/colibri_ca.cpp src/PID_controller.cpp)
- target_link_libraries(nav_rvizsinglegoal
-   ${catkin_LIBRARIES}
- )
 
- add_executable(crab_safe_node src/safe_node.cpp src/protect.cpp )
- target_link_libraries(crab_safe_node
-   ${catkin_LIBRARIES}
- )
+ #add_executable(crab_safe_node src/safe_node.cpp src/protect.cpp )
+ #target_link_libraries(crab_safe_node
+ #  ${catkin_LIBRARIES}
+ #)
 
- add_executable(nav_mult_rvizgoal src/nav_to_multipoint.cpp src/task_mgr.cpp src/global_planner.cpp src/colibri_action.cpp src/colibri_local_nav.cpp 
-    src/colibri_ca.cpp src/PID_controller.cpp src/nav_node_proc.cpp)
- target_link_libraries(nav_mult_rvizgoal yaml-cpp
-   ${catkin_LIBRARIES}
- )
+ #add_executable(nav_mult_rvizgoal src/nav_to_multipoint.cpp src/task_mgr.cpp src/global_planner.cpp src/colibri_action.cpp src/colibri_local_nav.cpp 
+ #   src/colibri_ca.cpp src/PID_controller.cpp src/nav_node_proc.cpp)
+ #target_link_libraries(nav_mult_rvizgoal yaml-cpp
+ #  ${catkin_LIBRARIES}
+ #)
 
  add_executable(node_test src/rectangle_test.cpp src/nav_node_proc.cpp)
  target_link_libraries(node_test yaml-cpp
