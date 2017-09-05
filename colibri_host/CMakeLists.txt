@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   rospy
   std_msgs
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -92,7 +93,18 @@ find_package(catkin REQUIRED COMPONENTS
 #   cfg/DynReconf1.cfg
 #   cfg/DynReconf2.cfg
 # )
+add_message_files(
+    FILES
+    NavState.msg
+	Coordinator.msg
+#   Message1.msg
+#   Message2.msg
+)
 
+generate_messages(
+    DEPENDENCIES
+    std_msgs
+)
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -105,7 +117,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES colibri_host
-#  CATKIN_DEPENDS nav_msgs rospy std_msgs
+  CATKIN_DEPENDS nav_msgs rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -124,13 +136,11 @@ include_directories(
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/colibri_host.cpp
 # )
-add_message_files(
-    FILES
-    NavState.msg
-	Coordinator.msg
-#   Message1.msg
-#   Message2.msg
-)
+
+
+
+
+
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure

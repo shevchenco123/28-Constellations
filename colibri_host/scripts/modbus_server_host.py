@@ -12,7 +12,8 @@ import threading
 import random
 import roslib
 import rospy
-from colibri_host.msg import Coordinator, NavState
+from colibri_host.msg import Coordinator
+from colibri_host.msg import NavState
 import modbus_tk
 import modbus_tk.defines as mdef
 from modbus_tk import modbus_tcp
