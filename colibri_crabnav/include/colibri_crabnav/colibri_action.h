@@ -12,6 +12,8 @@
 #define SIGMOID_SLOPE_DEC	10
 #define	SIGMOID_OFFSET_X	0.5
 
+#define SLOW_ROT_ANGLE 30
+
 #define BELL_SIGMA	0.5
 
 #define GRAVATON_NGHBORHD	0.6
@@ -35,19 +37,26 @@ class nav_action
 		float* WaitingAction(float waiting_time, unsigned int* finish_flag);
 		float* StraightMovingAction(float* cur_vx, float* ref_vx, float proc_time);
 
-		float* StillRotatingAction(float* cur_yaw, float* ref_yaw, unsigned int* finish_flag);
+		float* StillRotatingAction(float* cur_yaw, float* ref_yaw, unsigned int* finish_flag);	
+		float* StillRotatingAction(float* cur_yaw, float* ref_yaw, float & angle_bound, unsigned int* finish_flag);
+
+
 		float* CL4StillRotatingAction(float* cur_yaw, float* ref_yaw, unsigned int* finish_flag);
 		
 		float* AdjustMovingDirAction(float* cur_yaw, float* goal_in_laser, float* robot2goal, unsigned int* finish_flag);
 
 		float* ApproachingGoalAction(float* cur_pos, float* goal_pos,float* cur_laser2goal_angle, unsigned int* finish_flag);
 		float* ApproachingGoalAction(float* cur_pos, float* goal_pos, unsigned int* finish_flag);
+		float* ApproachingGoalAction(float* cur_pos, float* goal_pos, float * cur_yaw, float & cur_vx, unsigned int* finish_flag);
+
+
 		float* ApproachingGravatonAction(float* cur_pos, float* cur_vel, float* gravaton_pos,float* cur_laser2gravation_angle, unsigned int finish_flag);
 
 		bool ReachGravatonOK(float *cur_pos, float *cur_gravaton,float &delta_dis);
 
 		float SigmoidFunction(int fcn_dir, float* input);	
 		float UpdownBellFunction(float* input);
+		int	SgnOfData(float* input);
 
 	private:
 

@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
 	point2d_map route_terminator = {0.0, 0.0};
 	int route_terminator_node = 0;
 	navNodeObj.InitNodeAndSegMap(navNodeObj.segs_num_);
+	float tmp_pub_vx = 0.0;
 
 	while (ros::ok())
 	{	
@@ -127,9 +128,9 @@ int main(int argc, char* argv[])
 				// if robot goes to the setting target goal approching radius, set gravaton same as target goal 
 				if(local4navObj.approaching_flag == true)
 				{
-					plannerObj.gravaton.x = navNodeObj.cur_goal[0];
-					plannerObj.gravaton.y = navNodeObj.cur_goal[1];
-					plannerObj.gravaton.yaw = navNodeObj.cur_goal[2];
+					plannerObj.gravaton.x = route_end[0];
+					plannerObj.gravaton.y = route_end[1];
+					plannerObj.gravaton.yaw = 0.0;
 				}
 			}
 
@@ -180,7 +181,7 @@ int main(int argc, char* argv[])
 
 			local4navObj.CalcEuclidDistance(local4navObj.amcl_cur_state, route_end, rt_r2g_dis);	// rt_r2g_dis(robot2goal) is different from tmp_delta_dis(robot2gravaton)	
 			local4navObj.approaching_flag = local4navObj.ReachApprochingAreaOK(&rt_r2g_dis);
-						
+
 			if(turn_adj_flag == 1 && micro_adj_flag == 0)
 			{
 				if(local4navObj.approaching_flag == false)
@@ -190,7 +191,7 @@ int main(int argc, char* argv[])
 				}
 				else
 				{
-					ptr_action_cmd_t = actionObj.ApproachingGoalAction(&local4navObj.amcl_cur_state[0], &route_end[0], &micro_adj_flag);
+					ptr_action_cmd_t = actionObj.ApproachingGoalAction(&local4navObj.amcl_cur_state[0], &route_end[0], &local4navObj.amcl_cur_state[2], tmp_pub_vx, &micro_adj_flag);
 					
 				}
 
@@ -209,11 +210,12 @@ int main(int argc, char* argv[])
 				tt_angle = 0.0;
 				navNodeObj.robot_nav_state_.target_node = 255;
 			}
-	
+
+			float tt = 135.0;
 			if(micro_adj_flag == 1)
 			{
 
-				ptr_action_cmd_t = actionObj.StillRotatingAction(&local4navObj.amcl_cur_state[2], &tt_angle, &adjdir_flag);
+				ptr_action_cmd_t = actionObj.StillRotatingAction(&local4navObj.amcl_cur_state[2],&tt_angle, tt,  &adjdir_flag);
 				if(adjdir_flag == 1)
 				{
 					*ptr_action_cmd_t = 0.0;
@@ -330,7 +332,8 @@ int main(int argc, char* argv[])
 			cout<<"adjdir_flag: " << adjdir_flag <<endl;
 			cout<<"route_end[0]: " << route_end[0]<<endl;
 			cout<<"route_end[1]: " << route_end[1] <<endl;
-
+			
+			tmp_pub_vx = local4navObj.apf_cmd_vel.linear.x;
 
 			
 			if(navNodeObj.clr_achieve_target_ == 1)

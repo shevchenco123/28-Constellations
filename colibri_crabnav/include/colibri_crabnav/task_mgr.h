@@ -116,7 +116,6 @@ class task_mgr
 		
 		bool RecordRvizSubtask();
 		bool RecordRealEnvSubtask();
-
 		bool WriteTasklist();
 		
 		void InitGoalMarkers(visualization_msgs::Marker *marker);
