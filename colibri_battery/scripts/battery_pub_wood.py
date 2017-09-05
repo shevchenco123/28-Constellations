@@ -46,6 +46,7 @@ def chksum_calculate(reserved_list):
 
 def battery_info():
 	global B_C_stt, B_SOC, B_Alarm, B_cycle
+	B_C_stt = -1;
 	pub = rospy.Publisher('battery_info', Battery, queue_size=10)
 	rospy.init_node('battery_pub')
 	rate = rospy.Rate(1)  # 1hz
@@ -64,7 +65,7 @@ def battery_info():
 	send_data_44[13:15] = [0x30, 0x32]
 	send_data_44[15:19] = chksum_calculate(send_data_44[1:15])
 
-	bat_serial = serial.Serial('/dev/ttyUSB0', 9600, parity='N', stopbits=1)
+	bat_serial = serial.Serial('/dev/ttyS5', 9600, parity='N', stopbits=1)
 	# bat_serial.close()
 	print bat_serial.portstr
 	received_date = []
@@ -72,7 +73,7 @@ def battery_info():
 	while not rospy.is_shutdown():
 		bat_serial.timeout = 3
 		# bat_serial.open()
-		#bat_serial.reset_input_buffer()
+		# bat_serial.reset_input_buffer()
 		del received_date[:]
 		bat_serial.write(send_data_42)
 		while True:
@@ -84,7 +85,8 @@ def battery_info():
 					received_date.append(read)
 			except KeyboardInterrupt:
 				break
-		# print len(received_date)
+		print len(received_date)
+		
 		if len(received_date) == 128:
 			B_C_stt = current(''.join(received_date[97:101]))
 			# bat_volt = int(''.join(received_date[101:105]), 16)
@@ -106,14 +108,18 @@ def battery_info():
 		if len(received_date) == 88:
 			B_Alarm = int(''.join(received_date[73:75]), 16)
 
-		batten.Chg_state = B_C_stt
-		batten.SOC = B_SOC
-		batten.Bat_alarm = B_Alarm
-		batten.Bat_cycle = B_cycle
-		rospy.loginfo(batten)
-		pub.publish(batten)
-		rate.sleep()
-
+		try:					
+			batten.Chg_state = B_C_stt
+			batten.SOC = B_SOC
+			batten.Bat_alarm = B_Alarm
+			batten.Bat_cycle = B_cycle
+			rospy.loginfo(batten)
+			pub.publish(batten)
+			rate.sleep()
+		except NameError:
+			print('NameError: ')
+			pass
+			
 
 if __name__ == '__main__':
 	try:
