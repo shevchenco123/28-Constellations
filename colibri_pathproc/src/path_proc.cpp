@@ -101,7 +101,7 @@ PathProc::PathProc()
 	cout<<"Path Segment Num: "<<segs_num_<<endl;
 
 	pub_route_ = nh_route_.advertise<nav_msgs::Path>("/nav_path", 1);
-	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/coordinator", 5, &PathProc::CoordinatorCallBack, this);
+	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/coordinator", 2, &PathProc::CoordinatorCallBack, this);
 	sub_nav_state_ = nh_route_.subscribe<colibri_msgs::NavState>("/nav_state", 1, &PathProc::NavStateCallBack, this);
 	pub_marker_ = nh_route_.advertise<visualization_msgs::Marker>("waypoint_markers", 10);
  	srv4getpath_ = nh_route_.advertiseService("/move_base/make_plan", &PathProc::ExecGetPathSrv, this);

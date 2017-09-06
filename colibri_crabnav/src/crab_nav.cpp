@@ -17,6 +17,10 @@
 //#define CA_LIMIT
 #define NO_LIMIT
 
+#define LOW_VEL 0.15
+#define NORMAL_VEL 0.35
+#define HIGH_VEL 0.6
+
 bool node_shutdown  = false;
 int cnt_null_cmdvel = 0;
 static int rot_escape_flag = 0;
@@ -87,6 +91,9 @@ int main(int argc, char* argv[])
 	int route_terminator_node = 0;
 	navNodeObj.InitNodeAndSegMap(navNodeObj.segs_num_);
 	float tmp_pub_vx = 0.0;
+	int nav_cnt = 0;
+	float ref_vel = 0.6;
+	int length_path = 0;
 
 	while (ros::ok())
 	{	
@@ -107,11 +114,24 @@ int main(int argc, char* argv[])
 			{
 				plannerObj.time_to_refresh = false;
 				index4gravaton = 0;
-				replan_flag = true;
+				replan_flag = true;				
 			}
 			else
 			{	
-				plannerObj.PrunePath(plannerObj.path_pruned_array, plannerObj.path_array, local4navObj.amcl_cur_state);					
+				plannerObj.PrunePath(plannerObj.path_pruned_array, plannerObj.path_array, local4navObj.amcl_cur_state);	
+				length_path = plannerObj.path_array.size() ;
+				if(length_path < 36)
+				{
+					ref_vel = LOW_VEL;
+				}
+				else if(length_path < 80)
+				{
+					ref_vel = NORMAL_VEL;
+				}
+				else
+				{
+					ref_vel = HIGH_VEL;
+				}	
 				// If path replan or robot at gravaton but not in approaching target goal, calc a new gravaton in the existed planned path
 				if((at_gravaton_flag == true && local4navObj.approaching_flag == false)||(replan_flag == true))	
 				{
@@ -152,12 +172,11 @@ int main(int argc, char* argv[])
 			cout<<"local4navObj.amcl_cur_state.y: " << local4navObj.amcl_cur_state[1] <<endl;
 			cout<<"local4navObj.amcl_cur_state.yaw: " << local4navObj.amcl_cur_state[2] <<endl;
 
-			cout<<"dir_goal_in_laser: " << dir_goal_in_laser <<endl;
+			cout<<"local4navObj.cur_robot_vel[0]: "<<local4navObj.cur_robot_vel[0]<<endl;
 			
-			cout<<"scan4caObj.max_passfcn_val: " << scan4caObj.max_passfcn_val <<endl;
 			cout<<"scan4caObj.angle_adj: " << scan4caObj.angle_adj <<endl;
 			
-			cout<<"goal_inlaser_flag: " << goal_inlaser_flag <<endl;	
+			cout<<"ref_vel: " << ref_vel <<endl;	
 
 
 
@@ -165,8 +184,8 @@ int main(int argc, char* argv[])
 			
 			if(goal_inlaser_flag == true)
 			{
-				ori_apf_linear = (V_MAX - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
-				ori_apf_angular = scan4caObj.angle_adj / 120.0;
+				ori_apf_linear = (ref_vel - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
+				ori_apf_angular = scan4caObj.angle_adj / 200.0;
 
 				local4navObj.apf_ctrl_output[0] = local4navObj.LinearVelFilter(&ori_apf_linear, &local4navObj.cur_robot_vel[0]);
 				local4navObj.apf_ctrl_output[1] = local4navObj.AngularVelFilter(&ori_apf_angular, &local4navObj.cur_robot_vel[1]);
@@ -191,7 +210,7 @@ int main(int argc, char* argv[])
 				}
 				else
 				{
-					ptr_action_cmd_t = actionObj.ApproachingGoalAction(&local4navObj.amcl_cur_state[0], &route_end[0], &local4navObj.amcl_cur_state[2], tmp_pub_vx, &micro_adj_flag);
+					ptr_action_cmd_t = actionObj.ApproachingGoalAction(&local4navObj.amcl_cur_state[0], &route_end[0], &local4navObj.amcl_cur_state[2], local4navObj.cur_robot_vel[0], &micro_adj_flag);
 					
 				}
 
@@ -246,10 +265,6 @@ int main(int argc, char* argv[])
 			
 			float tmp_linear = local4navObj.apf_cmd_vel.linear.x;
 			float tmp_angluar = local4navObj.apf_cmd_vel.angular.z;
-
-			cout<<"tmp_linear: " << tmp_linear <<endl;
-			cout<<"tmp_angluar: " << tmp_angluar <<endl;
-
 
 #ifdef LASER_CA_LIMIT
 
@@ -320,7 +335,14 @@ int main(int argc, char* argv[])
 			navNodeObj.robot_nav_state_.cur_x = local4navObj.amcl_cur_state[0];
 			navNodeObj.robot_nav_state_.cur_y = local4navObj.amcl_cur_state[1];
 			navNodeObj.robot_nav_state_.cur_yaw = local4navObj.amcl_cur_state[2];
-			navNodeObj.PubNavState();
+
+			nav_cnt++;
+			if(nav_cnt > 10)
+			{
+				navNodeObj.PubNavState();
+				nav_cnt = 0;
+
+			}
 
 			local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel);
 			

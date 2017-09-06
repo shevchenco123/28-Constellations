@@ -384,42 +384,44 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, float 
 	float delta_gap = 0.5;
 	static float aiv_vx = cur_vx;
 
+	float tmp_g2r = 0.0;
+
 	delta_dis_puv = sqrt(pow(delta_x, 2) + pow(delta_y, 2))/GOAL_NGHBORHD;
-	delta_yaw = atan2(delta_y, delta_x) - (*cur_yaw);
+	delta_yaw = atan2(delta_y, delta_x) * RAD2DEG - (*cur_yaw);
 
 	if(delta_dis_puv > delta_gap)
 	{
 		action4cmd_vel[0] = aiv_vx;
-	}
+	}\
 	else
 	{
 		action4cmd_vel[0] = aiv_vx * delta_dis_puv / delta_gap;
 	}
 
-	action4cmd_vel[1] = delta_yaw / 300;
+	action4cmd_vel[1] = delta_yaw / 250;
 
-	cout<<"xxx Approaching action delta_yaw: "<< delta_yaw <<endl;
+	cout<<"------xxx----- Approaching action delta_yaw: "<< delta_yaw <<endl;
 	
-	if(delta_dis_puv > 0.125)	 // 0.1 m  / GOAL_NGHBORHD = 10 /80 = 0.125
+	if(delta_dis_puv > 0.06)	 // 0.1 m  / GOAL_NGHBORHD = 10 /80 = 0.125
 	{
 		*finish_flag = 0;
 	}
 	else
 	{
-		cout<<"Complete the approaching process"<<endl;
+		cout<<"Complete the approaching process: delta_dis: "<< delta_dis_puv*GOAL_NGHBORHD<<endl;
 		action4cmd_vel[0] = 0.0;
 		action4cmd_vel[1] = 0.0;
 		*finish_flag = 1;
 		aiv_vx = 0.0;
 	}
-
+/*
 	if(action4cmd_vel[0] < 0.01) //if vel so small should stop it 
 	{
 		action4cmd_vel[0] = 0.0;
 		action4cmd_vel[1] = 0.0;
 		*finish_flag = 1;
 	}
-
+*/
 	
 	return action4cmd_vel;
 

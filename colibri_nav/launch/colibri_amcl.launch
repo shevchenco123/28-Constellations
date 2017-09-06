@@ -3,7 +3,7 @@
  <include file="$(find colibri_description)/launch/aiv_description.launch"/>
   
   <node pkg="tf" type="static_transform_publisher" name="baselink_to_laser" 
-    args="0.3445 0.0 0.134 0.0 0.0 0.0 /base_link /gmaplaser_frame 40" />
+    args="0.335 0.0 0.134 0.0 0.0 0.0 /base_link /gmaplaser_frame 40" />
   
 
   <!-- Map server -->

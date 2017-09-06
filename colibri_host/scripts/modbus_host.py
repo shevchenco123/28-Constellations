@@ -6,29 +6,22 @@
  (C)2009 - Apidev - http://www.apidev.fr
  This is distributed under GNU LGPL license, see license.txt
 """
-import sys
-import serial
-import threading
-import random
-import roslib
 import rospy
-from colibri_host.msg import Coordinator
-from colibri_host.msg import NavState
+from colibri_msgs.msg import Coordinator, NavState
 import modbus_tk
 import modbus_tk.defines as mdef
 from modbus_tk import modbus_tcp
 from modbus_tk.utils import threadsafe_function, flush_socket, to_data
 import datetime
-import time as sys_time
 from datetime import time as fc_time
 import numpy as np
 
-# PORT = 1
-# PORT = "/dev/ttyUSB0"
+callbk_flag = 1
+
 AIV_ID = 14
 Axis_X = 30
 Axis_Y = 30
-course_theta = 20
+yaw = 20
 Modul_info = 8
 status_IO = 8
 alarm_info = 8
@@ -49,11 +42,8 @@ ID_followup = [2, 3, 4, 5, 6, 7, 8]
 locals_time = datetime.time()
 
 slaver_updata = [AIV_ID, locals_time.second, locals_time.minute, locals_time.hour, \
-				 Axis_X, Axis_Y, course_theta, \
-				 Target_x, Target_y, Target_yaw, \
-				 Modul_info, \
-				 status_IO, \
-				 alarm_info, \
+				 Axis_X, Axis_Y, yaw, Target_x, Target_y, Target_yaw, \
+				 Modul_info, status_IO, alarm_info, \
 				 Task_complt, Current_Task, Previous_Task, Next_Task, Num_finished, \
 				 Target_node, Target_heading, At_target_flag, \
 				 Current_rail, follow_up_Num]
@@ -62,41 +52,32 @@ slaver_updata[23:65] = ID_followup
 server = modbus_tcp.TcpServer(1502, "192.168.11.14")
 slaver = server.add_slave(1)
 logger = modbus_tk.utils.create_logger("console", record_format="%(message)s")
-client_data = [57]
 
 NavState1 = NavState()
-
-'''
-def ROS():
-    pub = rospy.Publisher('Coordinator_info', Coordinator, queue_size=10)
-    rospy.init_node('Coordinator_pub')
-    rate = rospy.Rate(1)  # 1hz
-    Centralserver = Coordinator()
-    rospy.loginfo(Centralserver)
-    pub.publish(Centralserver)
-    rate.sleep()
-'''
 Centralserver = Coordinator()
 
 
 def callback(data):
-	# rospy.loginfo(rospy.get_caller_id() + 'I heard %s', data)
+	print 'callback'
+	global callbk_flag
+	global slaver_updata
+	rospy.loginfo(rospy.get_caller_id() + 'I heard %s', data)
 	Axis_X = int(data.cur_x * 100)
 	Axis_Y = int(data.cur_y * 100)
-	course_theta = int(data.cur_yaw * 100)
+	yaw = int(data.cur_yaw * 100)
 	Target_x = int(data.target_x * 100)
 	Target_y = int(data.target_y * 100)
 	Target_yaw = int(data.target_yaw * 100)
 	Modul_info = data.err_code
-	status_IO = 255
-	Task_complt = data.achieve_flag
+	status_IO = 10
+	Task_complt = int(data.achieve_flag)
 	Target_node = data.target_node
-	Target_heading = data.target_heading
-	At_target_flag = data.at_target_flag
+	Target_heading = int(data.target_heading)
+	At_target_flag = int(data.at_target_flag)
 	Current_rail = data.cur_seg
 	locals_time = datetime.time()
 	slaver_updata = [30, locals_time.second, locals_time.minute, locals_time.hour, \
-					 Axis_X, Axis_Y, course_theta, Target_x, Target_y, Target_yaw, \
+					 Axis_X, Axis_Y, yaw, Target_x, Target_y, Target_yaw, \
 					 Modul_info, \
 					 status_IO, \
 					 alarm_info, \
@@ -104,9 +85,10 @@ def callback(data):
 					 Target_node, Target_heading, At_target_flag, \
 					 Current_rail, follow_up_Num]
 	slaver_updata[23:65] = ID_followup
+	slaver.set_values("slaver_data", 30000, slaver_updata)
 
 
-rospy.init_node('Coordinator_pub')
+rospy.init_node('hostpc_communication_node')
 logger.info("running...")
 rospy.Subscriber('/nav_state', NavState, callback)
 
@@ -116,12 +98,7 @@ def setup():
 	server.start()
 	slaver.add_block("master_data", mdef.HOLDING_REGISTERS, 40000, 100)  # address 0, length 100
 	slaver.add_block("slaver_data", mdef.ANALOG_INPUTS, 30000, 100)
-
-
-# set the values of registers at address 0
-# slaver.set_values("a", 0, range(100))
-# slaver.set_values("a", 0, [14, 24, 34])
-# slave_list.append(slave1)
+	slaver.set_values("slaver_data", 30000, slaver_updata)
 
 
 def loop():
@@ -145,8 +122,9 @@ def loop():
 		pub = rospy.Publisher('/coordinator', Coordinator, queue_size=10)
 		pub.publish(Centralserver)
 
-		rate = rospy.Rate(2)  # 1hz
-		slaver.set_values("slaver_data", 30000, slaver_updata)
+		rate = rospy.Rate(10)  # 1hz
+		# slaver_updata[20] += 10
+
 		rate.sleep()
 	rospy.spin()
 

@@ -50,3 +50,13 @@ add_executable(pub_constvel src/pub_constvel.cpp)
    ${catkin_LIBRARIES}
  )
  
+add_executable(pub_nav_state src/pub_nav_state.cpp)
+  
+ target_link_libraries(pub_nav_state
+   ${catkin_LIBRARIES}
+ )
+
+
+
+
+

@@ -49,7 +49,6 @@ int main(int argc, char *argv[])
 		
 		cout<<"robot_nav_state_.at_target_flag: "<<pathProcObj.robot_nav_state_.at_target_flag<<endl;
 		cout<<"robot_nav_state_.achieve_flag: "<<pathProcObj.robot_nav_state_.achieve_flag<<endl;
-		cout<<"sub_seg_index: "<<sub_seg_index<<endl;
 		ros::spinOnce();	  
 		loop_rate.sleep();
 	}
