@@ -23,7 +23,7 @@ local_nav::local_nav()
 		apf_cmd_vel.linear.x = 0.0;
 		apf_cmd_vel.angular.z = 0.0;
 
-		linear_filter_aplha = 0.3;		// filter factor
+		linear_filter_aplha = 0.4;		// filter factor
 		angular_filter_aplha = 0.2;
 		
 		position_OK_flag = false;

@@ -132,41 +132,45 @@ float* nav_action::StillRotatingAction(float* cur_yaw, float* ref_yaw, unsigned 
 	return action4cmd_vel;
 }
 
-float* nav_action::StillRotatingAction(float* cur_yaw, float* ref_yaw, float & angle_bound, unsigned int* finish_flag)
+float* nav_action::StillRotatingAction(float* cur_yaw, float* ref_yaw, float & angle_vel, unsigned int* finish_flag)
 {
 
 	float yaw_delta = 0.0;
 	float delta_puv = 1;
-	if(abs(*ref_yaw) > angle_bound)  //to handl the +/-180 cross
-	{
-		if(*cur_yaw >= 0.0)
-		{
-			yaw_delta = (*ref_yaw - *cur_yaw);
-		}
-		else
-		{
-			yaw_delta = (*ref_yaw + *cur_yaw);		
-		}
-		
+	int rot_dir = 1;
 
+	float tmp_diff = *ref_yaw - *cur_yaw;
+	
+	if(tmp_diff > 180)
+	{
+		yaw_delta = 360 - tmp_diff;
+		rot_dir = -1;
+	}
+	else if(tmp_diff < -180)
+	{
+		yaw_delta = 360 + tmp_diff;
+		rot_dir = 1;
 	}
 	else
 	{
-		yaw_delta = (*ref_yaw - *cur_yaw);
+		yaw_delta = tmp_diff;
+		rot_dir = 1;
 	}
+
+	yaw_delta = yaw_delta * rot_dir;
 
 	action4cmd_vel[0] = 0.0;
 
 	if(abs(yaw_delta) > SLOW_ROT_ANGLE)
 	{
 
-		action4cmd_vel[1] = PI / 2.0 * SgnOfData(&yaw_delta);			
+		action4cmd_vel[1] = angle_vel * SgnOfData(&yaw_delta);			
 	}
 	else
 	{
 		delta_puv = abs(yaw_delta/SLOW_ROT_ANGLE);
 
-		action4cmd_vel[1] = PI / 2.0 * SgnOfData(&yaw_delta) * SigmoidFunction(1, &delta_puv);	
+		action4cmd_vel[1] = angle_vel * SgnOfData(&yaw_delta) * SigmoidFunction(1, &delta_puv);	
 
 	}
 
@@ -382,7 +386,7 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, float 
 	float delta_x = *goal_pos - *cur_pos;
 	float delta_y = *(goal_pos + 1) - *(cur_pos + 1);
 	float delta_gap = 0.5;
-	static float aiv_vx = cur_vx;
+	static float aiv_vx = 0.15;
 	float anlge_diff = 0;
 	float tmp_r2g = 0.0;
 
@@ -405,7 +409,7 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, float 
 
 	cout<<"------xxx----- Approaching action delta_yaw: "<< delta_yaw <<endl;
 	
-	if(delta_dis_puv > 0.06)	 // 0.1 m  / GOAL_NGHBORHD = 10 /80 = 0.125
+	if(delta_dis_puv > 0.125)	 // 0.1 m  / GOAL_NGHBORHD = 10 /80 = 0.125
 	{
 		*finish_flag = 0;
 	}
@@ -415,7 +419,7 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, float 
 		action4cmd_vel[0] = 0.0;
 		action4cmd_vel[1] = 0.0;
 		*finish_flag = 1;
-		aiv_vx = 0.0;
+		//aiv_vx = 0.0;
 	}
 /*
 	if(action4cmd_vel[0] < 0.01) //if vel so small should stop it 

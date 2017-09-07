@@ -54,7 +54,7 @@ path:
   seg15_heading: 180
   seg16_property: [17, 16, 17]
   seg16_vector: [546, 493, 498, 493]
-  seg16_heading: 0
+  seg16_heading: 180
   seg17_property: [18, 17, 33]
   seg17_vector: [498, 493, 414, 493]
   seg17_heading: 180

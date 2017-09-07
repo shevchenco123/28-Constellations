@@ -184,6 +184,10 @@ int main(int argc, char* argv[])
 			if(goal_inlaser_flag == true)
 			{
 				ori_apf_linear = (ref_vel - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
+				if(abs(scan4caObj.angle_adj) <= 3)
+				{
+					scan4caObj.angle_adj = 0; //clear the quake
+				}
 				ori_apf_angular = scan4caObj.angle_adj / 150.0;
 
 				local4navObj.apf_ctrl_output[0] = local4navObj.LinearVelFilter(&ori_apf_linear, &local4navObj.cur_robot_vel[0]);
@@ -215,25 +219,25 @@ int main(int argc, char* argv[])
 
 			}
 						
-			float tt_angle;
+			float terminal_angle;
 			route_terminator.x = route_end[0];
 			route_terminator.y = route_end[1];
 			if(navNodeObj.NavPose2NavNode(route_terminator, route_terminator_node))
 			{
-				tt_angle = navNodeObj.node_head_map_[route_terminator_node];
+				terminal_angle = navNodeObj.node_head_map_[route_terminator_node];
 				navNodeObj.robot_nav_state_.target_node = route_terminator_node;
 			}
 			else
 			{
-				tt_angle = 0.0;
+				terminal_angle = 0.0;
 				navNodeObj.robot_nav_state_.target_node = 255;
 			}
 
-			float tt = 135.0;
+			float angle_vel = PI / 2.0;		
 			if(micro_adj_flag == 1)
 			{
 
-				ptr_action_cmd_t = actionObj.StillRotatingAction(&local4navObj.amcl_cur_state[2],&tt_angle, tt,  &adjdir_flag);
+				ptr_action_cmd_t = actionObj.StillRotatingAction(&local4navObj.amcl_cur_state[2],&terminal_angle, angle_vel,  &adjdir_flag);
 				if(adjdir_flag == 1)
 				{
 					*ptr_action_cmd_t = 0.0;
