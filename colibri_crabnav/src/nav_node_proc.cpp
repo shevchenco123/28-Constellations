@@ -93,7 +93,7 @@ NavNodeProc::NavNodeProc()
 	clr_achieve_target_ = 0;
 	target_node_ = 0;
 
-	pub_nav_state_ = nh_nav_node_.advertise<colibri_msgs::NavState>("/modbus_data_info", 1);
+	pub_nav_state_ = nh_nav_node_.advertise<colibri_msgs::NavState>("/nav_state", 1);
 	sub_robot_cmd_ = nh_nav_node_.subscribe<colibri_msgs::RobotCmd>("/robot_cmd", 1, &NavNodeProc::RobotCmdCallBack, this);
 	sub_node_id_ = nh_nav_node_.subscribe<colibri_msgs::NavNode>("/nav_node", 1, &NavNodeProc::NavNodeCallBack, this);
 
