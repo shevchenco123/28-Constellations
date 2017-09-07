@@ -62,18 +62,18 @@ def callback(data):
 	global callbk_flag
 	global slaver_updata
 	rospy.loginfo(rospy.get_caller_id() + 'I heard %s', data)
-	Axis_X = int(data.cur_x * 100)
-	Axis_Y = int(data.cur_y * 100)
-	yaw = int(data.cur_yaw * 100)
-	Target_x = int(data.target_x * 100)
-	Target_y = int(data.target_y * 100)
-	Target_yaw = int(data.target_yaw * 100)
-	Modul_info = data.err_code
+	Axis_X = np.int16(data.cur_x * 100)
+	Axis_Y = np.int16(data.cur_y * 100)
+	yaw = np.int16(data.cur_yaw * 100)
+	Target_x = np.int16(data.target_x * 100)
+	Target_y = np.int16(data.target_y * 100)
+	Target_yaw = np.int16(data.target_yaw * 100)
+	Modul_info = np.int16(data.err_code)
 	status_IO = 10
-	Task_complt = int(data.achieve_flag)
+	Task_complt = np.int16(data.achieve_flag)
 	Target_node = data.target_node
-	Target_heading = int(data.target_heading)
-	At_target_flag = int(data.at_target_flag)
+	Target_heading = np.int16(data.target_heading)
+	At_target_flag = np.int16(data.at_target_flag)
 	Current_rail = data.cur_seg
 	locals_time = datetime.time()
 	slaver_updata = [30, locals_time.second, locals_time.minute, locals_time.hour, \

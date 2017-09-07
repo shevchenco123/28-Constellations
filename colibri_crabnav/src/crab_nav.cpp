@@ -91,7 +91,6 @@ int main(int argc, char* argv[])
 	int route_terminator_node = 0;
 	navNodeObj.InitNodeAndSegMap(navNodeObj.segs_num_);
 	float tmp_pub_vx = 0.0;
-	int nav_cnt = 0;
 	float ref_vel = 0.6;
 	int length_path = 0;
 
@@ -185,7 +184,7 @@ int main(int argc, char* argv[])
 			if(goal_inlaser_flag == true)
 			{
 				ori_apf_linear = (ref_vel - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
-				ori_apf_angular = scan4caObj.angle_adj / 200.0;
+				ori_apf_angular = scan4caObj.angle_adj / 150.0;
 
 				local4navObj.apf_ctrl_output[0] = local4navObj.LinearVelFilter(&ori_apf_linear, &local4navObj.cur_robot_vel[0]);
 				local4navObj.apf_ctrl_output[1] = local4navObj.AngularVelFilter(&ori_apf_angular, &local4navObj.cur_robot_vel[1]);
@@ -336,13 +335,8 @@ int main(int argc, char* argv[])
 			navNodeObj.robot_nav_state_.cur_y = local4navObj.amcl_cur_state[1];
 			navNodeObj.robot_nav_state_.cur_yaw = local4navObj.amcl_cur_state[2];
 
-			nav_cnt++;
-			if(nav_cnt > 10)
-			{
-				navNodeObj.PubNavState();
-				nav_cnt = 0;
 
-			}
+			navNodeObj.PubNavState();
 
 			local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel);
 			

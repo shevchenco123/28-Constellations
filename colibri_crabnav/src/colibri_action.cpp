@@ -383,16 +383,19 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, float 
 	float delta_y = *(goal_pos + 1) - *(cur_pos + 1);
 	float delta_gap = 0.5;
 	static float aiv_vx = cur_vx;
-
-	float tmp_g2r = 0.0;
+	float anlge_diff = 0;
+	float tmp_r2g = 0.0;
 
 	delta_dis_puv = sqrt(pow(delta_x, 2) + pow(delta_y, 2))/GOAL_NGHBORHD;
-	delta_yaw = atan2(delta_y, delta_x) * RAD2DEG - (*cur_yaw);
+	tmp_r2g = atan2(delta_y, delta_x) * RAD2DEG;
+
+	CalcMicroRotAngle(tmp_r2g, *cur_yaw, anlge_diff);
+
 
 	if(delta_dis_puv > delta_gap)
 	{
 		action4cmd_vel[0] = aiv_vx;
-	}\
+	}
 	else
 	{
 		action4cmd_vel[0] = aiv_vx * delta_dis_puv / delta_gap;
@@ -433,6 +436,34 @@ float* nav_action::ApproachingGravatonAction(float* current_pos, float* current_
 {
 
 }
+
+int nav_action::CalcMicroRotAngle(float & r2g, float & heading, float & diff_angle)
+{
+	int diff_angle_property = 0;
+	float tmp_diff = r2g - heading;
+	diff_angle = 0.0;
+	if(tmp_diff > 180)
+	{
+		diff_angle = 360 - tmp_diff;
+		diff_angle_property = -1;
+
+	}
+	else if(tmp_diff < -180)
+	{
+		diff_angle = 360 + tmp_diff;
+		diff_angle_property = 1;
+
+	}
+	else
+	{
+		diff_angle = tmp_diff;
+		diff_angle_property = 0;
+	}
+
+	return diff_angle_property;
+	
+}
+
 
 bool nav_action::ReachGravatonOK(float *cur_pos, float *cur_gravaton, float &delta_dis)
 {

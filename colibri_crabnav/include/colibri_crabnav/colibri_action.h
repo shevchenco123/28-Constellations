@@ -62,6 +62,7 @@ class nav_action
 
 		ros::Time time_stamp;
 		ros::Time time_stamp_start;
+		int CalcMicroRotAngle(float & r2g, float & heading, float & diff_angle);
 
 		
 };
