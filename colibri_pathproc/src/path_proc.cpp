@@ -196,6 +196,18 @@ void PathProc::CalcAllPointsInSegs(void)
 	
 }
 
+void PathProc::Seg2LengthMap(void)
+{
+	int tmp_length = 0;
+	seg_length_map_.clear();
+	
+	for(vector<segment>::iterator it = vec_seg_.begin(); it != vec_seg_.end(); ++it)
+	{
+		tmp_length = (*it).points_map.size();
+		seg_length_map_.insert(pair<int, int>((*it).seg_id, tmp_length));
+	}
+}
+
 void PathProc::Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &points_map)
 {
 	point2d_map tmp;
@@ -458,6 +470,12 @@ bool PathProc::NavPixValid(point2d_pix &pix_uv)
 		return true;
 	}
 }
+
+int PathProc::CalcRobotOnCurSeg(pose & cur_pose, vector<route_list> cur_route)
+{
+
+}
+
 
 
 void PathProc::MakeNodeSegMap(vector<float> &vec_heading)

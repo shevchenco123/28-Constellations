@@ -145,6 +145,7 @@ class PathProc{
 		map<int, int> node_seg_map_;
 		map<int, int> seg_node_map_;
 		map<int, float> node_heading_map_;
+		map<int, int> seg_length_map_;
 
 		vector<int> knee_nodes_;
 		vector<float> nodes_heading_;
@@ -172,7 +173,10 @@ class PathProc{
 		bool ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPlan::Response & res);
 		int FillMarkerPose(route_list & route);
 		void FillRobotCmd(void);
-		void HandleRecvRoute(void);	
+		void HandleRecvRoute(void);
+		int CalcRobotOnCurSeg(pose & cur_pose, vector<route_list> cur_route);
+		void Seg2LengthMap(void);
+
 		
 
 	private:

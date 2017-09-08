@@ -41,7 +41,6 @@ int main(int argc, char* argv[])
 	ros::Subscriber sub4NavState;
 	ros::Publisher pub4Coordinator;
 	ros::Publisher pub4Robot_cmd;
-	ros::Publisher pub4NavNode;
 
 	colibri_msgs::NavNode cur_node;
 
@@ -53,7 +52,6 @@ int main(int argc, char* argv[])
 	sub4NavState = nh_test.subscribe<colibri_msgs::NavState>("/nav_state", 5, NavStateCallback);
 	pub4Coordinator = nh_test.advertise<colibri_msgs::Coordinator>("/coordinator", 1);
 	pub4Robot_cmd = nh_test.advertise<colibri_msgs::RobotCmd>("/robot_cmd", 1);
-	pub4NavNode = nh_test.advertise<colibri_msgs::NavNode>("/nav_node", 1);
 
 	ros::Rate loop_rate(10);
 
@@ -73,7 +71,6 @@ int main(int argc, char* argv[])
 		if(send_nav_node == false)
 		{
 			cur_node.node_id = it->target_node;
-			pub4NavNode.publish(cur_node);
 			send_nav_node = true;
 		}
 		else
