@@ -203,7 +203,7 @@ void PathProc::Seg2LengthMap(void)
 	
 	for(vector<segment>::iterator it = vec_seg_.begin(); it != vec_seg_.end(); ++it)
 	{
-		tmp_length = (*it).points_map.size();
+		tmp_length = (*it).points_map.size() - 1;
 		seg_length_map_.insert(pair<int, int>((*it).seg_id, tmp_length));
 	}
 }
@@ -471,11 +471,65 @@ bool PathProc::NavPixValid(point2d_pix &pix_uv)
 	}
 }
 
-int PathProc::CalcRobotOnCurSeg(pose & cur_pose, vector<route_list> cur_route)
+int PathProc::CalcRobotOnCurSeg(point2d_map & cur_pose, route_list &cur_route, vector<point2d_map> & straight_path)
 {
+	int path_total_len = straight_path.size();
+	vector<float> delta_dis;
+	delta_dis.reserve(path_total_len);
+	int cur_seg = cur_route.seg_list.at(0);
+	
+	float delta_x, delta_y, delta_distance;
 
+	for(vector<point2d_map>::iterator it = straight_path.begin(); it != straight_path.end(); ++it)
+	{
+		delta_x = it->x - cur_pose.x;
+		delta_y = it->y - cur_pose.y;
+		delta_distance = sqrt(pow(delta_x, 2) + pow(delta_y, 2));
+		delta_dis.push_back(delta_distance);
+	}
+
+	vector<float>::iterator it_min = min_element(delta_dis.begin(), delta_dis.end());
+	int gap = distance(delta_dis.begin(), it_min);
+
+	vector<int> stairs_len;
+	int seg_index_cnt = 0;
+
+	CalcLengthStairs(cur_route.seg_list, stairs_len);
+
+	for(vector<int>::iterator it = stairs_len.begin(); it != stairs_len.end(); ++it)
+	{
+		if(gap < *it)
+		{
+			cur_seg = cur_route.seg_list.at(seg_index_cnt);
+			break;
+		}
+		
+		seg_index_cnt++;
+	}
+
+	return cur_seg;
 }
 
+void PathProc::CalcLengthStairs(vector<int> & path_seg_id, vector<int> &len_stairs)
+{
+	int path_seg_num = path_seg_id.size();
+	len_stairs.reserve(path_seg_num);
+	int acc_len = 0;
+	vector<int> tmp_len_vec;
+	tmp_len_vec.reserve(path_seg_num);
+
+	for(vector<int>::iterator it = path_seg_id.begin(); it != path_seg_id.end(); ++it)
+	{
+		tmp_len_vec.push_back(seg_length_map_[*it]);	
+	}
+
+	for(vector<int>::iterator it_len = tmp_len_vec.begin(); it_len != tmp_len_vec.end(); ++it_len)
+	{
+		acc_len = accumulate(tmp_len_vec.begin(), it_len, tmp_len_vec.front());
+		len_stairs.push_back(acc_len);
+	}
+
+}
 
 
 void PathProc::MakeNodeSegMap(vector<float> &vec_heading)
@@ -631,6 +685,7 @@ void PathProc::HandleRecvRoute(void)
 		CatSeg2Route(cur_route_);
 		
 	}
+	
 	StdNavPath(route_map_);
 	FillMarkerPose(cur_route_);
 

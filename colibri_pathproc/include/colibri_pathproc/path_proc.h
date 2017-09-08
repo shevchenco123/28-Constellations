@@ -12,6 +12,7 @@
 #include <map>
 #include <utility>
 #include <sstream>
+#include <numeric>
 
 #include <ros/ros.h>
 
@@ -174,7 +175,7 @@ class PathProc{
 		int FillMarkerPose(route_list & route);
 		void FillRobotCmd(void);
 		void HandleRecvRoute(void);
-		int CalcRobotOnCurSeg(pose & cur_pose, vector<route_list> cur_route);
+		int CalcRobotOnCurSeg(point2d_map & cur_pose, route_list &cur_route, vector<point2d_map> &straight_path);
 		void Seg2LengthMap(void);
 
 		
@@ -186,8 +187,7 @@ class PathProc{
 		void NavStateCallBack(const colibri_msgs::NavState::ConstPtr& nav_state);
 		bool NavPixValid(point2d_pix &pix_uv);
 		bool MapPose2NavNode(point2d_map & pose, int & rev_node_id);
-
-			
+		void CalcLengthStairs(vector<int> & path_seg_id, vector<int> &len_stairs);			
 
 };
 
