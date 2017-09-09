@@ -67,8 +67,6 @@ NavNodeProc::NavNodeProc()
 		exit(-1);
 	}
 
-	test_var = 0;
-
 
 	cur_nav_node_ = 255;	//if node_id ==255 means no nav node to go shoule stop immediately
 	obtain_goal_flag = false;
@@ -88,14 +86,21 @@ NavNodeProc::NavNodeProc()
 	robot_nav_state_.cur_yaw = 0.0;
 	robot_nav_state_.err_code = 0;
 
-	basic_ctrl_ = 0;
-	clr_at_target_ = 0;
-	clr_achieve_target_ = 0;
-	target_node_ = 0;
+	aiv_cmd_.target_node = 0;
+	aiv_cmd_.clr_at_target = 0;
+	aiv_cmd_.clr_achieve_target = 0;
+	aiv_cmd_.basic_ctrl = 0;
+	aiv_cmd_.cur_seg = 255;
+	aiv_cmd_.pre_situated_node = 255;
+	aiv_cmd_.task_succ_flag = 0;
+	aiv_cmd_.music_mode = 255;
+	aiv_cmd_.screen_mode = 255;
+
+	
 
 	pub_nav_state_ = nh_nav_node_.advertise<colibri_msgs::NavState>("/nav_state", 1);
 	sub_robot_cmd_ = nh_nav_node_.subscribe<colibri_msgs::RobotCmd>("/robot_cmd", 1, &NavNodeProc::RobotCmdCallBack, this);
-	sub_node_id_ = nh_nav_node_.subscribe<colibri_msgs::NavNode>("/nav_node", 1, &NavNodeProc::NavNodeCallBack, this);
+	//sub_node_id_ = nh_nav_node_.subscribe<colibri_msgs::NavNode>("/nav_node", 1, &NavNodeProc::NavNodeCallBack, this);
 
 }
 
@@ -229,9 +234,10 @@ bool NavNodeProc::PubNavState(void)
 	nav_sta.header.frame_id = "robot";
 	nav_sta.target_node = robot_nav_state_.target_node;
 	nav_sta.target_heading = robot_nav_state_.target_heading;
-	nav_sta.cur_seg = test_var;
+	nav_sta.cur_seg = aiv_cmd_.cur_seg;
 	nav_sta.at_target_flag = robot_nav_state_.at_target_flag;
 	nav_sta.achieve_flag = robot_nav_state_.achieve_flag;
+	nav_sta.task_succ_flag = aiv_cmd_.task_succ_flag;
 	nav_sta.target_x = robot_nav_state_.target_x;
 	nav_sta.target_y = robot_nav_state_.target_y;
 	nav_sta.target_yaw = robot_nav_state_.target_yaw;
@@ -239,7 +245,6 @@ bool NavNodeProc::PubNavState(void)
 	nav_sta.cur_y = robot_nav_state_.cur_y;
 	nav_sta.cur_yaw = robot_nav_state_.cur_yaw;
 	nav_sta.err_code = robot_nav_state_.err_code;
-	test_var++;
 	
 	pub_nav_state_.publish(nav_sta);
 
@@ -333,11 +338,17 @@ bool NavNodeProc::NavNode2NavPose()
 
 void NavNodeProc::RobotCmdCallBack(const colibri_msgs::RobotCmd::ConstPtr& cmd)
 {
+	aiv_cmd_.target_node = int (cmd->target_node);
+	aiv_cmd_.clr_at_target = int (cmd->clr_at_target);
+	aiv_cmd_.clr_achieve_target = int (cmd->clr_achieve_target);
+	aiv_cmd_.basic_ctrl = int (cmd->basic_ctrl);
 
-	basic_ctrl_ = int (cmd->basic_ctrl);
-	clr_at_target_ = int (cmd->clr_at_target);
-	clr_achieve_target_ = int (cmd->clr_achieve_target);
-	target_node_ = int (cmd->target_node);
+	aiv_cmd_.cur_seg = int (cmd->cur_seg);
+	aiv_cmd_.pre_situated_node = int (cmd->pre_situated_node);
+	aiv_cmd_.task_succ_flag = int (cmd->task_succ_flag);
+	aiv_cmd_.music_mode = int (cmd->music_mode);
+	aiv_cmd_.screen_mode = int (cmd->screen_mode);
+
 }
 
 void NavNodeProc::Quaternion2Yaw(const geometry_msgs::PoseStamped &pose, float &yaw)

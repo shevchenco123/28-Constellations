@@ -107,6 +107,7 @@ def loop():
 		# slaver.set_values("c", 0, [1, 0, 1, 0, 1, 1])
 		client_data = slaver.get_values("master_data", 40000, 60)
 		time_client = fc_time(client_data[1], client_data[2], client_data[3])
+		
 		Centralserver.basic_ctrl = np.int8(client_data[4])
 		# node = oct(client_data[5])
 		Centralserver.target_node = np.int8(client_data[5])
@@ -115,7 +116,7 @@ def loop():
 		Centralserver.route_segs_num = np.int8(client_data[7])
 		Centralserver.segs_vector = client_data[8:58]
 		# get local time
-		rospy.loginfo(' segs_vector %s', Centralserver.segs_vector)
+		#rospy.loginfo(' segs_vector %s', Centralserver.segs_vector)
 		Centralserver.header.stamp = rospy.Time.now()
 		Centralserver.header.frame_id = 'hostpc'
 		# rospy.loginfo(Centralserver)

@@ -1,6 +1,6 @@
 #include "path_proc.h"
 
-bool get_coordinator_flag = false; 
+bool get_coordinator_flag = false;
 
 PathProc::PathProc()
 {
@@ -96,6 +96,12 @@ PathProc::PathProc()
 
 	cur_route_.target_id = 0;
 	cur_route_.target_heading = 0.0;
+	cur_seg_ = 255;
+	micro_seg_num_ = 1;
+	task_switch_ = false;
+
+	sub_seg_index_cache_ = 255;
+
 
 	cout<<"Load map: "<<map_name_<<endl;
 	cout<<"Path Segment Num: "<<segs_num_<<endl;
@@ -103,9 +109,10 @@ PathProc::PathProc()
 	pub_route_ = nh_route_.advertise<nav_msgs::Path>("/nav_path", 1);
 	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/coordinator", 2, &PathProc::CoordinatorCallBack, this);
 	sub_nav_state_ = nh_route_.subscribe<colibri_msgs::NavState>("/nav_state", 1, &PathProc::NavStateCallBack, this);
-	pub_marker_ = nh_route_.advertise<visualization_msgs::Marker>("waypoint_markers", 10);
- 	srv4getpath_ = nh_route_.advertiseService("/move_base/make_plan", &PathProc::ExecGetPathSrv, this);
+	pub_marker_ = nh_route_.advertise<visualization_msgs::Marker>("waypoint_markers", 2);
+ 	//srv4getpath_ = nh_route_.advertiseService("/move_base/make_plan", &PathProc::ExecGetPathSrv, this);
 	pub_robot_cmd_ = nh_route_.advertise<colibri_msgs::RobotCmd>("/robot_cmd", 1);
+	//pub_task_state_ = nh_route_.advertise<colibri_msgs::TaskState>("/task_state", 1);
 
 }
 
@@ -153,10 +160,28 @@ int PathProc::FillMarkerPose(route_list & route)
 	return goalmark_list_.points.size();
 }
 
+/*
+void PathProc::FillTaskState(void)
+{
+
+	task_state_.cur_seg = cur_seg_;
+	task_state_.pre_node = 255;
+	task_state_.nav_task_node = cur_route_.target_id;
+	if(sub_seg_index == (micro_seg_num_ - 1) && robot_nav_state_.achieve_flag == true)
+	{
+		task_state_.task_succ_flag = 1;
+	}
+	else
+	{
+		task_state_.task_succ_flag = 0;
+	}
+
+	task_state_.rsvd = 255;
+}
+*/
+
 void PathProc::FillRobotCmd(void)
 {
-	robot_cmd_.header.stamp = ros::Time::now();
-	robot_cmd_.header.frame_id = "robot";
 	robot_cmd_.target_node = cur_route_.target_id ;
 	
 	if(robot_nav_state_.at_target_flag == true)
@@ -170,6 +195,20 @@ void PathProc::FillRobotCmd(void)
 	}
 
 	robot_cmd_.basic_ctrl = basic_ctrl_;
+	robot_cmd_.cur_seg = cur_seg_;
+	robot_cmd_.pre_situated_node = 255;
+	
+	if(sub_seg_index_cache_ == (micro_seg_num_ - 1) && robot_nav_state_.achieve_flag == true)
+	{
+		robot_cmd_.task_succ_flag = 1;
+	}
+	else
+	{
+		robot_cmd_.task_succ_flag = 0;
+	}
+
+	robot_cmd_.music_mode = 255;
+	robot_cmd_.screen_mode = 255; 
 }
 
 
@@ -286,7 +325,7 @@ bool PathProc::DecomposeRoute(vector<int> &seg_list, vector<int> &check_nodes, i
 	return true;
 	
 }
-
+/*
 bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPlan::Response & res)
 {
 
@@ -384,7 +423,7 @@ bool PathProc::ExecGetPathSrv(nav_msgs::GetPlan::Request & req, nav_msgs::GetPla
 	return true;
 	
 }
-
+*/
 
 bool PathProc::StdNavPath(vector<point2d_map> &nav_path)
 {
@@ -496,6 +535,10 @@ int PathProc::CalcRobotOnCurSeg(point2d_map & cur_pose, route_list &cur_route, v
 
 	CalcLengthStairs(cur_route.seg_list, stairs_len);
 
+	cout<<"cur_route.seg_list size:  "<<cur_route.seg_list.size()<<endl;
+	cout<<"stairs_len size:  "<<stairs_len.size()<<endl;
+	cout<<"gap:  "<<gap<<endl;
+
 	for(vector<int>::iterator it = stairs_len.begin(); it != stairs_len.end(); ++it)
 	{
 		if(gap < *it)
@@ -506,6 +549,7 @@ int PathProc::CalcRobotOnCurSeg(point2d_map & cur_pose, route_list &cur_route, v
 		
 		seg_index_cnt++;
 	}
+	cur_seg_ = cur_seg;
 
 	return cur_seg;
 }
@@ -603,6 +647,7 @@ void PathProc::NavStateCallBack(const colibri_msgs::NavState::ConstPtr& nav_stat
 	robot_nav_state_.cur_seg = nav_state->cur_seg;
 	robot_nav_state_.at_target_flag = nav_state->at_target_flag;
 	robot_nav_state_.achieve_flag = nav_state->achieve_flag;
+	robot_nav_state_.task_succ_flag = nav_state->task_succ_flag;
 	robot_nav_state_.target.x = nav_state->target_x;
 	robot_nav_state_.target.y = nav_state->target_y;
 	robot_nav_state_.target.yaw = nav_state->target_yaw;
@@ -631,24 +676,55 @@ void PathProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& co
 	cur_route_.target_id = coordinator->target_node;
 	cur_route_.target_heading = coordinator->target_heading;
 	seg_num = coordinator->route_segs_num;
-	for(int i = 0; i < seg_num; i++)
+	if(seg_num == 0)
 	{
-		cur_route_.seg_list.push_back(coordinator->segs_vector[i]);
+		return;
 	}
+	else
+	{
+		for(int i = 0; i < seg_num; i++)
+		{
+			cur_route_.seg_list.push_back(coordinator->segs_vector[i]);
+		}
+		HandleRecvRoute();
+		get_coordinator_flag = true;
+		
+		if(last_task_node != cur_route_.target_id)
+		{
+			task_switch_ = true;
+		}
+		else
+		{
+			task_switch_ = false;
+		}
+		last_task_node =  cur_route_.target_id;
+
+	}
+
 	cout<<"seg_num: "<<seg_num<<endl;
 
-	HandleRecvRoute();
-	get_coordinator_flag = true;
+	
+}
+
+void PathProc::ClearFlags4NextTask(void)
+{
+	if(task_switch_ == true)
+	{
+		sub_seg_index = 0;
+		inc_seg_flag = false;
+		micro_seg_num_ = 1;
+		task_switch_ = false;
+	}
+	
 }
 
 void PathProc::HandleRecvRoute(void)
 {
-	int micro_seg_num = 1;
 
 	AddTargetNode2KneeNodes(cur_route_.target_id);
-	DecomposeRoute(cur_route_.seg_list, knee_nodes_, micro_seg_num);
+	DecomposeRoute(cur_route_.seg_list, knee_nodes_, micro_seg_num_);
 	
-	if(micro_seg_num != 1)
+	if(micro_seg_num_ != 1)
 	{
 		if(robot_nav_state_.achieve_flag && (inc_seg_flag == false))
 		{
@@ -662,13 +738,15 @@ void PathProc::HandleRecvRoute(void)
 			robot_cmd_.clr_achieve_target = 0;
 			
 		}
-		if(sub_seg_index >= micro_seg_num)
+		if(sub_seg_index >= micro_seg_num_)
 		{
-			sub_seg_index = micro_seg_num - 1; 
+			sub_seg_index = micro_seg_num_ - 1; 
 			cout<<"Exception sub_seg_index "<<endl;
 		}
 
 		CatSeg2Route(sub_route_vec_[sub_seg_index]);
+		cout<<"sub_seg_index In handle:"<<sub_seg_index<<endl;
+		cout<<"micro_seg_num_ In handle:"<<micro_seg_num_<<endl;
 		
 	}
 	else
@@ -685,7 +763,8 @@ void PathProc::HandleRecvRoute(void)
 		CatSeg2Route(cur_route_);
 		
 	}
-	
+
+	sub_seg_index_cache_ = sub_seg_index;
 	StdNavPath(route_map_);
 	FillMarkerPose(cur_route_);
 

@@ -21,6 +21,7 @@
 #include "colibri_msgs/Coordinator.h"
 #include "colibri_msgs/NavState.h"
 #include "colibri_msgs/RobotCmd.h"
+#include "colibri_msgs/TaskState.h"
 #include "geometry_msgs/PoseStamped.h"
 #include <visualization_msgs/Marker.h>
 #include "geometry_msgs/Pose.h"
@@ -32,7 +33,10 @@ extern string taskpath;
 extern ofstream  file1; 
 
 extern bool get_coordinator_flag;
+static int last_task_node = 255;
 
+static int sub_seg_index = 0;
+static bool inc_seg_flag = false;
 
 #define MANUAL_PATH
 //#define REC_PATH
@@ -87,6 +91,7 @@ typedef struct st_nav_state{
 	int cur_seg;
 	bool at_target_flag;
 	bool achieve_flag;
+	int task_succ_flag;
 	pose target;
 	pose robot;
 	int err_code;
@@ -113,8 +118,6 @@ bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver
 bool BresenhamBasic(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
 bool CalcPixesInLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
 
-static int sub_seg_index = 0;
-static bool inc_seg_flag = false;
 
 class PathProc{
 
@@ -126,11 +129,13 @@ class PathProc{
 		ros::Publisher pub_route_;
 		ros::Publisher pub_marker_;
 		ros::Publisher pub_robot_cmd_;
+		ros::Publisher pub_task_state_;
 		
 		ros::ServiceServer srv4getpath_;
 
 		visualization_msgs::Marker  goalmark_list_;
 		colibri_msgs::RobotCmd robot_cmd_;
+		int  micro_seg_num_;
 		
 		string map_name_;
 		float map_origin_[3];
@@ -153,11 +158,18 @@ class PathProc{
 		vector<float> segs_heading_;
 
 		nav_state robot_nav_state_;
+		colibri_msgs::TaskState task_state_;
+		int cur_seg_;
 		
 		int basic_ctrl_;
 		nav_msgs::Path plan_path_;
 		int parsed_node_;
 		bool req4path_flag;
+		
+		bool task_switch_;
+
+		int sub_seg_index_cache_;
+
 
 		PathProc();
 		~PathProc();
@@ -177,8 +189,8 @@ class PathProc{
 		void HandleRecvRoute(void);
 		int CalcRobotOnCurSeg(point2d_map & cur_pose, route_list &cur_route, vector<point2d_map> &straight_path);
 		void Seg2LengthMap(void);
-
-		
+		//void FillTaskState(void);	
+		void ClearFlags4NextTask(void);
 
 	private:
 		void Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &points_map);

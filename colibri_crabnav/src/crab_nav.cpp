@@ -356,7 +356,7 @@ int main(int argc, char* argv[])
 			tmp_pub_vx = local4navObj.apf_cmd_vel.linear.x;
 
 			
-			if(navNodeObj.clr_achieve_target_ == 1)
+			if(navNodeObj.aiv_cmd_.clr_achieve_target == 1)
 			{
 				micro_adj_flag = 0;
 				adjdir_flag = 0;

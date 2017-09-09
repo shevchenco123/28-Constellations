@@ -4,6 +4,7 @@ float32 target_heading
 int8 cur_seg
 bool at_target_flag
 bool achieve_flag
+int8 task_succ_flag
 float32 target_x
 float32 target_y
 float32 target_yaw

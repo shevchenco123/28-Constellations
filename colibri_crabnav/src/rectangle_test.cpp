@@ -49,9 +49,9 @@ int main(int argc, char* argv[])
 	nodeObj.InitNodeAndSegMap(nodeObj.segs_num_);
 	nodeObj.LoadExistedRoute();
 
-	sub4NavState = nh_test.subscribe<colibri_msgs::NavState>("/nav_state", 5, NavStateCallback);
+	//sub4NavState = nh_test.subscribe<colibri_msgs::NavState>("/nav_state", 1, NavStateCallback);
 	pub4Coordinator = nh_test.advertise<colibri_msgs::Coordinator>("/coordinator", 1);
-	pub4Robot_cmd = nh_test.advertise<colibri_msgs::RobotCmd>("/robot_cmd", 1);
+	//pub4Robot_cmd = nh_test.advertise<colibri_msgs::RobotCmd>("/robot_cmd", 1);
 
 	ros::Rate loop_rate(10);
 
@@ -104,6 +104,7 @@ void Init(void)
 
 	cur_nav_state.at_target_flag= false;
 	cur_nav_state.achieve_flag = false;
+	cur_nav_state.task_succ_flag = 0;
 
 }
 void NavStateCallback(const colibri_msgs::NavState::ConstPtr & nav_state)
@@ -124,6 +125,8 @@ void NavStateCallback(const colibri_msgs::NavState::ConstPtr & nav_state)
 
 	cur_nav_state.at_target_flag= nav_state->at_target_flag;
 	cur_nav_state.achieve_flag = nav_state->achieve_flag;
+
+	cur_nav_state.task_succ_flag = nav_state->task_succ_flag;
 
 }
 
@@ -149,12 +152,15 @@ void FillCoordinator(const coordinator & coord)
 
 void FillRobotCmd(void)
 {
-	robot_cmd.header.stamp = ros::Time::now();
-	robot_cmd.header.frame_id = "robot";
 	robot_cmd.target_node = 0;
 	robot_cmd.clr_at_target = 0;
 	robot_cmd.clr_achieve_target = 0;
-	robot_cmd.basic_ctrl = 0;
+	robot_cmd.basic_ctrl = 0;		
+	robot_cmd.cur_seg = 255;
+	robot_cmd.pre_situated_node = 255;
+	robot_cmd.task_succ_flag = 255;
+	robot_cmd.music_mode = 255;
+	robot_cmd.screen_mode = 255;
 
 }
 

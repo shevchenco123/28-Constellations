@@ -78,6 +78,7 @@ typedef struct st_nav_state{
 	int cur_seg;
 	bool at_target_flag;
 	bool achieve_flag;
+	int task_succ_flag;
 	pose target;
 	pose robot;
 	int err_code;
@@ -99,6 +100,20 @@ typedef struct st_coordinator
 	int route_seg_num;
 	int seg_array[MAX_SEG_NUM];
 }coordinator;
+
+typedef struct st_robot_cmd
+{
+	int target_node;
+	int clr_at_target;
+	int clr_achieve_target;
+	int basic_ctrl;
+	int cur_seg;
+	int pre_situated_node;
+	int task_succ_flag;
+	int music_mode;
+	int screen_mode;
+}handled_cmd;
+
 
 class NavNodeProc{
 
@@ -125,13 +140,9 @@ class NavNodeProc{
 		int cur_nav_node_;
 		float cur_goal[POS_DIM];
 		bool obtain_goal_flag;
-		
-		int basic_ctrl_;
-		int clr_at_target_;
-		int clr_achieve_target_;
-		int target_node_;
-		
-		int test_var;
+
+		handled_cmd aiv_cmd_;
+			
 
 		vector<coordinator> exist_route_;
 		int exist_route_num_;
