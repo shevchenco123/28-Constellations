@@ -32,7 +32,7 @@ IO_status = 8
 alarm_info = 8
 
 task_finish_flag = 0
-cur_task_id = 255
+cur_task_id = 128
 pre_task_id = 0
 next_task_id = 0
 executed_cnt = 0
@@ -91,7 +91,7 @@ def callback(data):
 
 rospy.init_node('host_comm_node')
 logger.info("running...")
-rospy.Subscriber('/nav_state', NavState, callback)
+#rospy.Subscriber('/nav_state', NavState, callback)
 
 
 def setup():

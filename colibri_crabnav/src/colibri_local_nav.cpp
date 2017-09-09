@@ -3,20 +3,20 @@
 local_nav::local_nav()
 {	
 		//memset(goal_state, 0, POS_DIM);
-		goal_state[0] = -2.55;
-		goal_state[1] = -2.45;
+		goal_state[0] = -10.0;
+		goal_state[1] = -10.0;
 		goal_state[2] = 90.0;
 			
 		memset(robot_init_state, 0, POS_DIM);
 		memset(cur_robot_state, 0, POS_DIM);
 		memset(last_robot_state, 0, POS_DIM);
 
-		memset(amcl_cur_state, 0, POS_DIM);//store the linear vel and angular vel
+		amcl_cur_state[0] = -0.4;
+		amcl_cur_state[0] = -0.0;
+		amcl_cur_state[0] = 180;
 
 		memset(cur_robot_vel, 0, VEL_DIM);//store the linear vel and angular vel
 		memset(last_robot_vel, 0, VEL_DIM);
-
-
 		
 		memset(apf_ctrl_output, 0, VEL_DIM);
 
@@ -31,7 +31,7 @@ local_nav::local_nav()
 		approaching_flag = false;
 
 		sub_carto_odom = nh_nav.subscribe<nav_msgs::Odometry>("/odom", 1, &local_nav::CartoOdomCallBack, this);
-		pub_apf_twist = nh_nav.advertise<geometry_msgs::Twist>("/tt_cmd_vel", 1);
+		pub_apf_twist = nh_nav.advertise<geometry_msgs::Twist>("/t_cmd_vel", 1);
 
 		sub_amcl_pose = nh_nav.subscribe<geometry_msgs::PoseWithCovarianceStamped>("/amcl_pose", 1, &local_nav::AmclPoseCallBack, this);
 
