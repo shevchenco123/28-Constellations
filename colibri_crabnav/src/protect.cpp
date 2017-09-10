@@ -503,7 +503,7 @@ bool protector::CalcCrabLaserCA(int &laser_encoder, range_finder & laser, safe_s
 				safe_laser.steer = 0;
 				break;
 				
-			case 6: 	//
+			case 6: 	// in 1.6m 
 				safe_laser.linear_up_vel= CRAB_MIN_LINEAR_VEL;
 				safe_laser.angular_up_vel = CRAB_MIN_ANGULAR_VEL;
 				safe_laser.area_state = 2;
@@ -516,6 +516,12 @@ bool protector::CalcCrabLaserCA(int &laser_encoder, range_finder & laser, safe_s
 				safe_laser.area_state = 3;
 				safe_laser.steer = 0;
 				break;
+			case 0: 	// out of the rectangle
+				safe_laser.linear_up_vel= CRAB_MAX_LINEAR_VEL;
+				safe_laser.angular_up_vel = CRAB_MAX_ANGULAR_VEL;
+				safe_laser.area_state = 0;
+				safe_laser.steer = 0;
+				break;	
 			default:
 				safe_laser.linear_up_vel= CRAB_STOP_LINEAR_VEL;
 				safe_laser.angular_up_vel = CRAB_STOP_ANGULAR_VEL;
@@ -583,6 +589,7 @@ bool protector::LocateInRecArea(float &rec_width, float &rec_height, float &x, f
 	}
 }
 
+//Calc the rectangle bound map into a polar frame theta-rho relation for 180 points
 map<int, float> protector::Rect2Polar(float &width, float &height)
 {
 	map<int, float> rho;

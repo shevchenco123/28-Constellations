@@ -6,7 +6,7 @@
     args="0.335 0.0 0.134 0.0 0.0 0.0 /base_link /gmaplaser_frame 40" />
   
   <!-- Map server -->
-  <arg name="map_file" default="$(find colibri_nav)/maps/903_mdf.yaml"/>
+  <arg name="map_file" default="$(find colibri_nav)/maps/hf910_mdf.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
   <arg name="initial_pose_x" default="0.0"/>

@@ -107,7 +107,8 @@ def loop():
 		# slaver.set_values("a", 40000, [1, 2, 3, 4, 5, 6, 7, 8])
 		# slaver.set_values("c", 0, [1, 0, 1, 0, 1, 1])
 		client_data = slaver.get_values("master_data", 40000, 60)
-		time_client = fc_time(client_data[1], client_data[2], client_data[3])
+		print client_data
+		time_client = fc_time(client_data[3], client_data[2], client_data[1])
 		
 		host2robot_info.basic_ctrl = np.int8(client_data[4])
 		# node = oct(client_data[5])
