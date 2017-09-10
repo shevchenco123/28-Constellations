@@ -31,7 +31,7 @@ local_nav::local_nav()
 		approaching_flag = false;
 
 		sub_carto_odom = nh_nav.subscribe<nav_msgs::Odometry>("/odom", 1, &local_nav::CartoOdomCallBack, this);
-		pub_apf_twist = nh_nav.advertise<geometry_msgs::Twist>("/t_cmd_vel", 1);
+		pub_apf_twist = nh_nav.advertise<geometry_msgs::Twist>("/tt_cmd_vel", 1);
 
 		sub_amcl_pose = nh_nav.subscribe<geometry_msgs::PoseWithCovarianceStamped>("/amcl_pose", 1, &local_nav::AmclPoseCallBack, this);
 
