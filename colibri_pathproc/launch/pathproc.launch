@@ -1,6 +1,6 @@
 <launch>
   <arg name="path_file" default="$(find colibri_pathproc)/routes/gm903_routes.yaml"/>
-  <node pkg="colibri_pathproc" type="pathproc_node" name="path_proc_node" output="screen" args="$(arg path_file)" >
+  <node pkg="colibri_pathproc" type="path_handle_node" name="path_handle_node" output="screen" args="$(arg path_file)" >
   </node>
   
 </launch>

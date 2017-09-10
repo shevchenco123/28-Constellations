@@ -17,26 +17,6 @@ if(NEW_YAMLCPP_FOUND)
 	add_definitions(-DHAVE_NEW_YAMLCPP) 
 endif(NEW_YAMLCPP_FOUND)
 
-## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
-
-## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
-
-## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
 
 ###################################
 ## catkin specific configuration ##
@@ -57,8 +37,8 @@ link_directories(/usr/local/lib)
 
 INCLUDE_DIRECTORIES(include/colibri_pathproc)
 
-add_executable(pathproc_node src/path_proc_test.cpp src/path_proc.cpp)
-target_link_libraries(pathproc_node yaml-cpp ${catkin_LIBRARIES})
+#add_executable(pathproc_node src/path_proc_test.cpp src/path_proc.cpp)
+#target_link_libraries(pathproc_node yaml-cpp ${catkin_LIBRARIES})
 
 
 add_executable(path_handle_node src/path_handle.cpp src/path_proc.cpp)
