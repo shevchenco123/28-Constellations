@@ -7,7 +7,7 @@ PathProc::PathProc()
 
 #ifdef MANUAL_PATH
 	string path_name;
-	path_name.assign("/home/aiv-4/colibri_ws/src/colibri_pathproc/routes/gm903_path.yaml");
+	path_name.assign("/home/aiv-4/colibri_ws/src/colibri_pathproc/routes/gm903_routes.yaml");
 #else
 	string path_name(taskpath);
 #endif
