@@ -18,7 +18,9 @@ int main(int argc, char *argv[])
 	
 	ros::Rate loop_rate(10);
 	
-#ifndef MANUAL_PATH
+#ifdef MANUAL_PATH
+
+#else
 	taskpath.assign(argv[1]);
 	cout<<"Load YAML Name: "<<taskpath<<endl;
 #endif

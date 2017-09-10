@@ -5,12 +5,11 @@ bool get_coordinator_flag = false;
 PathProc::PathProc()
 {
 
-#ifndef MANUAL_PATH
-	string path_name(taskpath);
-
-#else
+#ifdef MANUAL_PATH
 	string path_name;
 	path_name.assign("/home/aiv-4/colibri_ws/src/colibri_pathproc/path/903_path.yaml");
+#else
+	string path_name(taskpath);
 #endif
 
 	ifstream fin_path(path_name.c_str());
