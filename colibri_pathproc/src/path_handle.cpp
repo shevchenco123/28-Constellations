@@ -7,7 +7,8 @@
 #include "path_proc.h"
 
 using namespace std;
-string taskpath;
+string routes_path;
+string sp_nodes_path;
 ofstream  file1; 
 
 int main(int argc, char *argv[])
@@ -21,18 +22,18 @@ int main(int argc, char *argv[])
 #ifdef MANUAL_PATH
 
 #else
-	taskpath.assign(argv[1]);
-	cout<<"Load YAML Name: "<<taskpath<<endl;
+	routes_path.assign(argv[1]);
+	sp_nodes_path.assign(argv[2]);
+	cout<<"Load Routes YAML Name: "<<routes_path<<endl;
+	cout<<"Load Special Nodes YAML Name: "<<sp_nodes_path<<endl;
 #endif
 
 	PathProc pathProcObj;
 
-	int sp_nodes[] = {3, 4, 11, 12, 14, 15, 16, 17, 33, 20, 21, 22, 28, 30, 31, 23, 25, 26};
 	point2d_map cur_robot = {0.0, 0.0};
-	int cur_seg = 255;
+	int cur_seg = 127;
 
-	int cnt_nodes = sizeof(sp_nodes) / sizeof(int);
-	pathProcObj.InitKneeNodes(sp_nodes, cnt_nodes);
+	pathProcObj.InitKneeNodes();
 
 	pathProcObj.MakeNodeSegMap();
 	pathProcObj.CalcAllPointsInSegs();

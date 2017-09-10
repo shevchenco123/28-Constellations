@@ -9,7 +9,7 @@ PathProc::PathProc()
 	string path_name;
 	path_name.assign("/home/aiv-4/colibri_ws/src/colibri_pathproc/routes/gm903_routes.yaml");
 #else
-	string path_name(taskpath);
+	string path_name(routes_path);
 #endif
 
 	ifstream fin_path(path_name.c_str());
@@ -619,6 +619,48 @@ void PathProc::InitKneeNodes(int *node_array, int &array_size)
 	{
 		knee_nodes_.push_back(*(node_array + i));
 	}
+}
+
+void PathProc::InitKneeNodes(void)
+{
+	
+#ifdef MANUAL_PATH
+	string path_name;
+	path_name.assign("/home/aiv-4/colibri_ws/src/colibri_pathproc/routes/gm903_sp_nodes.yaml");
+#else
+	string path_name(sp_nodes_path);
+#endif
+
+	knee_nodes_.clear();	
+	vector<int> ().swap(knee_nodes_);
+
+	ifstream fin_path(path_name.c_str());
+	if(fin_path.fail())
+	{
+		cout<<"sp_nodes yaml file can not open in parse the yaml argv in proc"<<endl;
+		exit(-1);
+	}
+
+	YAML::Node doc_path = YAML::Load(fin_path);
+	try 
+	{ 
+		int sp_nodes_num = 0;
+		int tmp_node_id = 127;
+		doc_path["special_nodes"]["sp_nodes_num"] >> sp_nodes_num;
+		
+		for(int node_index = 0; node_index < sp_nodes_num; node_index++)
+		{
+			doc_path["special_nodes"]["sp_nodes_id"][node_index] >> tmp_node_id;
+			knee_nodes_.push_back(tmp_node_id);
+		}
+	
+	}
+	catch (YAML::InvalidScalar) 
+	{ 
+		cout<<"The sp_nodes yaml does not contain an origin tag or it is invalid."<<endl;
+		exit(-1);
+	}
+
 }
 
 

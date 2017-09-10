@@ -29,7 +29,8 @@
 #include <nav_msgs/GetPlan.h>
 
 using namespace std;
-extern string taskpath;
+extern string routes_path;
+extern string sp_nodes_path;
 extern ofstream  file1; 
 
 extern bool get_coordinator_flag;
@@ -176,6 +177,7 @@ class PathProc{
 		void InitMarkers(void);
 		void ConfigNodesHeading(float *head_array, int &array_size);
 		void InitKneeNodes(int *node_array, int &array_size);
+		void InitKneeNodes(void);
 		bool AddTargetNode2KneeNodes(int &target_node);
 		void CalcAllPointsInSegs(void);
 		void CatSeg2Route(route_list &route);
