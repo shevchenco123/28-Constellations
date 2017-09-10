@@ -534,10 +534,6 @@ int PathProc::CalcRobotOnCurSeg(point2d_map & cur_pose, route_list &cur_route, v
 
 	CalcLengthStairs(cur_route.seg_list, stairs_len);
 
-	cout<<"cur_route.seg_list size:  "<<cur_route.seg_list.size()<<endl;
-	cout<<"stairs_len size:  "<<stairs_len.size()<<endl;
-	cout<<"gap:  "<<gap<<endl;
-
 	for(vector<int>::iterator it = stairs_len.begin(); it != stairs_len.end(); ++it)
 	{
 		if(gap < *it)

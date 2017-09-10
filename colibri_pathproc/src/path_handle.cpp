@@ -53,8 +53,6 @@ int main(int argc, char *argv[])
 			pathProcObj.pub_route_.publish(pathProcObj.plan_path_);
 
 			cur_seg = pathProcObj.CalcRobotOnCurSeg(cur_robot, pathProcObj.sub_route_vec_[pathProcObj.sub_seg_index_cache_], pathProcObj.route_map_);
-			cout<<"sub_seg_index: "<<sub_seg_index<<endl;
-			cout<< "pathProcObj.route_map_.size: "<<pathProcObj.route_map_.size()<<endl;
 			pathProcObj.FillRobotCmd();
 			
 		}
