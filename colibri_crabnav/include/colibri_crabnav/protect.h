@@ -89,7 +89,6 @@
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-
 using namespace std;
 
 typedef enum
@@ -181,7 +180,7 @@ class protector
 		vector< map<int, float> > vec_rect_polar;
 		bitset<SAFE_RECT_NUM> rect_encoder;
 
-
+		
 		protector();
 		
 		~protector();
@@ -223,6 +222,7 @@ class protector
 		bool LocateInRecArea(float &rec_x, float &rec_y, float &x, float &y);
 
 };
+
 
 #endif
 

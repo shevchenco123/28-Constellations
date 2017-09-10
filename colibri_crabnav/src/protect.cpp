@@ -40,7 +40,7 @@ protector::protector()
 	rectangle[1].height = 1.6;
 	rectangle[2].width = 0.8;
 	rectangle[2].height = 3.0;
-	
+
 	scan_sub4safe = nh_safety.subscribe<sensor_msgs::LaserScan>("/scan", 1, &protector::CrabScanSafeCallBack, this);
 
 	ultra_sub4safe = nh_safety.subscribe<colibri_ultra::Ultrasonic>("/ultra_front", 1, &protector::UltraSafeCallBack, this);
