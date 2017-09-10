@@ -13,7 +13,7 @@ ofstream  file1;
 int main(int argc, char *argv[])
 {
 
-	ros::init(argc, argv, "path_handle_node");
+	ros::init(argc, argv, "Path_Handle_Node");
 	ros::NodeHandle nh;
 	
 	ros::Rate loop_rate(10);
