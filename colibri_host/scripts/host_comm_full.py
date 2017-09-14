@@ -39,12 +39,12 @@ IO_status = 8
 alarm_info = 8
 
 task_finish_flag = 0
-cur_task_id = 127
+cur_task_id = 0
 pre_task_id = 0
 next_task_id = 0
 executed_cnt = 0
 
-target_node = 255
+target_node = 0
 target_heading = 0
 at_target_flag = 0
 
@@ -68,10 +68,10 @@ logger = modbus_tk.utils.create_logger("console", record_format="%(message)s")
 
 host2robot_info = Coordinator()
 
-def getsign(data)
-	if data < 0
-		return 255
-	else
+def getsign(data):
+	if data < 0:
+		return 0
+	else:
 		return 1
 
 
@@ -97,7 +97,7 @@ def callback(data):
 	target_heading = np.int16(data.target_heading)
 	at_target_flag = np.int16(data.at_target_flag)
 	cur_seg_id = data.cur_seg
-	followup_seg_num = 127
+	followup_seg_num = 60
 	cur_time = datetime.time()
 
 	robot2host_info = [robot_id, cur_time.second, cur_time.minute, cur_time.hour, \
@@ -112,11 +112,11 @@ def callback(data):
 	
 	slaver.set_values("slaver_data", 30000, robot2host_info)
 
-	print robot2host_info
+	print robot2host_info[19:27]
 
 rospy.init_node('host_comm_node')
 logger.info("running...")
-#rospy.Subscriber('/nav_state', NavState, callback)
+rospy.Subscriber('/nav_state', NavState, callback)
 
 
 def setup():
@@ -132,7 +132,7 @@ def loop():
 		# slaver.set_values("a", 40000, [1, 2, 3, 4, 5, 6, 7, 8])
 		# slaver.set_values("c", 0, [1, 0, 1, 0, 1, 1])
 		client_data = slaver.get_values("master_data", 40000, 60)
-		time_client = fc_time(client_data[1], client_data[2], client_data[3])
+		time_client = fc_time(client_data[3], client_data[2], client_data[1])
 		
 		host2robot_info.basic_ctrl = np.int8(client_data[4])
 		# node = oct(client_data[5])
@@ -146,10 +146,10 @@ def loop():
 		host2robot_info.header.stamp = rospy.Time.now()
 		host2robot_info.header.frame_id = 'hostpc'
 		# rospy.loginfo(host2robot_info)
-		pub = rospy.Publisher('/coordinator', Coordinator, queue_size=3)
+		pub = rospy.Publisher('/coordinator', Coordinator, queue_size=2)
 		pub.publish(host2robot_info)
 
-		rate = rospy.Rate(10)  
+		rate = rospy.Rate(5)  
 		rate.sleep()
 
 	rospy.spin()

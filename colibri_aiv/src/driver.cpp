@@ -526,7 +526,7 @@ void AIV_Driver::ReadInfoProc(unsigned char buf[], boost::system::error_code ec,
 					odom_pub.publish(odom);
 					
 					ROS_INFO("virtual x/y/yaw: %0.3lfm %0.3lfm %0.2lfdeg", cartodom_x, cartodom_y, cartodom_yaw * RAD2DEG);
-					ROS_INFO("virtual vx/vth: %0.3lfm/s  %0.2lfrad/s",aiv_vx,cartodom_vth);
+					//ROS_INFO("virtual vx/vth: %0.3lfm/s  %0.2lfrad/s",aiv_vx,cartodom_vth);
 
 					AIV_Driver::req_vel_start_finish = false; 
 				}

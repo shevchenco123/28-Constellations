@@ -88,27 +88,32 @@ PathProc::PathProc()
 	robot_nav_state_.err_code = 0;
 
 	robot_cmd_.target_node = 0;
-	robot_cmd_.clr_at_target = 0;
-	robot_cmd_.clr_achieve_target = 0;
+	robot_cmd_.clr_at_target = 1;
+	robot_cmd_.clr_achieve_target = 1;
 	robot_cmd_.basic_ctrl = 0;
+	robot_cmd_.cur_seg = 1;
+	robot_cmd_.pre_situated_node = 0;
+	robot_cmd_.task_succ_flag = 1;
+	robot_cmd_.music_mode = 127;
+	robot_cmd_.screen_mode = 127;
 
 
 	cur_route_.target_id = 0;
 	cur_route_.target_heading = 0.0;
-	cur_seg_ = 255;
+	cur_seg_ = 1;
 	micro_seg_num_ = 1;
 	task_switch_ = false;
 
-	sub_seg_index_cache_ = 255;
+	sub_seg_index_cache_ = 1;
 
 
 	cout<<"Load map: "<<map_name_<<endl;
 	cout<<"Path Segment Num: "<<segs_num_<<endl;
 
 	pub_route_ = nh_route_.advertise<nav_msgs::Path>("/nav_path", 1);
-	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/coordinator", 2, &PathProc::CoordinatorCallBack, this);
+	sub_coodinator_ = nh_route_.subscribe<colibri_msgs::Coordinator>("/coordinator", 1, &PathProc::CoordinatorCallBack, this);
 	sub_nav_state_ = nh_route_.subscribe<colibri_msgs::NavState>("/nav_state", 1, &PathProc::NavStateCallBack, this);
-	pub_marker_ = nh_route_.advertise<visualization_msgs::Marker>("waypoint_markers", 2);
+	pub_marker_ = nh_route_.advertise<visualization_msgs::Marker>("waypoint_markers", 1);
  	//srv4getpath_ = nh_route_.advertiseService("/move_base/make_plan", &PathProc::ExecGetPathSrv, this);
 	pub_robot_cmd_ = nh_route_.advertise<colibri_msgs::RobotCmd>("/robot_cmd", 1);
 	//pub_task_state_ = nh_route_.advertise<colibri_msgs::TaskState>("/task_state", 1);
@@ -181,6 +186,8 @@ void PathProc::FillTaskState(void)
 
 void PathProc::FillRobotCmd(void)
 {
+	static int confirm_cnt = 0;
+
 	robot_cmd_.target_node = cur_route_.target_id ;
 	
 	if(robot_nav_state_.at_target_flag == true)
@@ -195,19 +202,33 @@ void PathProc::FillRobotCmd(void)
 
 	robot_cmd_.basic_ctrl = basic_ctrl_;
 	robot_cmd_.cur_seg = cur_seg_;
-	robot_cmd_.pre_situated_node = 255;
+	robot_cmd_.pre_situated_node = 127;
 	
-	if(sub_seg_index_cache_ == (micro_seg_num_ - 1) && robot_nav_state_.achieve_flag == true)
+	if(sub_seg_index_cache_ == (micro_seg_num_ - 1)) 
 	{
-		robot_cmd_.task_succ_flag = 1;
+		if(robot_nav_state_.achieve_flag == true)
+		{
+			confirm_cnt ++;
+		}
+		
+		if(confirm_cnt > 25)
+		{
+			robot_cmd_.task_succ_flag = 1;
+			confirm_cnt = 0;
+		}
+		else
+		{
+		
+		}
+		
 	}
 	else
 	{
 		robot_cmd_.task_succ_flag = 0;
 	}
 
-	robot_cmd_.music_mode = 255;
-	robot_cmd_.screen_mode = 255; 
+	robot_cmd_.music_mode = 127;
+	robot_cmd_.screen_mode = 127; 
 }
 
 
@@ -514,9 +535,19 @@ int PathProc::CalcRobotOnCurSeg(point2d_map & cur_pose, route_list &cur_route, v
 	int path_total_len = straight_path.size();
 	vector<float> delta_dis;
 	delta_dis.reserve(path_total_len);
-	int cur_seg = cur_route.seg_list.at(0);
-	
+	int cur_seg = 1;
+	static int last_cur_seg = 1;
 	float delta_x, delta_y, delta_distance;
+	
+	if(cur_route.seg_list.empty())
+	{
+		cur_seg_ = last_cur_seg;
+		return cur_seg;	
+	}
+	else
+	{
+	
+	}
 
 	for(vector<point2d_map>::iterator it = straight_path.begin(); it != straight_path.end(); ++it)
 	{
@@ -545,6 +576,7 @@ int PathProc::CalcRobotOnCurSeg(point2d_map & cur_pose, route_list &cur_route, v
 		seg_index_cnt++;
 	}
 	cur_seg_ = cur_seg;
+	last_cur_seg = cur_seg_;
 
 	return cur_seg;
 }
@@ -648,6 +680,7 @@ void PathProc::InitKneeNodes(void)
 		{
 			doc_path["special_nodes"]["sp_nodes_id"][node_index] >> tmp_node_id;
 			knee_nodes_.push_back(tmp_node_id);
+			updated_knee_nodes_.push_back(tmp_node_id);
 		}
 	
 	}
@@ -662,10 +695,20 @@ void PathProc::InitKneeNodes(void)
 
 bool PathProc::AddTargetNode2KneeNodes(int &target_node)
 {
+	updated_knee_nodes_.clear();
+	vector<int> ().swap(updated_knee_nodes_);
+	
+	vector<int> tmp_knee(knee_nodes_);
+
+	for(vector<int>::iterator it = tmp_knee.begin(); it != tmp_knee.end(); ++it)
+	{
+		updated_knee_nodes_.push_back(*it);
+	}
+		
 	vector<int>::iterator iElement = find(knee_nodes_.begin(), knee_nodes_.end(), target_node);	
 	if(iElement == knee_nodes_.end())
 	{
-		knee_nodes_.push_back(target_node);	
+		updated_knee_nodes_.push_back(target_node);	
 		return true;
 	}
 	else
@@ -675,9 +718,11 @@ bool PathProc::AddTargetNode2KneeNodes(int &target_node)
 
 }
 
+
 void PathProc::NavStateCallBack(const colibri_msgs::NavState::ConstPtr& nav_state)
 {
 	static int last_target_node = 0;
+	static int rec_flag = false;
 	
 	robot_nav_state_.target_node = nav_state->target_node;
 	robot_nav_state_.target_heading = nav_state->cur_seg;
@@ -695,13 +740,16 @@ void PathProc::NavStateCallBack(const colibri_msgs::NavState::ConstPtr& nav_stat
 
 	if(last_target_node != robot_nav_state_.target_node)
 	{
-		inc_seg_flag = false;
+		new_seg_flag = true;
+	}
+
+	if(new_seg_flag == true && robot_nav_state_.achieve_flag == false)
+	{
+		lock_seg_flag = false;
 	}
 
 	last_target_node = robot_nav_state_.target_node;
-	cout<<"inc_seg_flag : "<<inc_seg_flag<<endl;
 	
-
 }
 
 void PathProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coordinator)
@@ -713,8 +761,10 @@ void PathProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& co
 	cur_route_.target_id = coordinator->target_node;
 	cur_route_.target_heading = coordinator->target_heading;
 	seg_num = coordinator->route_segs_num;
+	
 	if(seg_num == 0)
 	{
+		get_coordinator_flag = false;
 		return;
 	}
 	else
@@ -723,7 +773,6 @@ void PathProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& co
 		{
 			cur_route_.seg_list.push_back(coordinator->segs_vector[i]);
 		}
-		HandleRecvRoute();
 		get_coordinator_flag = true;
 		
 		if(last_task_node != cur_route_.target_id)
@@ -738,56 +787,76 @@ void PathProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& co
 
 	}
 
-	cout<<"seg_num: "<<seg_num<<endl;
+	cout<<"seg_num in Coordinator callback: "<<seg_num<<endl;
 
 	
 }
 
 void PathProc::ClearFlags4NextTask(void)
 {
+	static int delay_cnt = 0;
+	static bool lock_flag = false;
 	if(task_switch_ == true)
 	{
+		lock_flag = true;
+	}
+
+	if((lock_flag == true) && (delay_cnt < 15))
+	{
 		sub_seg_index = 0;
-		inc_seg_flag = false;
+		new_seg_flag = false;
+		lock_seg_flag = false;
 		micro_seg_num_ = 1;
 		task_switch_ = false;
+		robot_cmd_.clr_at_target = 0;
+		robot_cmd_.clr_achieve_target = 1;
+		robot_cmd_.task_succ_flag = 0;
+		sub_seg_index_cache_ = 1;
+		delay_cnt++;
 	}
+	else
+	{
+		delay_cnt = 0;
+		lock_flag = false;
+
+	}
+	
 	
 }
 
 void PathProc::HandleRecvRoute(void)
 {
-
 	AddTargetNode2KneeNodes(cur_route_.target_id);
-	DecomposeRoute(cur_route_.seg_list, knee_nodes_, micro_seg_num_);
+	DecomposeRoute(cur_route_.seg_list, updated_knee_nodes_, micro_seg_num_);
+	cout<<"+++ micro_seg_num_ : "<<micro_seg_num_<<endl;
+	cout<<"--- sub_seg_index : "<<sub_seg_index<<endl;
 	
-	if(micro_seg_num_ != 1)
+	if(micro_seg_num_ > 1)
 	{
-		if(robot_nav_state_.achieve_flag && (inc_seg_flag == false))
+		if(robot_nav_state_.achieve_flag && (lock_seg_flag == false))
 		{
 			sub_seg_index++;
-			inc_seg_flag = true;
+			if(sub_seg_index == micro_seg_num_)
+			{
+				sub_seg_index = micro_seg_num_ - 1;
+			}		
+			lock_seg_flag = true;
 			robot_cmd_.clr_achieve_target = 1;
-			robot_nav_state_.achieve_flag = false;
 		}
 		else
 		{
-			robot_cmd_.clr_achieve_target = 0;
-			
-		}
-		if(sub_seg_index >= micro_seg_num_)
-		{
-			sub_seg_index = micro_seg_num_ - 1; 
-			cout<<"Exception sub_seg_index "<<endl;
+			robot_cmd_.clr_achieve_target = 0;			
 		}
 
-		CatSeg2Route(sub_route_vec_[sub_seg_index]);
-		cout<<"sub_seg_index In handle:"<<sub_seg_index<<endl;
-		cout<<"micro_seg_num_ In handle:"<<micro_seg_num_<<endl;
+		if(sub_seg_index < micro_seg_num_)
+		{
+			CatSeg2Route(sub_route_vec_[sub_seg_index]);
+		}
 		
 	}
 	else
 	{
+		sub_seg_index = 0;
 		if(robot_nav_state_.achieve_flag)
 		{
 			robot_cmd_.clr_achieve_target = 1;
@@ -797,13 +866,13 @@ void PathProc::HandleRecvRoute(void)
 			robot_cmd_.clr_achieve_target = 0;
 		}
 
-		CatSeg2Route(cur_route_);
+		CatSeg2Route(sub_route_vec_[sub_seg_index]);
 		
 	}
 
 	sub_seg_index_cache_ = sub_seg_index;
 	StdNavPath(route_map_);
-	FillMarkerPose(cur_route_);
+
 
 }
 

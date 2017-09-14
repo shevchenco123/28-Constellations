@@ -22,6 +22,7 @@
 #include "geometry_msgs/PoseStamped.h"
 #include "colibri_msgs/NavNode.h"
 
+#include "global_planner.h"
 
 #include "colibri_local_nav.h"
 

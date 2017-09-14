@@ -145,7 +145,7 @@ void FillCoordinator(const coordinator & coord)
 	}
 	for(int j = coord.route_seg_num; j < MAX_SEG_NUM; j++)
 	{
-		coordintor.segs_vector[j] = 255;	// the remain null seg set to be an invalid value 255
+		coordintor.segs_vector[j] = 127;	// the remain null seg set to be an invalid value 255
 	}	
 		
 }
@@ -156,11 +156,11 @@ void FillRobotCmd(void)
 	robot_cmd.clr_at_target = 0;
 	robot_cmd.clr_achieve_target = 0;
 	robot_cmd.basic_ctrl = 0;		
-	robot_cmd.cur_seg = 255;
-	robot_cmd.pre_situated_node = 255;
-	robot_cmd.task_succ_flag = 255;
-	robot_cmd.music_mode = 255;
-	robot_cmd.screen_mode = 255;
+	robot_cmd.cur_seg = 1;
+	robot_cmd.pre_situated_node = 0;
+	robot_cmd.task_succ_flag = 0;
+	robot_cmd.music_mode = 127;
+	robot_cmd.screen_mode = 127;
 
 }
 

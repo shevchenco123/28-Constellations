@@ -293,17 +293,17 @@ bool protector::CalcCrabSafeVelThd(int &laser_encoder,float  &min_scan, int &min
 	{
 		case 4:		// in 3m rectangle
 			*linear_safe = CRAB_MID_LINEAR_VEL;
-			*angular_safe = CRAB_MIN_ANGULAR_VEL;				
+			*angular_safe = CRAB_MAX_ANGULAR_VEL;				
 			break;
 			
 		case 6:		//
 			*linear_safe = CRAB_MIN_LINEAR_VEL;
-			*angular_safe = CRAB_MIN_ANGULAR_VEL;	
+			*angular_safe = CRAB_MAX_ANGULAR_VEL;	
 			break;
 			
 		case 7:		// in 0.5 rectangle
 			*linear_safe = CRAB_STOP_LINEAR_VEL;
-			*angular_safe = CRAB_STOP_ANGULAR_VEL;	
+			*angular_safe = CRAB_MAX_ANGULAR_VEL;	
 			break;	
 			
 		case 0:
@@ -315,7 +315,7 @@ bool protector::CalcCrabSafeVelThd(int &laser_encoder,float  &min_scan, int &min
 			else
 			{
 				*linear_safe = CRAB_MAX_LINEAR_VEL;
-				*angular_safe = CRAB_MID_ANGULAR_VEL;
+				*angular_safe = CRAB_MAX_ANGULAR_VEL;
 			}
 			break;
 			
@@ -453,14 +453,14 @@ bool protector::CalcCrabUltraCA(range_finder & ultra, safe_state & safe_ultra)
 	else if(ultra.min_dis > ULTRA_ROT_RADIUS)
 	{
 		safe_ultra.linear_up_vel = CRAB_MIN_LINEAR_VEL;
-		safe_ultra.angular_up_vel = CRAB_MID_ANGULAR_VEL;
+		safe_ultra.angular_up_vel = CRAB_MAX_ANGULAR_VEL;
 		safe_ultra.steer= 0;
 		safe_ultra.area_state = 1;
 	}
 	else if(ultra.min_dis > ULTRA_STOP_RADIUS)
 	{
 		safe_ultra.linear_up_vel = CRAB_STOP_LINEAR_VEL;
-		safe_ultra.angular_up_vel = CRAB_MIN_ANGULAR_VEL;
+		safe_ultra.angular_up_vel = CRAB_STOP_ANGULAR_VEL;
 		if(ultra.min_index == 1)
 		{
 			safe_ultra.steer = 1;
@@ -489,6 +489,56 @@ bool protector::CalcCrabUltraCA(range_finder & ultra, safe_state & safe_ultra)
 }
 
 
+void protector::PubLaserSafeVel(safe_state & laser_safe, int &laser_rect_encoder)
+{
+	// publish the laser module safe vel
+	laser_safe_vel.header.stamp = ros::Time::now();
+	laser_safe_vel.header.frame_id = "laser";
+
+	if((laser_safe.linear_up_vel == LINEAR_STOP) && (laser_safe.angular_up_vel == ANGULAR_STOP) && (laser_safe.steer == 0))
+	{
+		laser_safe_vel.stop.data = true;
+	}
+	else
+	{
+		laser_safe_vel.stop.data = false;
+	}				
+	laser_safe_vel.linear_safe_thd = laser_safe.linear_up_vel ;
+	laser_safe_vel.area_status = laser_safe.area_state;
+	laser_safe_vel.steer = 0;
+	laser_safe_vel.angular_safe_thd = laser_safe.angular_up_vel ;
+	laser_safe_vel.rsvd = laser_rect_encoder;
+
+	security_pub4laser.publish(laser_safe_vel);
+
+}
+
+
+void protector::PubUltraSafeVel(safe_state & ultra_safe)
+{
+	// publish the ultra module safe vel
+	ultra_safe_vel.header.stamp = ros::Time::now();
+	ultra_safe_vel.header.frame_id = "ultra";
+	
+	if((ultra_safe.linear_up_vel == LINEAR_STOP) && (ultra_safe.angular_up_vel == ANGULAR_STOP) && (ultra_safe.steer == 0))
+	{
+		ultra_safe_vel.stop.data = true;
+	}
+	else
+	{
+		ultra_safe_vel.stop.data = false;
+	}				
+	ultra_safe_vel.linear_safe_thd = ultra_safe.linear_up_vel;
+	ultra_safe_vel.area_status = ultra_safe.area_state;
+	ultra_safe_vel.steer = ultra_safe.steer;
+	ultra_safe_vel.angular_safe_thd = ultra_safe.angular_up_vel;
+	ultra_safe_vel.rsvd = 0.0;
+	
+	security_pub4ultra.publish(ultra_safe_vel);
+
+}
+
+
 bool protector::CalcCrabLaserCA(int &laser_encoder, range_finder & laser, safe_state & safe_laser)
 {
 
@@ -498,14 +548,14 @@ bool protector::CalcCrabLaserCA(int &laser_encoder, range_finder & laser, safe_s
 		{
 			case 4: 	// in 3m rectangle
 				safe_laser.linear_up_vel= CRAB_MID_LINEAR_VEL;
-				safe_laser.angular_up_vel = CRAB_MID_ANGULAR_VEL;
+				safe_laser.angular_up_vel = CRAB_MAX_ANGULAR_VEL;
 				safe_laser.area_state = 1;
 				safe_laser.steer = 0;
 				break;
 				
 			case 6: 	// in 1.6m 
 				safe_laser.linear_up_vel= CRAB_MIN_LINEAR_VEL;
-				safe_laser.angular_up_vel = CRAB_MIN_ANGULAR_VEL;
+				safe_laser.angular_up_vel = CRAB_MAX_ANGULAR_VEL;
 				safe_laser.area_state = 2;
 				safe_laser.steer = 0;
 				break;

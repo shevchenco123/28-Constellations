@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 	ros::init(argc, argv, "Path_Handle_Node");
 	ros::NodeHandle nh;
 	
-	ros::Rate loop_rate(10);
+	ros::Rate loop_rate(5);
 	
 #ifdef MANUAL_PATH
 
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 	PathProc pathProcObj;
 
 	point2d_map cur_robot = {0.0, 0.0};
-	int cur_seg = 127;
+	int cur_seg = 1;
 
 	pathProcObj.InitKneeNodes();
 
@@ -49,22 +49,18 @@ int main(int argc, char *argv[])
 		if(get_coordinator_flag == true)
 		{
 			get_coordinator_flag = false;
+			pathProcObj.ClearFlags4NextTask();
+			pathProcObj.HandleRecvRoute();
 
 			pathProcObj.pub_route_.publish(pathProcObj.plan_path_);
-
 			cur_seg = pathProcObj.CalcRobotOnCurSeg(cur_robot, pathProcObj.sub_route_vec_[pathProcObj.sub_seg_index_cache_], pathProcObj.route_map_);
 			pathProcObj.FillRobotCmd();
-			
+			pathProcObj.FillMarkerPose(pathProcObj.cur_route_);
 		}
-
-		pathProcObj.pub_marker_.publish(pathProcObj.goalmark_list_);
+		
 		pathProcObj.pub_robot_cmd_.publish(pathProcObj.robot_cmd_);
-		
+		pathProcObj.pub_marker_.publish(pathProcObj.goalmark_list_);	
 		cout<<"robot cur_seg: "<<cur_seg<<endl;
-		cout<<"robot_nav_state_.at_target_flag: "<<pathProcObj.robot_nav_state_.at_target_flag<<endl;
-		cout<<"robot_nav_state_.achieve_flag: "<<pathProcObj.robot_nav_state_.achieve_flag<<endl;
-		
-		pathProcObj.ClearFlags4NextTask();
 		
 		ros::spinOnce();	  
 		loop_rate.sleep();

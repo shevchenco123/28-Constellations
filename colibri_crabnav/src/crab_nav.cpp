@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
 				{
 					ref_vel = LOW_VEL;
 				}
-				else if(length_path < 80)
+				else if(length_path < 96)
 				{
 					ref_vel = NORMAL_VEL;
 				}
@@ -165,19 +165,9 @@ int main(int argc, char* argv[])
 			scan4caObj.CalcKrfTheta(scan4caObj.kp_phi_vec, scan4caObj.phi_start_vec, scan4caObj.phi_end_vec);
 			scan4caObj.CalcPassFcnWithoutRPF(&scan4caObj.max_passfcn_val, scan4caObj.passfcn_vec, &scan4caObj.angle_adj);
 
-			cout<<"plannerObj.gravaton.x: " << plannerObj.gravaton.x <<endl;
-			cout<<"plannerObj.gravaton.y: " << plannerObj.gravaton.y <<endl;
 			cout<<"local4navObj.amcl_cur_state.x: " << local4navObj.amcl_cur_state[0] <<endl;
 			cout<<"local4navObj.amcl_cur_state.y: " << local4navObj.amcl_cur_state[1] <<endl;
 			cout<<"local4navObj.amcl_cur_state.yaw: " << local4navObj.amcl_cur_state[2] <<endl;
-
-			cout<<"local4navObj.cur_robot_vel[0]: "<<local4navObj.cur_robot_vel[0]<<endl;
-			
-			cout<<"scan4caObj.angle_adj: " << scan4caObj.angle_adj <<endl;
-			
-			cout<<"ref_vel: " << ref_vel <<endl;	
-
-
 
 			scan4caObj.CalcAlarmInAPF();
 			
@@ -230,7 +220,7 @@ int main(int argc, char* argv[])
 			else
 			{
 				terminal_angle = 0.0;
-				navNodeObj.robot_nav_state_.target_node = 255;
+				navNodeObj.robot_nav_state_.target_node = 100;
 			}
 
 			float angle_vel = PI / 2.0;		
@@ -241,9 +231,7 @@ int main(int argc, char* argv[])
 				if(adjdir_flag == 1)
 				{
 					*ptr_action_cmd_t = 0.0;
-					*(ptr_action_cmd_t + 1) = 0.0;
-					cout<<" ~~~ Goal Completed and Adjust OK ... "<<endl;
-					
+					*(ptr_action_cmd_t + 1) = 0.0;		
 					navNodeObj.robot_nav_state_.achieve_flag = true;			
 				}
 				else
@@ -350,8 +338,7 @@ int main(int argc, char* argv[])
 			cout<<"pub_angular_z: " << local4navObj.apf_cmd_vel.angular.z <<endl;
 			cout<<"micro_adj_flag: " << micro_adj_flag<<endl;
 			cout<<"adjdir_flag: " << adjdir_flag <<endl;
-			cout<<"route_end[0]: " << route_end[0]<<endl;
-			cout<<"route_end[1]: " << route_end[1] <<endl;
+
 			
 			tmp_pub_vx = local4navObj.apf_cmd_vel.linear.x;
 
@@ -360,6 +347,7 @@ int main(int argc, char* argv[])
 			{
 				micro_adj_flag = 0;
 				adjdir_flag = 0;
+				navNodeObj.robot_nav_state_.achieve_flag = false;			
 			}
 			
 			ros::spinOnce();

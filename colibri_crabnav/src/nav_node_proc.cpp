@@ -4,7 +4,7 @@ NavNodeProc::NavNodeProc()
 {
 
 	string path_name;
-	path_name.assign("/home/aiv-4/colibri_ws/src/colibri_crabnav/path/hf910_routes.yaml");
+	path_name.assign("/home/aiv-4/colibri_ws/src/colibri_crabnav/path/gm903_routes.yaml");
 
 	ifstream fin_path(path_name.c_str());
 	if(fin_path.fail())
@@ -68,14 +68,14 @@ NavNodeProc::NavNodeProc()
 	}
 
 
-	cur_nav_node_ = 255;	//if node_id ==255 means no nav node to go shoule stop immediately
+	cur_nav_node_ = 0;	//if node_id ==127 means no nav node to go shoule stop immediately
 	obtain_goal_flag = false;
 
 	robot_nav_state_.header.stamp = ros::Time::now();
 	robot_nav_state_.header.frame_id = "robot";
 	robot_nav_state_.target_node = 0;
 	robot_nav_state_.target_heading = 0.0;
-	robot_nav_state_.cur_seg = 0;
+	robot_nav_state_.cur_seg = 1;
 	robot_nav_state_.at_target_flag = false;
 	robot_nav_state_.achieve_flag = false;
 	robot_nav_state_.target_x = 0.0;
@@ -88,13 +88,13 @@ NavNodeProc::NavNodeProc()
 
 	aiv_cmd_.target_node = 0;
 	aiv_cmd_.clr_at_target = 0;
-	aiv_cmd_.clr_achieve_target = 0;
+	aiv_cmd_.clr_achieve_target = 1;
 	aiv_cmd_.basic_ctrl = 0;
-	aiv_cmd_.cur_seg = 255;
-	aiv_cmd_.pre_situated_node = 255;
+	aiv_cmd_.cur_seg = 1;
+	aiv_cmd_.pre_situated_node = 0;
 	aiv_cmd_.task_succ_flag = 0;
-	aiv_cmd_.music_mode = 255;
-	aiv_cmd_.screen_mode = 255;
+	aiv_cmd_.music_mode = 127;
+	aiv_cmd_.screen_mode = 127;
 
 	
 
@@ -113,7 +113,7 @@ void NavNodeProc::LoadExistedRoute(void)
 {
 
 	string route_name;
-	route_name.assign("/home/aiv-4/colibri_ws/src/colibri_crabnav/config/tasklist/gm903_dbg_route.yaml");
+	route_name.assign("/home/aiv-4/colibri_ws/src/colibri_crabnav/config/tasklist/hf910_dbg_route.yaml");
 
 	ifstream fin_path(route_name.c_str());
 	if(fin_path.fail())

@@ -34,10 +34,12 @@ extern string sp_nodes_path;
 extern ofstream  file1; 
 
 extern bool get_coordinator_flag;
-static int last_task_node = 255;
+static int last_task_node = 127;
 
 static int sub_seg_index = 0;
-static bool inc_seg_flag = false;
+static bool new_seg_flag = false;
+static bool lock_seg_flag = false;
+
 
 #define MANUAL_PATH
 //#define REC_PATH
@@ -155,6 +157,7 @@ class PathProc{
 		map<int, int> seg_length_map_;
 
 		vector<int> knee_nodes_;
+		vector<int> updated_knee_nodes_;
 		vector<float> nodes_heading_;
 		vector<float> segs_heading_;
 

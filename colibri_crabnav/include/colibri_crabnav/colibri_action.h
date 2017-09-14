@@ -12,7 +12,7 @@
 #define SIGMOID_SLOPE_DEC	10
 #define	SIGMOID_OFFSET_X	0.5
 
-#define SLOW_ROT_ANGLE 30
+#define SLOW_ROT_ANGLE 45
 
 #define BELL_SIGMA	0.5
 

@@ -78,11 +78,11 @@
 
 #define CRAB_MAX_LINEAR_VEL 0.8
 #define CRAB_MID_LINEAR_VEL 0.45
-#define CRAB_MIN_LINEAR_VEL 0.2
+#define CRAB_MIN_LINEAR_VEL 0.15
 #define CRAB_STOP_LINEAR_VEL 0.0
 
 #define CRAB_MAX_ANGULAR_VEL 0.785  //45deg/sec
-#define CRAB_MID_ANGULAR_VEL 0.4	//22.5deg/sec
+#define CRAB_MID_ANGULAR_VEL 0.45	//22.5deg/sec
 #define CRAB_MIN_ANGULAR_VEL 0.175  //10deg/sec
 #define CRAB_STOP_ANGULAR_VEL 0.0
 
@@ -209,6 +209,8 @@ class protector
 	    bool CalcCrabSafeVelThd(int &laser_encoder,float  &min_scan, int &min_scan_ang, float *linear_safe, float* angular_safe);
 		bool CalcCrabUltraCA(range_finder & laser, safe_state & safe_laser);
 		bool CalcCrabLaserCA(int &laser_encoder, range_finder & laser, safe_state & safe_laser);
+		void PubLaserSafeVel(safe_state & laser_safe, int &laser_rect_encoder);
+		void PubUltraSafeVel(safe_state & ultra_safe);
 
 
 	private:

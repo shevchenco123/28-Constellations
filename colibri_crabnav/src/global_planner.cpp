@@ -275,7 +275,6 @@ void planner::SubNavPathCallback(const nav_msgs::Path::ConstPtr & path)
 		ROS_WARN("Got Empty Plan in Subscrib /nav_path...");
 		get_path_flag = false;
 	}
-	
 
 
 }

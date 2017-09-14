@@ -36,8 +36,7 @@
 #define GET_MAX_PATH_CNT 30
 
 extern float route_end[2];
-
-
+static bool nav_clr_achieve = true;
 using namespace std;
 
 typedef struct st_path_point
