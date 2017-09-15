@@ -45,8 +45,8 @@ class nav_action
 		
 		float* AdjustMovingDirAction(float* cur_yaw, float* goal_in_laser, float* robot2goal, unsigned int* finish_flag);
 
-		float* ApproachingGoalAction(float* cur_pos, float* goal_pos,float* cur_laser2goal_angle, unsigned int* finish_flag);
-		float* ApproachingGoalAction(float* cur_pos, float* goal_pos, unsigned int* finish_flag);
+		//float* ApproachingGoalAction(float* cur_pos, float* goal_pos,float* cur_laser2goal_angle, unsigned int* finish_flag);
+		//float* ApproachingGoalAction(float* cur_pos, float* goal_pos, unsigned int* finish_flag);
 		float* ApproachingGoalAction(float* cur_pos, float* goal_pos, float * cur_yaw, float & cur_vx, unsigned int* finish_flag);
 
 
@@ -57,13 +57,12 @@ class nav_action
 		float SigmoidFunction(int fcn_dir, float* input);	
 		float UpdownBellFunction(float* input);
 		int	SgnOfData(float* input);
+		int CalcMicroRotAngle(float & r2g, float & heading, float & diff_angle);
 
 	private:
 
 		ros::Time time_stamp;
 		ros::Time time_stamp_start;
-		int CalcMicroRotAngle(float & r2g, float & heading, float & diff_angle);
-
 		
 };
 

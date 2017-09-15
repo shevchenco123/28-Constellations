@@ -170,6 +170,9 @@ int planner::CalcGravatonFromPath(vector<path_point> &path_array, vector<path_de
 		else
 		{
 			exist_gravaton = false;
+			gravaton.x = route_end[0];
+			gravaton.y = route_end[1];
+			gravaton.yaw = 0;
 		}
 	}
 

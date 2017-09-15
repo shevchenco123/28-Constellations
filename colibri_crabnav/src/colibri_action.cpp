@@ -302,7 +302,7 @@ float* nav_action::AdjustMovingDirAction(float* cur_yaw, float* goal_in_laser, f
 	return action4cmd_vel;
 }
 
-
+/*
 float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos,float* cur_laser2goal_angle, unsigned int* finish_flag)
 { 
 	float delta_dis_puv = 1.0;		//distance per unit value
@@ -355,7 +355,7 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, unsign
 
 	action4cmd_vel[1] = APPROACH_VTH_MAX * delta_yaw_puv;
 	
-	if(delta_dis_puv > 0.06)	 // 0.1 m  / GOAL_NGHBORHD = 10 /120 = 0.084
+	if(delta_dis_puv > 0.06)	
 	{
 		*finish_flag = 0;
 	}
@@ -379,6 +379,8 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, unsign
 
 }
 
+*/
+
 float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, float * cur_yaw, float & cur_vx, unsigned int* finish_flag)
 { 
 	float delta_dis_puv = 1.0;		//distance per unit value
@@ -386,9 +388,11 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, float 
 	float delta_x = *goal_pos - *cur_pos;
 	float delta_y = *(goal_pos + 1) - *(cur_pos + 1);
 	float delta_gap = 0.5;
-	static float aiv_vx = 0.15;
+	static float aiv_vx = 0.2;
 	float anlge_diff = 0;
 	float tmp_r2g = 0.0;
+	static float last_dis_puv = 10.0;
+	static int pose_diverge_cnt = 0;
 
 	delta_dis_puv = sqrt(pow(delta_x, 2) + pow(delta_y, 2))/GOAL_NGHBORHD;
 	tmp_r2g = atan2(delta_y, delta_x) * RAD2DEG;
@@ -405,30 +409,53 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, float 
 		action4cmd_vel[0] = aiv_vx * delta_dis_puv / delta_gap;
 	}
 
-	action4cmd_vel[1] = delta_yaw / 250;
+	action4cmd_vel[1] = delta_yaw / 100;
 
 	cout<<"------xxx----- Approaching action delta_yaw: "<< delta_yaw <<endl;
 	
-	if(delta_dis_puv > 0.125)	 // 0.1 m  / GOAL_NGHBORHD = 10 /80 = 0.125
+	if(delta_dis_puv > 0.125)	
 	{
 		*finish_flag = 0;
+		
+		if(delta_dis_puv - last_dis_puv > 0)
+		{
+			pose_diverge_cnt++;
+		}
+		else
+		{
+			
+		}
+		
+		if(pose_diverge_cnt > 1)
+		{
+			action4cmd_vel[0] = 0.0;
+			action4cmd_vel[1] = 0.0;
+			pose_diverge_cnt = 0;
+			last_dis_puv = 10.0;
+			*finish_flag = 1;
+		}
+		else
+		{
+			
+		}
+	
 	}
 	else
 	{
 		cout<<"Complete the approaching process: delta_dis: "<< delta_dis_puv*GOAL_NGHBORHD<<endl;
 		action4cmd_vel[0] = 0.0;
 		action4cmd_vel[1] = 0.0;
+		pose_diverge_cnt = 0;
+		last_dis_puv = 10.0;
+
 		*finish_flag = 1;
-		//aiv_vx = 0.0;
+
 	}
-/*
-	if(action4cmd_vel[0] < 0.01) //if vel so small should stop it 
+
+	if(delta_dis_puv != last_dis_puv)
 	{
-		action4cmd_vel[0] = 0.0;
-		action4cmd_vel[1] = 0.0;
-		*finish_flag = 1;
+		last_dis_puv = delta_dis_puv;
 	}
-*/
 	
 	return action4cmd_vel;
 

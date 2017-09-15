@@ -55,8 +55,6 @@ int main(int argc, char* argv[])
 	float self_rotation_angle = 0.0;
 	bool goal_inlaser_flag = true;
 
-	unsigned int turn_adj_flag = 1;
-
 	float tmp_action_cmd_t[2] = {0.0, 0.0};
 	float* ptr_action_cmd_t = tmp_action_cmd_t;
 
@@ -93,6 +91,7 @@ int main(int argc, char* argv[])
 	float tmp_pub_vx = 0.0;
 	float ref_vel = 0.6;
 	int length_path = 0;
+	float diff_angle = 0.0;
 
 	while (ros::ok())
 	{	
@@ -164,6 +163,9 @@ int main(int argc, char* argv[])
 
 			scan4caObj.CalcKrfTheta(scan4caObj.kp_phi_vec, scan4caObj.phi_start_vec, scan4caObj.phi_end_vec);
 			scan4caObj.CalcPassFcnWithoutRPF(&scan4caObj.max_passfcn_val, scan4caObj.passfcn_vec, &scan4caObj.angle_adj);
+			
+			cout<<"plannerObj.gravaton.x: " << plannerObj.gravaton.x <<endl;
+			cout<<"plannerObj.gravaton.y: " << plannerObj.gravaton.y<<endl;
 
 			cout<<"local4navObj.amcl_cur_state.x: " << local4navObj.amcl_cur_state[0] <<endl;
 			cout<<"local4navObj.amcl_cur_state.y: " << local4navObj.amcl_cur_state[1] <<endl;
@@ -174,11 +176,16 @@ int main(int argc, char* argv[])
 			if(goal_inlaser_flag == true)
 			{
 				ori_apf_linear = (ref_vel - V_MIN) * (scan4caObj.max_passfcn_val / D_M) + V_MIN;
+
+				//actionObj.CalcMicroRotAngle(tmp_robot2goal_yaw, local4navObj.amcl_cur_state[2],diff_angle);
+				
 				if(abs(scan4caObj.angle_adj) <= 3)
 				{
 					scan4caObj.angle_adj = 0; //clear the quake
 				}
 				ori_apf_angular = scan4caObj.angle_adj / 150.0;
+				
+				//ori_apf_angular = diff_angle / 150.0;
 
 				local4navObj.apf_ctrl_output[0] = local4navObj.LinearVelFilter(&ori_apf_linear, &local4navObj.cur_robot_vel[0]);
 				local4navObj.apf_ctrl_output[1] = local4navObj.AngularVelFilter(&ori_apf_angular, &local4navObj.cur_robot_vel[1]);
@@ -194,7 +201,7 @@ int main(int argc, char* argv[])
 			local4navObj.CalcEuclidDistance(local4navObj.amcl_cur_state, route_end, rt_r2g_dis);	// rt_r2g_dis(robot2goal) is different from tmp_delta_dis(robot2gravaton)	
 			local4navObj.approaching_flag = local4navObj.ReachApprochingAreaOK(&rt_r2g_dis);
 
-			if(turn_adj_flag == 1 && micro_adj_flag == 0)
+			if(micro_adj_flag == 0)
 			{
 				if(local4navObj.approaching_flag == false)
 				{
