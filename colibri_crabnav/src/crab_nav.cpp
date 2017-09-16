@@ -179,11 +179,11 @@ int main(int argc, char* argv[])
 
 				//actionObj.CalcMicroRotAngle(tmp_robot2goal_yaw, local4navObj.amcl_cur_state[2],diff_angle);
 				
-				if(abs(scan4caObj.angle_adj) <= 3)
+				if(abs(scan4caObj.angle_adj) <= 2)
 				{
 					scan4caObj.angle_adj = 0; //clear the quake
 				}
-				ori_apf_angular = scan4caObj.angle_adj / 150.0;
+				ori_apf_angular = scan4caObj.angle_adj / 180.0;
 				
 				//ori_apf_angular = diff_angle / 150.0;
 

@@ -5,6 +5,7 @@
 #include "yaml-cpp/yaml.h"
 
 #include <math.h>
+#include <cmath>
 #include <vector>
 #include <algorithm>
 #include <iostream>
@@ -13,6 +14,7 @@
 #include <utility>
 #include <sstream>
 #include <numeric>
+#include <queue>
 
 #include <ros/ros.h>
 
@@ -122,6 +124,7 @@ bool BresenhamBasic(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &p
 bool CalcPixesInLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
 
 
+
 class PathProc{
 
 	public:
@@ -152,6 +155,7 @@ class PathProc{
 		route_list cur_route_;
 		vector<route_list> sub_route_vec_;
 		map<int, int> node_seg_map_;
+		map<int, int> seg_prenode_map_;
 		map<int, int> seg_node_map_;
 		map<int, float> node_heading_map_;
 		map<int, int> seg_length_map_;
@@ -196,6 +200,7 @@ class PathProc{
 		void Seg2LengthMap(void);
 		//void FillTaskState(void);	
 		void ClearFlags4NextTask(void);
+		bool CalcNearestNode(float & robot_x, float &robot_y, int & nearest_node);
 
 	private:
 		void Pix2Map(vector<point2d_pix> &points_pix, vector<point2d_map> &points_map);

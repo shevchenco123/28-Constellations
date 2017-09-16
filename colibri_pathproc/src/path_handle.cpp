@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
 	pathProcObj.CalcAllPointsInSegs();
 	pathProcObj.Seg2LengthMap();
 	pathProcObj.InitMarkers();
+	
 
 	while(ros::ok())
 	{

@@ -4,7 +4,7 @@ NavNodeProc::NavNodeProc()
 {
 
 	string path_name;
-	path_name.assign("/home/aiv-4/colibri_ws/src/colibri_crabnav/path/gm903_routes.yaml");
+	path_name.assign("/home/aiv-4/colibri_ws/src/colibri_crabnav/path/hf910_routes.yaml");
 
 	ifstream fin_path(path_name.c_str());
 	if(fin_path.fail())
@@ -36,7 +36,7 @@ NavNodeProc::NavNodeProc()
 		string num2str;
 		float tmp_heading = 0.0;
 		seg_property tmp_seg_prop;
-		for(int seg_index = 1; seg_index < segs_num_; seg_index++)
+		for(int seg_index = 1; seg_index <= segs_num_; seg_index++)
 		{
 			sstr_num << seg_index;
 		    num2str = sstr_num.str();

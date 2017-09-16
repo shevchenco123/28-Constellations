@@ -65,6 +65,11 @@ void local_nav::CartoOdomCallBack(const nav_msgs::Odometry::ConstPtr& carto_odom
 void local_nav::AmclPoseCallBack(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& amcl_pose)
 {
 	float tmp_yaw_rad = 0.0;
+	float yaw = 0.0;
+	float elimited_yaw = 0.0;
+	static float last_robot_yaw = 180;
+	static bool lock_flag = false;
+	float angle_thd = 30.0;
 	
 	amcl_cur_state[0] = amcl_pose->pose.pose.position.x;
 	amcl_cur_state[1] = amcl_pose->pose.pose.position.y;
@@ -73,7 +78,19 @@ void local_nav::AmclPoseCallBack(const geometry_msgs::PoseWithCovarianceStamped:
 	tmp_yaw_rad = tf::getYaw(amcl_cur_quat);
 	
 	amcl_cur_state[2] = tmp_yaw_rad * RAD2DEG;
-	
+
+/*	if(lock_flag == false)  
+	{
+		last_robot_yaw = yaw;
+		lock_flag = true;
+	}
+
+	//elimited_yaw = EliminateBurr(last_robot_yaw, yaw, angle_thd); // care: +-180 crossing filter failed
+	//amcl_cur_state[2] = SmoothFilter(yaw);
+
+	last_robot_yaw = amcl_cur_state[2];
+*/
+
 }
 
 
@@ -445,5 +462,39 @@ void local_nav::UltraSafeVelCallBack(const colibri_msgs::SafeVel::ConstPtr& safe
 
 }
 
+float EliminateBurr(float & last_value, float & cur_value, float & thd)
+{
+	float output = last_value;
+	if(abs(abs(cur_value) - abs(last_value)) < thd)
+	{
+		output = cur_value;
+	}
+	else
+	{
+
+	}
+	return output;
+}
+
+float SmoothFilter(float & value)
+{
+	float output = 0.0;
+	const int WIN_LENGTH = 5;
+	const float coefficient[WIN_LENGTH] = {0.05, 0.15, 0.2, 0.35, 0.25};
+	static vector<float> history_value(WIN_LENGTH, value);
+	
+	history_value[0] = history_value[1];
+	history_value[1] = history_value[2]; 
+	history_value[2] = history_value[3]; 
+	history_value[3] = history_value[4]; 
+	history_value[4] = value; 
+
+	output = history_value[0] * coefficient[0] +  history_value[1] * coefficient[1]
+			 + history_value[2] * coefficient[2] +  history_value[3] * coefficient[3]
+			 + history_value[4] * coefficient[4];
+
+	return output;
+
+}
 
 

@@ -39,7 +39,7 @@ PathProc::PathProc()
 		string num2str;
 		float tmp_heading = 0.0;
 		seg_property tmp_seg_prop;
-		for(int seg_index = 1; seg_index < segs_num_; seg_index++)
+		for(int seg_index = 1; seg_index <= segs_num_; seg_index++)
 		{
 			sstr_num << seg_index;
 		    num2str = sstr_num.str();
@@ -91,7 +91,7 @@ PathProc::PathProc()
 	robot_cmd_.clr_at_target = 1;
 	robot_cmd_.clr_achieve_target = 1;
 	robot_cmd_.basic_ctrl = 0;
-	robot_cmd_.cur_seg = 1;
+	robot_cmd_.cur_seg = 0;
 	robot_cmd_.pre_situated_node = 0;
 	robot_cmd_.task_succ_flag = 1;
 	robot_cmd_.music_mode = 127;
@@ -184,9 +184,43 @@ void PathProc::FillTaskState(void)
 }
 */
 
+bool PathProc::CalcNearestNode(float & robot_x, float &robot_y, int & nearest_node)
+{
+	vector<float> delta_r2node;
+	float tmp_delta = 0.0;
+	float tmp_node_x = 0.0;
+	float tmp_node_y = 0.0;
+	int index = 0;
+	for(vector<segment>::iterator it = vec_seg_.begin(); it != vec_seg_.end(); ++it)
+	{
+		tmp_node_x = it->points_map.back().x;
+		tmp_node_y = it->points_map.back().y;
+		tmp_delta = sqrt(pow(tmp_node_x - robot_x, 2) + pow(tmp_node_y - robot_y, 2));
+		delta_r2node.push_back(tmp_delta);
+	}
+
+	vector<float>::iterator shortest = min_element(delta_r2node.begin(), delta_r2node.end());   
+
+	index = distance(delta_r2node.begin(), shortest);
+	nearest_node = vec_seg_[index].end_id;
+
+	if(*shortest < 0.5)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+}
+
 void PathProc::FillRobotCmd(void)
 {
 	static int confirm_cnt = 0;
+	int near_node = 0;
+	float robot_x = 0.0;
+	float robot_y = 0.0;
 
 	robot_cmd_.target_node = cur_route_.target_id ;
 	
@@ -201,7 +235,7 @@ void PathProc::FillRobotCmd(void)
 	}
 
 	robot_cmd_.basic_ctrl = basic_ctrl_;
-	robot_cmd_.cur_seg = cur_seg_;
+
 	robot_cmd_.pre_situated_node = 127;
 	
 	if(sub_seg_index_cache_ == (micro_seg_num_ - 1)) 
@@ -225,6 +259,18 @@ void PathProc::FillRobotCmd(void)
 	else
 	{
 		robot_cmd_.task_succ_flag = 0;
+	}
+
+	if(robot_cmd_.task_succ_flag == 1)
+	{
+		robot_x = robot_nav_state_.robot.x;
+		robot_y = robot_nav_state_.robot.y;
+		CalcNearestNode(robot_x, robot_y, near_node);
+		robot_cmd_.cur_seg  = near_node;
+	}
+	else
+	{
+		robot_cmd_.cur_seg = seg_prenode_map_[cur_seg_];
 	}
 
 	robot_cmd_.music_mode = 127;
@@ -610,6 +656,7 @@ void PathProc::MakeNodeSegMap(vector<float> &vec_heading)
 	{
 		node_seg_map_.insert(pair<int, int>((*it).end_id, (*it).seg_id));
 		seg_node_map_.insert(pair<int, int>((*it).seg_id, (*it).end_id));
+		seg_prenode_map_.insert(pair<int, int>((*it).seg_id, (*it).start_id));
 		node_heading_map_.insert(pair<int, float>((*it).end_id, vec_heading[i]));
 		i++;
 	}
@@ -622,6 +669,7 @@ void PathProc::MakeNodeSegMap(void)
 	{
 		node_seg_map_.insert(pair<int, int>((*it).end_id, (*it).seg_id));
 		seg_node_map_.insert(pair<int, int>((*it).seg_id, (*it).end_id));
+		seg_prenode_map_.insert(pair<int, int>((*it).seg_id, (*it).start_id));
 		node_heading_map_.insert(pair<int, float>((*it).end_id, segs_heading_[i]));
 		i++;
 	}

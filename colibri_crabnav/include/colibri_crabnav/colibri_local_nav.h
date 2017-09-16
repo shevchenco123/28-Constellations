@@ -25,6 +25,9 @@
 #define APPROACH_V_MAX		0.45
 #define APPROACH_VTH_MAX	0.5
 
+float EliminateBurr(float & last_val, float & cur_val, float & thd);
+float SmoothFilter(float & value);
+
 class local_nav
 {
 	public:
