@@ -112,8 +112,6 @@ def callback(data):
 	
 	slaver.set_values("slaver_data", 30000, robot2host_info)
 
-	print robot2host_info[19:27]
-
 rospy.init_node('host_comm_node')
 logger.info("running...")
 rospy.Subscriber('/nav_state', NavState, callback)

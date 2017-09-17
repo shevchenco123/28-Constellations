@@ -12,10 +12,10 @@
 
 #include<signal.h>
 
-//#define LASER_CA_LIMIT
+#define LASER_CA_LIMIT
 //#define ULTRA_CA_LIMIT
 //#define CA_LIMIT
-#define NO_LIMIT
+//#define NO_LIMIT
 
 #define LOW_VEL 0.15
 #define NORMAL_VEL 0.35
@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
 				{
 					scan4caObj.angle_adj = 0; //clear the quake
 				}
-				ori_apf_angular = scan4caObj.angle_adj / 180.0;
+				ori_apf_angular = 0.9 * scan4caObj.angle_adj / 180.0;
 				
 				//ori_apf_angular = diff_angle / 150.0;
 
@@ -258,8 +258,6 @@ int main(int argc, char* argv[])
 			local4navObj.apf_cmd_vel.angular.z = *(ptr_action_cmd_t + 1);
 
 			cout<<"tmp_delta_dis: " << tmp_delta_dis <<endl;		
-			cout<<"rt_r2g_dis: " << rt_r2g_dis <<endl;
-
 			
 			float tmp_linear = local4navObj.apf_cmd_vel.linear.x;
 			float tmp_angluar = local4navObj.apf_cmd_vel.angular.z;
@@ -293,10 +291,11 @@ int main(int argc, char* argv[])
 			local4navObj.apf_cmd_vel.angular.z = MIN(laser_safe_angular_vel, ultra_safe_angular_vel);
 #endif
 
+/*
 #ifdef NO_LIMIT
 			if((local4navObj.position_OK_flag == true))
 #endif
-
+*/
 #ifdef LASER_CA_LIMIT
 			if((local4navObj.position_OK_flag == true)||(local4navObj.laser_safe_velocity.stop.data == true))
 #endif
@@ -304,6 +303,7 @@ int main(int argc, char* argv[])
 #ifdef ULTRA_CA_LIMIT
 			if((local4navObj.position_OK_flag == true)||(local4navObj.ultra_safe_velocity.stop.data == true))
 #endif
+
 
 #ifdef CA_LIMIT
 			if((local4navObj.position_OK_flag == true)||(local4navObj.laser_safe_velocity.stop.data == true)||(local4navObj.ultra_safe_velocity.stop.data == true))

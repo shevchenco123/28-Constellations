@@ -34,11 +34,11 @@ protector::protector()
 	vec_scan4safe.reserve(SCAN4SAFE_NUM);
 	vec_rect_polar.reserve(SAFE_RECT_NUM);
 
-	rectangle[0].width = 0.8;
+	rectangle[0].width = 0.6;
 	rectangle[0].height = 0.5;
-	rectangle[1].width = 0.8;
+	rectangle[1].width = 0.6;
 	rectangle[1].height = 1.6;
-	rectangle[2].width = 0.8;
+	rectangle[2].width = 0.6;
 	rectangle[2].height = 3.0;
 
 	scan_sub4safe = nh_safety.subscribe<sensor_msgs::LaserScan>("/scan", 1, &protector::CrabScanSafeCallBack, this);
@@ -486,6 +486,45 @@ bool protector::CalcCrabUltraCA(range_finder & ultra, safe_state & safe_ultra)
 	}
 
 
+}
+
+bool protector::CalcCrabUltraCA(safe_state & safe_ultra)
+{
+	static int confirm_cnt = 0;
+	float tmp_ultra_min = (ultra_vec[2]>ultra_vec[1]) ? ultra_vec[1]:ultra_vec[2];
+		
+	if(tmp_ultra_min < ULTRA_STOP_DIS)
+	{
+		confirm_cnt++;
+	}
+	else
+	{
+		confirm_cnt--;
+		if(confirm_cnt < 0)
+		{
+			confirm_cnt = 0;
+		}
+	}
+
+	if(confirm_cnt > 2)
+	{
+		confirm_cnt = 2;
+		safe_ultra.linear_up_vel = 0;
+		safe_ultra.angular_up_vel = 0;
+		safe_ultra.steer = 0;
+		safe_ultra.area_state = 0;
+		return true;
+	}
+	else
+	{
+		safe_ultra.linear_up_vel = CRAB_MAX_LINEAR_VEL;
+		safe_ultra.angular_up_vel = CRAB_MAX_ANGULAR_VEL;
+		safe_ultra.steer = 0;
+		safe_ultra.area_state = 0;
+		return false;	
+	}
+	
+	
 }
 
 
@@ -988,7 +1027,7 @@ void protector::InitRectPolarVec(void)
 
 }
 
-
+/*
 void protector::CrabScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4safe)
 {
 	float tmp_scan = 20.0;
@@ -1011,6 +1050,31 @@ void protector::CrabScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& sca
 	}
 
 }
+*/
+
+void protector::CrabScanSafeCallBack(const sensor_msgs::LaserScan::ConstPtr& scan4safe)
+{
+	float tmp_scan = 20.0;
+	vec_scan4safe.clear();
+	vector<float> ().swap(vec_scan4safe);
+	
+	int j = 31;	//from laser ray at  -15deg starts : 31 = 15/0.5+1;
+	for(int i = 0; i < SCAN4SAFE_NUM; i++)
+	{
+		tmp_scan = scan4safe->ranges[j];
+		
+		if(tmp_scan <= 0.06)
+		{
+			tmp_scan = 20.0;
+		}
+
+		vec_scan4safe.push_back(tmp_scan);
+		
+		j = j + 2; 
+	}
+
+}
+
 
 
 void protector::UltraSafeCallBack(const colibri_ultra::Ultrasonic::ConstPtr& ultra4safe)

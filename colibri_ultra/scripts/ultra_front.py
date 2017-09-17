@@ -75,7 +75,7 @@ def ultrasonic_info():
 		if len(ultrasonic_send_str) == 2:
 			ultradata.ultra_4 =  (ord(ultrasonic_send_str[0]) * 256 + ord(ultrasonic_send_str[1])) / 1000.0
 
-		rospy.loginfo(ultradata)
+		#rospy.loginfo(ultradata)
 		pub.publish(ultradata)
 
 		rate.sleep()

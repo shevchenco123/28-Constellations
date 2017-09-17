@@ -70,6 +70,7 @@ void local_nav::AmclPoseCallBack(const geometry_msgs::PoseWithCovarianceStamped:
 	static float last_robot_yaw = 180;
 	static bool lock_flag = false;
 	float angle_thd = 30.0;
+	bool reset_filter = true;
 	
 	amcl_cur_state[0] = amcl_pose->pose.pose.position.x;
 	amcl_cur_state[1] = amcl_pose->pose.pose.position.y;
@@ -84,12 +85,23 @@ void local_nav::AmclPoseCallBack(const geometry_msgs::PoseWithCovarianceStamped:
 		last_robot_yaw = yaw;
 		lock_flag = true;
 	}
-
+*/
 	//elimited_yaw = EliminateBurr(last_robot_yaw, yaw, angle_thd); // care: +-180 crossing filter failed
-	//amcl_cur_state[2] = SmoothFilter(yaw);
+/*
+	if(abs(yaw) > 135)
+	{
+		reset_filter = true;
+		amcl_cur_state[2] = SmoothFilter(yaw, reset_filter);
+	}
+	else
+	{
+		reset_filter = false;
+		amcl_cur_state[2] = SmoothFilter(yaw, reset_filter);
+	}
 
 	last_robot_yaw = amcl_cur_state[2];
 */
+
 
 }
 
@@ -476,18 +488,30 @@ float EliminateBurr(float & last_value, float & cur_value, float & thd)
 	return output;
 }
 
-float SmoothFilter(float & value)
+float SmoothFilter(float & value, bool & reset_history)
 {
 	float output = 0.0;
 	const int WIN_LENGTH = 5;
-	const float coefficient[WIN_LENGTH] = {0.05, 0.15, 0.2, 0.35, 0.25};
+	const float coefficient[WIN_LENGTH] = {0.05, 0.05, 0.1, 0.15, 0.65};
 	static vector<float> history_value(WIN_LENGTH, value);
-	
-	history_value[0] = history_value[1];
-	history_value[1] = history_value[2]; 
-	history_value[2] = history_value[3]; 
-	history_value[3] = history_value[4]; 
-	history_value[4] = value; 
+
+	if(reset_history == false)
+	{
+		history_value[0] = history_value[1];
+		history_value[1] = history_value[2]; 
+		history_value[2] = history_value[3]; 
+		history_value[3] = history_value[4]; 
+		history_value[4] = value; 
+	}
+	else
+	{
+		history_value[0] = value;
+		history_value[1] = value; 
+		history_value[2] = value; 
+		history_value[3] = value; 
+		history_value[4] = value; 
+
+	}
 
 	output = history_value[0] * coefficient[0] +  history_value[1] * coefficient[1]
 			 + history_value[2] * coefficient[2] +  history_value[3] * coefficient[3]

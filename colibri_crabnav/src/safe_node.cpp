@@ -1,7 +1,7 @@
 #include "protect.h"
 
-//#define LASER_SAFE
-#define ULTRA_SAFE
+#define LASER_SAFE
+//#define ULTRA_SAFE
 
 
 int main(int argc, char* argv[])
@@ -50,13 +50,8 @@ int main(int argc, char* argv[])
 			laser_property.min_index =  protectObj.min_scan_angle;
 
 			laser_rect_encoder = protectObj.LaserRectEncoder();
-			cout<<"laser_rect_encoder: "<<laser_rect_encoder<<endl;
 
 			protectObj.CalcCrabLaserCA(laser_rect_encoder,laser_property, laser_safe);
-			cout<<"laser_linear_vel_safe_thd: "<< laser_safe.linear_up_vel<< endl;
-			cout<<"laser_angular_vel_safe_thd: "<< laser_safe.angular_up_vel<< endl;
-			cout<<"laser_steer_thd: "<< laser_safe.steer<< endl;
-			cout<<"laser_area_sts: "<< laser_safe.area_state<< endl;
 			protectObj.PubLaserSafeVel(laser_safe, laser_rect_encoder);
 #endif
 
@@ -66,7 +61,7 @@ int main(int argc, char* argv[])
  			ultra_property.min_dis =  protectObj.min_ultra;
 			ultra_property.min_index =  protectObj.min_index_ultra;
 
-			protectObj.CalcCrabUltraCA(ultra_property, ultra_safe);
+			protectObj.CalcCrabUltraCA(ultra_safe);
 			protectObj.PubUltraSafeVel(ultra_safe);
 #endif
 
@@ -78,7 +73,7 @@ int main(int argc, char* argv[])
 
 			ros::spinOnce();
 			loop_rate.sleep();
-			ROS_INFO("end ...");
+
 		}
 	
 

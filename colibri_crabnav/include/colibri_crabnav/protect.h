@@ -71,6 +71,8 @@
 #define ULTRA_ROT_RADIUS 0.4
 #define ULTRA_STOP_RADIUS 0.15
 
+#define ULTRA_STOP_DIS 0.3
+
 #define SAFE_RECT_WIDTH 0.8
 #define SAFE_RECT_HEIGHT 3.0
 
@@ -203,6 +205,7 @@ class protector
 
 		bool CalcLaserCA(float	&min_scan, int &min_scan_ang, int &steer, float *linear_safe, float* angular_safe, int &area_state);
 		bool CalcUltraCA(float &min_ultra, unsigned int &min_ultra_index, int &steer, float* linear_safe, float* angular_safe, int &area_state);
+		bool CalcCrabUltraCA(safe_state & safe_ultra);
 		map<int, float> Rect2Polar(float &width, float &height);
 		bool PointInRect(map<int, float> &rec2polar);
 		int LaserRectEncoder(void);	

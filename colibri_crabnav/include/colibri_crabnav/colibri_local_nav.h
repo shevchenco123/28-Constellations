@@ -26,7 +26,7 @@
 #define APPROACH_VTH_MAX	0.5
 
 float EliminateBurr(float & last_val, float & cur_val, float & thd);
-float SmoothFilter(float & value);
+float SmoothFilter(float & value, bool & reset_history);
 
 class local_nav
 {

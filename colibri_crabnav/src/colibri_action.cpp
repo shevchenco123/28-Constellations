@@ -388,11 +388,22 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, float 
 	float delta_x = *goal_pos - *cur_pos;
 	float delta_y = *(goal_pos + 1) - *(cur_pos + 1);
 	float delta_gap = 0.5;
+	static bool lock_approx_vel = false;
 	static float aiv_vx = 0.2;
 	float anlge_diff = 0;
 	float tmp_r2g = 0.0;
 	static float last_dis_puv = 10.0;
 	static int pose_diverge_cnt = 0;
+
+	if(lock_approx_vel == false)
+	{
+		aiv_vx = cur_vx;
+		lock_approx_vel = true;
+	}
+	else
+	{
+		
+	}
 
 	delta_dis_puv = sqrt(pow(delta_x, 2) + pow(delta_y, 2))/GOAL_NGHBORHD;
 	tmp_r2g = atan2(delta_y, delta_x) * RAD2DEG;
@@ -456,6 +467,12 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, float 
 	{
 		last_dis_puv = delta_dis_puv;
 	}
+
+	if(	*finish_flag == 1)
+	{
+		lock_approx_vel = false;
+	}
+	
 	
 	return action4cmd_vel;
 
