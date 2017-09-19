@@ -849,7 +849,7 @@ void PathProc::ClearFlags4NextTask(void)
 		lock_flag = true;
 	}
 
-	if((lock_flag == true) && (delay_cnt < 15))
+	if((lock_flag == true) && (delay_cnt < 10))
 	{
 		sub_seg_index = 0;
 		new_seg_flag = false;
