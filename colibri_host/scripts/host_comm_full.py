@@ -16,7 +16,7 @@ import datetime
 from datetime import time as fc_time
 import numpy as np
 
-robot_id = 14
+robot_id = 17
 
 cur_time = datetime.time()
 
@@ -62,7 +62,7 @@ robot2host_info = [robot_id, cur_time.second, cur_time.minute, cur_time.hour, \
 				 cur_seg_id, followup_seg_num]
 robot2host_info[29:89] = followup_seg_vec
 
-server = modbus_tcp.TcpServer(1502, "192.168.11.14")
+server = modbus_tcp.TcpServer(1502, "192.168.11.17")
 slaver = server.add_slave(1)
 logger = modbus_tk.utils.create_logger("console", record_format="%(message)s")
 

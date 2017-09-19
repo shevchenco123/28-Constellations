@@ -17,9 +17,9 @@
 //#define CA_LIMIT
 //#define NO_LIMIT
 
-#define LOW_VEL 0.15
-#define NORMAL_VEL 0.35
-#define HIGH_VEL 0.6
+#define LOW_VEL 0.2
+#define NORMAL_VEL 0.4
+#define HIGH_VEL 0.8
 
 bool node_shutdown  = false;
 int cnt_null_cmdvel = 0;
@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
 				{
 					scan4caObj.angle_adj = 0; //clear the quake
 				}
-				ori_apf_angular = 0.9 * scan4caObj.angle_adj / 180.0;
+				ori_apf_angular = 1.0 * scan4caObj.angle_adj / 150.0;
 				
 				//ori_apf_angular = diff_angle / 150.0;
 
@@ -201,19 +201,18 @@ int main(int argc, char* argv[])
 			local4navObj.CalcEuclidDistance(local4navObj.amcl_cur_state, route_end, rt_r2g_dis);	// rt_r2g_dis(robot2goal) is different from tmp_delta_dis(robot2gravaton)	
 			local4navObj.approaching_flag = local4navObj.ReachApprochingAreaOK(&rt_r2g_dis);
 
-			if(micro_adj_flag == 0)
+
+			if(local4navObj.approaching_flag == false)
 			{
-				if(local4navObj.approaching_flag == false)
-				{
-					*ptr_action_cmd_t = local4navObj.apf_ctrl_output[0];
-					*(ptr_action_cmd_t + 1) = local4navObj.apf_ctrl_output[1];
-				}
-				else
+				*ptr_action_cmd_t = local4navObj.apf_ctrl_output[0];
+				*(ptr_action_cmd_t + 1) = local4navObj.apf_ctrl_output[1];
+			}
+			else
+			{
+				if(micro_adj_flag == 0)
 				{
 					ptr_action_cmd_t = actionObj.ApproachingGoalAction(&local4navObj.amcl_cur_state[0], &route_end[0], &local4navObj.amcl_cur_state[2], local4navObj.cur_robot_vel[0], &micro_adj_flag);
-					
 				}
-
 			}
 						
 			float terminal_angle;

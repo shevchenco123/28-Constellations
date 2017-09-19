@@ -4,7 +4,7 @@ NavNodeProc::NavNodeProc()
 {
 
 	string path_name;
-	path_name.assign("/home/aiv-4/colibri_ws/src/colibri_crabnav/path/hf910_routes.yaml");
+	path_name.assign("/home/aiv-7/colibri_ws/src/colibri_crabnav/path/hf910_routes.yaml");
 
 	ifstream fin_path(path_name.c_str());
 	if(fin_path.fail())

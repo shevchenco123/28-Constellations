@@ -387,17 +387,27 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, float 
 	float delta_yaw = 0.0;
 	float delta_x = *goal_pos - *cur_pos;
 	float delta_y = *(goal_pos + 1) - *(cur_pos + 1);
-	float delta_gap = 0.5;
+	float delta_gap = 0.4;
 	static bool lock_approx_vel = false;
 	static float aiv_vx = 0.2;
-	float anlge_diff = 0;
+	float angle_diff = 0;
 	float tmp_r2g = 0.0;
 	static float last_dis_puv = 10.0;
 	static int pose_diverge_cnt = 0;
+	int rot_proterty = 0;
+	float stop_ratio = 0.08;
 
 	if(lock_approx_vel == false)
 	{
-		aiv_vx = cur_vx;
+		if(cur_vx < 0.2)
+		{
+			aiv_vx = 0.2;
+		}
+		else
+		{
+			aiv_vx = cur_vx;			
+		}
+
 		lock_approx_vel = true;
 	}
 	else
@@ -405,30 +415,48 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, float 
 		
 	}
 
+
 	delta_dis_puv = sqrt(pow(delta_x, 2) + pow(delta_y, 2))/GOAL_NGHBORHD;
 	tmp_r2g = atan2(delta_y, delta_x) * RAD2DEG;
 
-	CalcMicroRotAngle(tmp_r2g, *cur_yaw, anlge_diff);
+	rot_proterty = CalcMicroRotAngle(tmp_r2g, *cur_yaw, angle_diff);
 
 
 	if(delta_dis_puv > delta_gap)
 	{
 		action4cmd_vel[0] = aiv_vx;
+		if(abs(angle_diff) > 3.0)
+		{
+			if(rot_proterty != 0)
+			{
+				action4cmd_vel[1] = rot_proterty * angle_diff / 100;
+
+			}
+			else
+			{
+				action4cmd_vel[1] = angle_diff / 100;
+			}
+
+		}
+		else
+		{
+			action4cmd_vel[1] = 0.0;
+		}
 	}
 	else
 	{
 		action4cmd_vel[0] = aiv_vx * delta_dis_puv / delta_gap;
+		action4cmd_vel[1] = 0.0;
 	}
 
-	action4cmd_vel[1] = delta_yaw / 100;
-
-	cout<<"------xxx----- Approaching action delta_yaw: "<< delta_yaw <<endl;
+	cout<<"------xxx----- Approaching action angle_diff: "<< angle_diff <<endl;
+	cout<<"tmp_r2g: "<< tmp_r2g << "*cur_yaw: "<< *cur_yaw <<endl;
 	
-	if(delta_dis_puv > 0.125)	
+	if(delta_dis_puv > stop_ratio)	
 	{
 		*finish_flag = 0;
 		
-		if(delta_dis_puv - last_dis_puv > 0)
+		if(delta_dis_puv - last_dis_puv > 0 && delta_dis_puv < delta_gap)
 		{
 			pose_diverge_cnt++;
 		}

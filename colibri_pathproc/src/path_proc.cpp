@@ -7,7 +7,7 @@ PathProc::PathProc()
 
 #ifdef MANUAL_PATH
 	string path_name;
-	path_name.assign("/home/aiv-4/colibri_ws/src/colibri_pathproc/routes/hf910_routes.yaml");
+	path_name.assign("/home/aiv-7/colibri_ws/src/colibri_pathproc/routes/hf910_routes.yaml");
 #else
 	string path_name(routes_path);
 #endif
@@ -702,7 +702,7 @@ void PathProc::InitKneeNodes(void)
 	
 #ifdef MANUAL_PATH
 	string path_name;
-	path_name.assign("/home/aiv-4/colibri_ws/src/colibri_pathproc/routes/hf910_sp_nodes.yaml");
+	path_name.assign("/home/aiv-7/colibri_ws/src/colibri_pathproc/routes/hf910_sp_nodes.yaml");
 #else
 	string path_name(sp_nodes_path);
 #endif
@@ -887,9 +887,13 @@ void PathProc::HandleRecvRoute(void)
 			if(sub_seg_index == micro_seg_num_)
 			{
 				sub_seg_index = micro_seg_num_ - 1;
-			}		
+				robot_cmd_.clr_achieve_target = 0;
+			}
+			else
+			{
+				robot_cmd_.clr_achieve_target = 1;
+			}
 			lock_seg_flag = true;
-			robot_cmd_.clr_achieve_target = 1;
 		}
 		else
 		{
@@ -905,6 +909,7 @@ void PathProc::HandleRecvRoute(void)
 	else
 	{
 		sub_seg_index = 0;
+		/*
 		if(robot_nav_state_.achieve_flag)
 		{
 			robot_cmd_.clr_achieve_target = 1;
@@ -913,7 +918,7 @@ void PathProc::HandleRecvRoute(void)
 		{
 			robot_cmd_.clr_achieve_target = 0;
 		}
-
+		*/
 		CatSeg2Route(sub_route_vec_[sub_seg_index]);
 		
 	}
