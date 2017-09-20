@@ -15,6 +15,7 @@
 #include <sstream>
 #include <numeric>
 #include <queue>
+#include <unistd.h>
 
 #include <ros/ros.h>
 
@@ -117,12 +118,10 @@ typedef struct st_route_list
 	vector<int> seg_list;
 }route_list;
 
-
 void int2str(int & i_val, string &str);
 bool VerticalLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &ver_line);
 bool BresenhamBasic(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
 bool CalcPixesInLine(point2d_pix &start, point2d_pix &end, vector<point2d_pix> &point_at_line);
-
 
 
 class PathProc{

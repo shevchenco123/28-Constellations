@@ -4,7 +4,10 @@ NavNodeProc::NavNodeProc()
 {
 
 	string path_name;
-	path_name.assign("/home/aiv-7/colibri_ws/src/colibri_crabnav/path/hf910_routes.yaml");
+	char user_name[10];
+	getlogin_r(user_name, 10);
+	string str_username = user_name;
+	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_crabnav/path/hf910_routes.yaml");
 
 	ifstream fin_path(path_name.c_str());
 	if(fin_path.fail())
@@ -101,6 +104,7 @@ NavNodeProc::NavNodeProc()
 	pub_nav_state_ = nh_nav_node_.advertise<colibri_msgs::NavState>("/nav_state", 1);
 	sub_robot_cmd_ = nh_nav_node_.subscribe<colibri_msgs::RobotCmd>("/robot_cmd", 1, &NavNodeProc::RobotCmdCallBack, this);
 	//sub_node_id_ = nh_nav_node_.subscribe<colibri_msgs::NavNode>("/nav_node", 1, &NavNodeProc::NavNodeCallBack, this);
+
 
 }
 
