@@ -180,6 +180,49 @@ void NavNodeProc::LoadExistedRoute(void)
 
 }
 
+void NavNodeProc::LoadBranchNode(void)
+{
+
+	string path_name;
+	char user_name[10];
+	getlogin_r(user_name, 10);
+	string str_username = user_name;
+	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_crabnav/path/hf910_sp_nodes.yaml");
+
+	branch_node_.clear();	
+	vector<int> ().swap(branch_node_);
+
+	ifstream fin_path(path_name.c_str());
+	if(fin_path.fail())
+	{
+		cout<<"sp_nodes yaml file can not open in parse the yaml argv in proc"<<endl;
+		exit(-1);
+	}
+
+	YAML::Node doc_path = YAML::Load(fin_path);
+	try 
+	{ 
+		int branch_nodes_num = 0;
+		int tmp_node_id = 127;
+		doc_path["special_nodes"]["branch_nodes_num"] >> branch_nodes_num;
+		branch_node_.reserve(branch_nodes_num);
+		
+		for(int node_index = 0; node_index < branch_nodes_num; node_index++)
+		{
+			doc_path["special_nodes"]["branch_nodes_id"][node_index] >> tmp_node_id;
+			branch_node_.push_back(tmp_node_id);
+		}
+	
+	}
+	catch (YAML::InvalidScalar) 
+	{ 
+		cout<<"The sp_nodes yaml does not contain an origin tag or it is invalid."<<endl;
+		exit(-1);
+	}
+	
+
+}
+
 void NavNodeProc::NavNodeCallBack(const colibri_msgs::NavNode::ConstPtr& node)
 {
 	cur_nav_node_ = int (node->node_id);

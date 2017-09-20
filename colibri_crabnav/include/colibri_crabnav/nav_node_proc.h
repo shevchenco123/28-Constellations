@@ -136,6 +136,7 @@ class NavNodeProc{
 		map<int, float> node_head_map_;
 
 		vector<float> seg_heading_;
+		vector<int> branch_node_;
 
 		colibri_msgs::NavState robot_nav_state_;
 		int cur_nav_node_;
@@ -158,6 +159,7 @@ class NavNodeProc{
 		bool PubNavState();
 		bool NavPose2NavNode(point2d_map & pose, int & rev_node_id);
 		bool NavPixValid(point2d_pix &pix_uv);
+		void LoadBranchNode(void);
 
 	private:
 
