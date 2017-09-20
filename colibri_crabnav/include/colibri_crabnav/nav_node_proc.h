@@ -124,6 +124,7 @@ class NavNodeProc{
 		ros::Subscriber sub_robot_cmd_;
 		ros::Subscriber sub_node_id_;
 		ros::Publisher pub_nav_state_;
+		ros::Subscriber sub_coordinator_;
 
 		string map_name_;
 		float map_origin_[POS_DIM];
@@ -137,7 +138,10 @@ class NavNodeProc{
 
 		vector<float> seg_heading_;
 		vector<int> branch_node_;
-
+		map<int, float> nextnode_heading_map_;
+		vector<int> total_route_segs_;
+		int route_segs_;
+		
 		colibri_msgs::NavState robot_nav_state_;
 		int cur_nav_node_;
 		float cur_goal[POS_DIM];
@@ -160,10 +164,16 @@ class NavNodeProc{
 		bool NavPose2NavNode(point2d_map & pose, int & rev_node_id);
 		bool NavPixValid(point2d_pix &pix_uv);
 		void LoadBranchNode(void);
+		void SetupBranchMap(void);
+		bool IsBranchNode(int &cur_node_id);
+		bool ObtainNextNodeInRoute(int &cur_node_id, int & next_node);
+
+		
 
 	private:
 
 		void RobotCmdCallBack(const colibri_msgs::RobotCmd::ConstPtr& cmd);
+		void CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coord);
 		void NavNodeCallBack(const colibri_msgs::NavNode::ConstPtr& node);
 		void Quaternion2Yaw(const geometry_msgs::PoseStamped &pose, float &yaw);
 
