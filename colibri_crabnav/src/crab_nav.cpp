@@ -88,6 +88,8 @@ int main(int argc, char* argv[])
 	point2d_map route_terminator = {0.0, 0.0};
 	int route_terminator_node = 0;
 	navNodeObj.InitNodeAndSegMap(navNodeObj.segs_num_);
+	navNodeObj.LoadBranchNode();
+	navNodeObj.SetupBranchMap();
 	float tmp_pub_vx = 0.0;
 	float ref_vel = 0.6;
 	int length_path = 0;
@@ -218,9 +220,19 @@ int main(int argc, char* argv[])
 			float terminal_angle;
 			route_terminator.x = route_end[0];
 			route_terminator.y = route_end[1];
+			int branch_next_node = 127;
 			if(navNodeObj.NavPose2NavNode(route_terminator, route_terminator_node))
 			{
-				terminal_angle = navNodeObj.node_head_map_[route_terminator_node];
+				if(navNodeObj.IsBranchNode(route_terminator_node))
+				{
+					navNodeObj.ObtainNextNodeInRoute(route_terminator_node, branch_next_node);
+					terminal_angle = navNodeObj.nextnode_heading_map_[branch_next_node];	
+				}
+				else
+				{
+					terminal_angle = navNodeObj.node_head_map_[route_terminator_node];
+				}
+
 				navNodeObj.robot_nav_state_.target_node = route_terminator_node;
 			}
 			else

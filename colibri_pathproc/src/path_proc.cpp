@@ -7,7 +7,12 @@ PathProc::PathProc()
 
 #ifdef MANUAL_PATH
 	string path_name;
-	path_name.assign("/home/aiv-1/colibri_ws/src/colibri_pathproc/routes/hf910_routes.yaml");
+
+	char user_name[10];
+	getlogin_r(user_name, 10);
+	string str_username = user_name;
+	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_pathproc/routes/hf910_routes.yaml");
+
 #else
 	string path_name(routes_path);
 #endif
@@ -117,6 +122,9 @@ PathProc::PathProc()
  	//srv4getpath_ = nh_route_.advertiseService("/move_base/make_plan", &PathProc::ExecGetPathSrv, this);
 	pub_robot_cmd_ = nh_route_.advertise<colibri_msgs::RobotCmd>("/robot_cmd", 1);
 	//pub_task_state_ = nh_route_.advertise<colibri_msgs::TaskState>("/task_state", 1);
+
+
+
 
 }
 
@@ -702,7 +710,12 @@ void PathProc::InitKneeNodes(void)
 	
 #ifdef MANUAL_PATH
 	string path_name;
-	path_name.assign("/home/aiv-1/colibri_ws/src/colibri_pathproc/routes/hf910_sp_nodes.yaml");
+
+	char user_name[10];
+	getlogin_r(user_name, 10);
+	string str_username = user_name;
+	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_pathproc/routes/hf910_sp_nodes.yaml");
+
 #else
 	string path_name(sp_nodes_path);
 #endif
@@ -737,6 +750,8 @@ void PathProc::InitKneeNodes(void)
 		cout<<"The sp_nodes yaml does not contain an origin tag or it is invalid."<<endl;
 		exit(-1);
 	}
+
+
 
 }
 

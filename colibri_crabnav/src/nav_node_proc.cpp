@@ -4,7 +4,11 @@ NavNodeProc::NavNodeProc()
 {
 
 	string path_name;
-	path_name.assign("/home/aiv-1/colibri_ws/src/colibri_crabnav/path/hf910_routes.yaml");
+
+	char user_name[10];
+	getlogin_r(user_name, 10);
+	string str_username = user_name;
+	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_crabnav/path/hf910_routes.yaml");
 
 	ifstream fin_path(path_name.c_str());
 	if(fin_path.fail())
@@ -100,7 +104,9 @@ NavNodeProc::NavNodeProc()
 
 	pub_nav_state_ = nh_nav_node_.advertise<colibri_msgs::NavState>("/nav_state", 1);
 	sub_robot_cmd_ = nh_nav_node_.subscribe<colibri_msgs::RobotCmd>("/robot_cmd", 1, &NavNodeProc::RobotCmdCallBack, this);
+	sub_coordinator_ = nh_nav_node_.subscribe<colibri_msgs::Coordinator>("/coordinator", 1, &NavNodeProc::CoordinatorCallBack, this);
 	//sub_node_id_ = nh_nav_node_.subscribe<colibri_msgs::NavNode>("/nav_node", 1, &NavNodeProc::NavNodeCallBack, this);
+
 
 }
 
@@ -176,6 +182,118 @@ void NavNodeProc::LoadExistedRoute(void)
 
 }
 
+void NavNodeProc::LoadBranchNode(void)
+{
+
+	string path_name;
+	char user_name[10];
+	getlogin_r(user_name, 10);
+	string str_username = user_name;
+	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_crabnav/path/hf910_sp_nodes.yaml");
+
+	branch_node_.clear();	
+	vector<int> ().swap(branch_node_);
+
+	ifstream fin_path(path_name.c_str());
+	if(fin_path.fail())
+	{
+		cout<<"sp_nodes yaml file can not open in parse the yaml argv in proc"<<endl;
+		exit(-1);
+	}
+
+	YAML::Node doc_path = YAML::Load(fin_path);
+	try 
+	{ 
+		int branch_nodes_num = 0;
+		int tmp_node_id = 127;
+		doc_path["special_nodes"]["branch_nodes_num"] >> branch_nodes_num;
+		branch_node_.reserve(branch_nodes_num);
+		
+		for(int node_index = 0; node_index < branch_nodes_num; node_index++)
+		{
+			doc_path["special_nodes"]["branch_nodes_id"][node_index] >> tmp_node_id;
+			branch_node_.push_back(tmp_node_id);
+		}
+	
+	}
+	catch (YAML::InvalidScalar) 
+	{ 
+		cout<<"The sp_nodes yaml does not contain an origin tag or it is invalid."<<endl;
+		exit(-1);
+	}
+	
+
+}
+
+void NavNodeProc::SetupBranchMap(void)
+{
+
+	string path_name;
+	char user_name[10];
+	getlogin_r(user_name, 10);
+	string str_username = user_name;
+	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_crabnav/path/hf910_branch_map.yaml");
+
+	nextnode_heading_map_.clear();	
+	
+	ifstream fin_path(path_name.c_str());
+	if(fin_path.fail())
+	{
+		cout<<"branch_map yaml file can not open in parse the yaml argv in proc"<<endl;
+		exit(-1);
+	}
+
+	YAML::Node doc_path = YAML::Load(fin_path);
+	try 
+	{ 
+		int branch_maps_num = 0;
+		int branch_nextnode = 127;
+		float branch_heading = 0.0;
+		doc_path["branch_map"]["map_num"] >> branch_maps_num;
+
+		string branch_name;
+		string route_seg_name;
+		stringstream sstr_num; 
+		string num2str;
+
+		for(int branch_index = 1; branch_index <= branch_maps_num; branch_index++)
+		{
+			sstr_num << branch_index;
+		    num2str = sstr_num.str();
+			branch_name = "branch" + num2str+ "_map";
+
+			doc_path["branch_map"][branch_name][1] >> branch_nextnode;
+			doc_path["branch_map"][branch_name][2] >> branch_heading;
+			nextnode_heading_map_.insert(make_pair(branch_nextnode, branch_heading));
+			sstr_num.str("");
+		}
+
+	
+	}
+	catch (YAML::InvalidScalar) 
+	{ 
+		cout<<"The branch_map yaml does not contain an origin tag or it is invalid."<<endl;
+		exit(-1);
+	}
+	
+
+}
+
+
+bool NavNodeProc::IsBranchNode(int &cur_node_id)
+{
+	if(find(branch_node_.begin(), branch_node_.end(), cur_node_id) != branch_node_.end())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+}
+
+
 void NavNodeProc::NavNodeCallBack(const colibri_msgs::NavNode::ConstPtr& node)
 {
 	cur_nav_node_ = int (node->node_id);
@@ -228,7 +346,6 @@ void NavNodeProc::InitNodeAndSegMap(int &array_size)
 bool NavNodeProc::PubNavState(void)
 {
 
-	
 	colibri_msgs::NavState nav_sta;
 	nav_sta.header.stamp = ros::Time::now();
 	nav_sta.header.frame_id = "robot";
@@ -301,6 +418,26 @@ bool NavNodeProc::NavPixValid(point2d_pix &pix_uv)
 	}
 }
 
+bool NavNodeProc::ObtainNextNodeInRoute(int &cur_node_id, int & next_node)
+{
+	int cur_seg = node_seg_map_[cur_node_id];
+	int next_seg = cur_seg;
+	vector<int>::iterator it = find(total_route_segs_.begin(), total_route_segs_.end(), cur_seg);
+	if(it != total_route_segs_.end())
+	{
+		it++;
+		next_seg = *it;
+		next_node = seg_node_map_[next_seg];
+		return true;
+	}
+	else
+	{
+		next_node = cur_node_id;
+		return false;
+	}
+	
+}
+
 
 bool NavNodeProc::NavNode2NavPose()
 {	
@@ -348,6 +485,20 @@ void NavNodeProc::RobotCmdCallBack(const colibri_msgs::RobotCmd::ConstPtr& cmd)
 	aiv_cmd_.task_succ_flag = int (cmd->task_succ_flag);
 	aiv_cmd_.music_mode = int (cmd->music_mode);
 	aiv_cmd_.screen_mode = int (cmd->screen_mode);
+
+}
+
+void NavNodeProc::CoordinatorCallBack(const colibri_msgs::Coordinator::ConstPtr& coord)
+{
+	total_route_segs_.clear();
+	vector<int> ().swap(total_route_segs_);
+	
+	route_segs_ = coord->route_segs_num;
+	total_route_segs_.reserve(route_segs_);
+	for(int i = 0; i < route_segs_; i++)
+	{
+		total_route_segs_.push_back(coord->segs_vector[i]);
+	}
 
 }
 
