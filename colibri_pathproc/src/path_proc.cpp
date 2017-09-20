@@ -7,7 +7,7 @@ PathProc::PathProc()
 
 #ifdef MANUAL_PATH
 	string path_name;
-	path_name.assign("/home/aiv-7/colibri_ws/src/colibri_pathproc/routes/hf910_routes.yaml");
+	path_name.assign("/home/aiv-1/colibri_ws/src/colibri_pathproc/routes/hf910_routes.yaml");
 #else
 	string path_name(routes_path);
 #endif
@@ -702,7 +702,7 @@ void PathProc::InitKneeNodes(void)
 	
 #ifdef MANUAL_PATH
 	string path_name;
-	path_name.assign("/home/aiv-7/colibri_ws/src/colibri_pathproc/routes/hf910_sp_nodes.yaml");
+	path_name.assign("/home/aiv-1/colibri_ws/src/colibri_pathproc/routes/hf910_sp_nodes.yaml");
 #else
 	string path_name(sp_nodes_path);
 #endif

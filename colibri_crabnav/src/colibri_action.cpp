@@ -450,7 +450,7 @@ float* nav_action::ApproachingGoalAction(float* cur_pos, float* goal_pos, float 
 	}
 
 	cout<<"------xxx----- Approaching action angle_diff: "<< angle_diff <<endl;
-	cout<<"tmp_r2g: "<< tmp_r2g << "*cur_yaw: "<< *cur_yaw <<endl;
+	cout<<"tmp_r2g: "<< tmp_r2g << " *cur_yaw: "<< *cur_yaw <<endl;
 	
 	if(delta_dis_puv > stop_ratio)	
 	{
