@@ -66,7 +66,7 @@ path:
   seg20_heading: -90
   seg21_property: [21, 18, 19]
   seg21_vector: [318, 517, 318, 553]
-  seg21_heading: 0
+  seg21_heading: -90
   seg22_property: [22, 19, 20]
   seg22_vector: [318, 553, 318, 589]
   seg22_heading: 0

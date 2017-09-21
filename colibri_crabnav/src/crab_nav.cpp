@@ -17,9 +17,9 @@
 //#define CA_LIMIT
 //#define NO_LIMIT
 
-#define LOW_VEL 0.2
-#define NORMAL_VEL 0.4
-#define HIGH_VEL 0.8
+#define LOW_VEL 0.20
+#define NORMAL_VEL 0.6
+#define HIGH_VEL 1.1
 
 bool node_shutdown  = false;
 int cnt_null_cmdvel = 0;
@@ -30,6 +30,7 @@ unsigned int micro_adj_flag = 0;
 unsigned int adjdir_flag = 0;
 float route_end[2] = {10.0, 10.0};
 
+float CalcVel(float & cmd_vel, float & fb_vel);
 void PlannerCallback(planner *plannerObj, float* start_pos, float* goal_pos, bool *finish_flag);
 void MySigintHandler(int sig);
 int main(int argc, char* argv[])
@@ -185,7 +186,7 @@ int main(int argc, char* argv[])
 				{
 					scan4caObj.angle_adj = 0; //clear the quake
 				}
-				ori_apf_angular = 1.0 * scan4caObj.angle_adj / 150.0;
+				ori_apf_angular = 1.35 * scan4caObj.angle_adj / 180.0;
 				
 				//ori_apf_angular = diff_angle / 150.0;
 
@@ -336,6 +337,9 @@ int main(int argc, char* argv[])
 				}
 			}
 
+			float cur_cmd_vel = local4navObj.apf_cmd_vel.linear.x;
+			local4navObj.apf_cmd_vel.linear.x = CalcVel(cur_cmd_vel, local4navObj.cur_robot_vel[0]);
+
 			local4navObj.LimitPubTwist(local4navObj.apf_cmd_vel);
 
 			navNodeObj.robot_nav_state_.target_x = route_end[0]; 
@@ -347,7 +351,6 @@ int main(int argc, char* argv[])
 
 
 			navNodeObj.PubNavState();
-
 			local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel);
 			
 			scan4caObj.ResetMaxPassValCnt();
@@ -391,3 +394,37 @@ void MySigintHandler(int sig)
 {
 	node_shutdown = true;
 }
+
+float CalcVel(float & cmd_vel, float & fb_vel)
+{
+	float output = cmd_vel;
+	const float acc_thd = 0.25;
+	const float dec_thd = -0.1;
+	
+	if(cmd_vel - fb_vel > acc_thd)
+	{
+		output = fb_vel + acc_thd/2.0;
+	}
+
+	if(cmd_vel - fb_vel < dec_thd)
+	{
+		output = cmd_vel + 1.8*dec_thd;
+	}
+
+	if(output < 0)
+	{
+	   output = 0;
+	}
+	else if(output > V_MAX)
+	{
+	   output = V_MAX;
+	}
+	else
+	{
+
+	}	
+	
+	return output;
+
+}
+
