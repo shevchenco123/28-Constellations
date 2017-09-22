@@ -1,5 +1,5 @@
 robot:
-  name: AIV-10
-  id: 11
-  addr: "192.168.11.11"
+  name: AIV-4
+  id: 14
+  addr: "192.168.11.14"
   port: 1502

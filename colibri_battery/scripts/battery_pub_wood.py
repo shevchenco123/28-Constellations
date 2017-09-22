@@ -65,7 +65,7 @@ def battery_info():
 	send_data_44[13:15] = [0x30, 0x32]
 	send_data_44[15:19] = chksum_calculate(send_data_44[1:15])
 
-	bat_serial = serial.Serial('/dev/ttyUSB0', 9600, parity='N', stopbits=1)
+	bat_serial = serial.Serial('/dev/ttyS5', 9600, parity='N', stopbits=1)
 	# bat_serial.close()
 	print bat_serial.portstr
 	received_date = []
