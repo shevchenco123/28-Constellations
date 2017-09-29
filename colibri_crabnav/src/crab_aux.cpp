@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
 				break;
 
 			case RUNNING:
-				if(obs_rec_coder != 0)
+				if(obs_rec_coder == 6 || obs_rec_coder == 7 )
 				{
 					cur_mode = AVOIDENCE;
 				}
@@ -168,7 +168,21 @@ int main(int argc, char* argv[])
 					}
 				}
 			
-				break;		
+				break;
+			case ALARM:
+				break;	
+			case AVOIDENCE:
+				if(obs_rec_coder == 0)
+				{
+					cur_mode = RUNNING;
+				}
+				if(bat_vol_ratio < 0.15)
+				{
+					cur_mode = CHARGING;
+				}
+
+				
+				break;	
 
 			default :
 				cur_mode = SILENCE;

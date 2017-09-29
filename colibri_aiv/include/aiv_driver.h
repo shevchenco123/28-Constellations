@@ -12,6 +12,7 @@
 #include "colibri_aiv/Bumper.h"
 #include "cartodom/Cartodom.h"
 #include "colibri_msgs/AuxInfo.h"
+#include "colibri_msgs/MusicMode.h"
 
 #ifndef _AIV_DRIVER_H_
 #define _AIV_DRIVER_H_
@@ -136,6 +137,8 @@ class AIV_Driver
 		float cartodom_vx;
 		float cartodom_vth;
 		float cartodom_interval;
+
+		int cur_music_mode;
 		
 		//Constructor
 		AIV_Driver();
@@ -160,6 +163,8 @@ class AIV_Driver
 		void SendCmd(const unsigned char *cmd ,volatile bool &send_flag);
 		
 		void CartodomCallback(const cartodom::Cartodom::ConstPtr & carto_odom);
+
+		void MusicCallback(const colibri_msgs::MusicMode::ConstPtr & music_info);
 	private:
 
 		pthread_t thread_id;
@@ -194,7 +199,7 @@ class AIV_Driver
 		ros::Publisher bumper_pub;
 		ros::Subscriber cartodom_sub;
 		ros::Subscriber aux_sub;
-
+		ros::Subscriber music_sub;
 		tf::TransformBroadcaster odom_broadcaster;
 
 		void ParseWheelRpm(const unsigned char *valid_data);

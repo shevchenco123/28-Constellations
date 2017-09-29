@@ -56,6 +56,8 @@ AIV_Driver::AIV_Driver()
 	aiv_vx = 0.0;	
 	aiv_vth = 0.0;
 
+	cur_music_mode = 0;
+
 	unsigned char cmd_data[21];	//used to store for valid data in defined protocol
 	memset(cmd_data,0,21);
 	
@@ -618,6 +620,7 @@ bool AIV_Driver::InitSubandPub()
 	ros::NodeHandle global_nh;	
 	twist_sub= global_nh.subscribe<geometry_msgs::Twist>("t_cmd_vel", 10, boost::bind(&AIV_Driver::TwistCallback, this, _1));
 	aux_sub= global_nh.subscribe<colibri_msgs::AuxInfo>("aux_info", 10, boost::bind(&AIV_Driver::AuxInfoCallback, this, _1));
+	music_sub= global_nh.subscribe<colibri_msgs::MusicMode>("music", 10, boost::bind(&AIV_Driver::MusicCallback, this, _1));
 
 	ros::NodeHandle nh_cartodom;
 	cartodom_sub= global_nh.subscribe<cartodom::Cartodom>("cartodom", 10, boost::bind(&AIV_Driver::CartodomCallback, this, _1));
@@ -659,7 +662,7 @@ void AIV_Driver::TwistCallback(const geometry_msgs::Twist::ConstPtr & twist)
 		send_twist[VALID_DATA_START_INDX + 3] = 100*twist->angular.z;
 	}
 
-	send_twist[VALID_DATA_START_INDX + 8] = 2; //add music ctrl
+	send_twist[VALID_DATA_START_INDX + 8] = cur_music_mode; //add music ctrl
 	twist_seq++;
 	if(send_cnt > 255)
 	{
@@ -719,6 +722,13 @@ void AIV_Driver::CartodomCallback(const cartodom::Cartodom::ConstPtr & carto_odo
 	cartodom_vth = carto_odom->vth;
 	cartodom_interval = carto_odom->interval;
 }
+
+void AIV_Driver::MusicCallback(const colibri_msgs::MusicMode::ConstPtr & music_info)
+{
+	cur_music_mode = music_info->music_mode;
+
+}
+
 
 void AIV_Driver::SendCmd(const unsigned char *cmd ,volatile bool &send_flag)
 {
