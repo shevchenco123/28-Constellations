@@ -201,6 +201,7 @@ int main(int argc, char **argv)
       {
         for (int i = 0; i < data.dist_len1; i++)
         {
+			/*
 			if(data.dist1[i] * 0.001 > 0.05)  //if scan < 0.05 we believe that is wrong or interference
 			{
 				if(0 == zero_cnt)
@@ -230,7 +231,8 @@ int main(int argc, char **argv)
 				}
 				scan_msg.ranges[data.dist_len1-1-i] = data.dist1[i] * 0.001; 
 			}
-		  
+			*/
+		  scan_msg.ranges[data.dist_len1-1-i] = data.dist1[i] * 0.001; 
         }
 
         for (int i = 0; i < data.rssi_len1; i++)

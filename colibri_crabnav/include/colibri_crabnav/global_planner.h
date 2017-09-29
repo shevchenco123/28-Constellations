@@ -30,7 +30,7 @@
 
 #define GOAL_NUM	10
 #define GOAL_TOLLERANCE	0.5
-#define GRAVATON_RADIUS 1.0		// gravation in path array distance to robot 
+#define GRAVATON_RADIUS 1.3		// gravation in path array distance to robot 
 
 #define PLAN_INTERVAL 2.0
 #define GET_MAX_PATH_CNT 30

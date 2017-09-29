@@ -69,3 +69,9 @@ INCLUDE_DIRECTORIES(include/colibri_crabnav/)
  )
 
 
+ add_executable(crab_aux_node src/crab_aux.cpp)
+ target_link_libraries(crab_aux_node yaml-cpp
+   ${catkin_LIBRARIES}
+ )
+
+

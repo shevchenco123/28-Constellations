@@ -636,6 +636,7 @@ bool AIV_Driver::InitSubandPub()
 void AIV_Driver::TwistCallback(const geometry_msgs::Twist::ConstPtr & twist)
 {
 
+	static int twist_seq = 0;
 	if(twist->linear.x < 0 )
 	{
 		send_twist[VALID_DATA_START_INDX + 0] = NEG_SIGN;
@@ -658,6 +659,14 @@ void AIV_Driver::TwistCallback(const geometry_msgs::Twist::ConstPtr & twist)
 		send_twist[VALID_DATA_START_INDX + 3] = 100*twist->angular.z;
 	}
 
+	send_twist[VALID_DATA_START_INDX + 8] = 2; //add music ctrl
+	twist_seq++;
+	if(send_cnt > 255)
+	{
+		twist_seq = 0;
+	}
+	send_twist[VALID_DATA_START_INDX + 9] = twist_seq;
+	
 	send_cache = send_twist;
 	SendCmd(send_twist, send_twist_finish);
 	

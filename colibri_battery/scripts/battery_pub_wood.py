@@ -71,7 +71,7 @@ def battery_info():
 	received_date = []
 
 	while not rospy.is_shutdown():
-		bat_serial.timeout = 3
+		bat_serial.timeout = 0.1
 		# bat_serial.open()
 		# bat_serial.reset_input_buffer()
 		del received_date[:]

@@ -45,6 +45,7 @@ find_package(catkin REQUIRED COMPONENTS
    Ultrasonic.msg
    RobotCmd.msg
    TaskState.msg
+   MusicMode.msg
  )
 
 ## Generate services in the 'srv' folder

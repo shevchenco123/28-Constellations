@@ -18,7 +18,7 @@
 
 #define OFFSET_LASER2ROBOT		0.335	// in x dir for new aiv , old one is 0.3443
 
-#define GOAL_NGHBORHD		1.3		//robot diagonal radius lenth = 0.5
+#define GOAL_NGHBORHD		1.5		//robot diagonal radius lenth = 0.5
 
 #define	INFLATE_FACTOR		1.5
 

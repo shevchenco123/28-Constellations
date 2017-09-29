@@ -186,7 +186,7 @@ int main(int argc, char* argv[])
 				{
 					scan4caObj.angle_adj = 0; //clear the quake
 				}
-				ori_apf_angular = 1.35 * scan4caObj.angle_adj / 180.0;
+				ori_apf_angular = 1.32 * scan4caObj.angle_adj / 180.0;
 				
 				//ori_apf_angular = diff_angle / 150.0;
 
