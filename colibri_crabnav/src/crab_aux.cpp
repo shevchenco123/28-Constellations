@@ -107,7 +107,35 @@ int main(int argc, char* argv[])
 			case SILENCE:
 				if(cur_nav_state.target_node != 100)
 				{
-					cur_mode = RUNNING;
+					if(obs_rec_coder == 6 || obs_rec_coder == 7 )
+					{
+						cur_mode = AVOIDENCE;
+					}
+					else
+					{
+						if(bat_vol_ratio < 0.15)
+						{
+							cur_mode = CHARGING;
+						}
+						else
+						{
+							if(cur_nav_state.task_succ_flag == 1)
+							{
+								if(IsElemInVector(vec_upload, cur_nav_state.target_node))
+								{
+									cur_mode = UPLOAD;
+								}
+					
+								if(IsElemInVector(vec_download, cur_nav_state.target_node))
+								{
+									cur_mode = DOWNLOAD;
+								}
+								
+							}
+						}
+					
+					}
+
 				}
 				else
 				{
@@ -117,35 +145,6 @@ int main(int argc, char* argv[])
 				break;
 
 			case RUNNING:
-				if(obs_rec_coder == 6 || obs_rec_coder == 7 )
-				{
-					cur_mode = AVOIDENCE;
-				}
-				else
-				{
-					if(bat_vol_ratio < 0.15)
-					{
-						cur_mode = CHARGING;
-					}
-					else
-					{
-						if(cur_nav_state.task_succ_flag == 1)
-						{
-							if(IsElemInVector(vec_upload, cur_nav_state.target_node))
-							{
-								cur_mode = UPLOAD;
-							}
-
-							if(IsElemInVector(vec_download, cur_nav_state.target_node))
-							{
-								cur_mode = DOWNLOAD;
-							}
-							
-						}
-					}
-
-				}
-
 				break;
 
 			case UPLOAD:
@@ -153,7 +152,7 @@ int main(int argc, char* argv[])
 				{
 					if(last_target_node != cur_nav_state.target_node)
 					{
-						cur_mode = RUNNING;
+						cur_mode = SILENCE;
 					}
 				}
 
@@ -164,7 +163,7 @@ int main(int argc, char* argv[])
 				{
 					if(last_target_node != cur_nav_state.target_node)
 					{
-						cur_mode = RUNNING;
+						cur_mode = SILENCE;
 					}
 				}
 			
@@ -174,7 +173,7 @@ int main(int argc, char* argv[])
 			case AVOIDENCE:
 				if(obs_rec_coder == 0)
 				{
-					cur_mode = RUNNING;
+					cur_mode = SILENCE;
 				}
 				if(bat_vol_ratio < 0.15)
 				{

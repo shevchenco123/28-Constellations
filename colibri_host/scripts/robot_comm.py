@@ -139,7 +139,8 @@ def loop():
 		client_data = slaver.get_values("master_data", 40000, 60)
 		time_client = fc_time(client_data[3], client_data[2], client_data[1])
 		
-		host2robot_info.basic_ctrl = np.int8(client_data[4])
+		#host2robot_info.basic_ctrl = np.int8(client_data[4])
+		host2robot_info.basic_ctrl = 2
 		# node = oct(client_data[5])
 		host2robot_info.target_node = np.int8(client_data[5])
 		host2robot_info.target_heading = client_data[6] / 100
