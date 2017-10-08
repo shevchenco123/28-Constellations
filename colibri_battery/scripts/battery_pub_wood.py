@@ -67,7 +67,7 @@ def battery_info():
 
 	bat_serial = serial.Serial('/dev/ttyS5', 9600, parity='N', stopbits=1)
 	# bat_serial.close()
-	print bat_serial.portstr
+	#print bat_serial.portstr
 	received_date = []
 
 	while not rospy.is_shutdown():
@@ -85,7 +85,7 @@ def battery_info():
 					received_date.append(read)
 			except KeyboardInterrupt:
 				break
-		print len(received_date)
+		#print len(received_date)
 		
 		if len(received_date) == 128:
 			B_C_stt = current(''.join(received_date[97:101]))
@@ -113,7 +113,7 @@ def battery_info():
 			batten.SOC = B_SOC
 			batten.Bat_alarm = B_Alarm
 			batten.Bat_cycle = B_cycle
-			rospy.loginfo(batten)
+			#rospy.loginfo(batten)
 			pub.publish(batten)
 			rate.sleep()
 		except NameError:
