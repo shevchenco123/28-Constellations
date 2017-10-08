@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
 	ros::Subscriber sub_nav_state;
 	ros::Publisher pub_music_mode;
 
-	ros::Rate loop_rate(2);
+	ros::Rate loop_rate(5);
 	int upload_nodes[] = {5, 6, 23, 24, 25, 26, 27, 28};
 	int download_nodes[] = {31, 32, 33, 34, 35, 36, 37, 13, 14, 15};
 	int charging_nodes[] = {41, 42, 43, 44};
