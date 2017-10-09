@@ -83,9 +83,17 @@ int main(int argc, char* argv[])
 	ros::Publisher pub_music_mode;
 
 	ros::Rate loop_rate(5);
+	/* //sz929map
 	int upload_nodes[] = {5, 6, 23, 24, 25, 26, 27, 28};
 	int download_nodes[] = {31, 32, 33, 34, 35, 36, 37, 13, 14, 15};
 	int charging_nodes[] = {41, 42, 43, 44};
+	*/
+
+	//ych1008map
+	int upload_nodes[] = {6, 7, 22, 23, 24, 25, 26, 27};
+	int download_nodes[] = {31, 32, 33, 34, 35, 36, 14, 15};
+	int charging_nodes[] = {39, 40, 41, 42};
+
 	size_t tmp_len = sizeof(upload_nodes)/sizeof(int);
 	vector<int> vec_upload(upload_nodes, upload_nodes + tmp_len);
 	tmp_len = sizeof(download_nodes)/sizeof(int);
