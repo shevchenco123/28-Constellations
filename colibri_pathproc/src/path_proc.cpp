@@ -11,7 +11,7 @@ PathProc::PathProc()
 	char user_name[10];
 	getlogin_r(user_name, 10);
 	string str_username = user_name;
-	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_pathproc/routes/sz929_mdf_cut_routes.yaml");
+	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_pathproc/routes/ych1008_mdf_cut_routes.yaml");
 
 #else
 	string path_name(routes_path);
@@ -714,7 +714,7 @@ void PathProc::InitKneeNodes(void)
 	char user_name[10];
 	getlogin_r(user_name, 10);
 	string str_username = user_name;
-	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_pathproc/routes/sz929_mdf_cut_sp_nodes.yaml");
+	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_pathproc/routes/ych1008_mdf_cut_sp_nodes.yaml");
 
 #else
 	string path_name(sp_nodes_path);

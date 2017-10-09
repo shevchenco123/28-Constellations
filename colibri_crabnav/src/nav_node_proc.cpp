@@ -8,7 +8,7 @@ NavNodeProc::NavNodeProc()
 	char user_name[10];
 	getlogin_r(user_name, 10);
 	string str_username = user_name;
-	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_crabnav/path/sz929_mdf_cut_routes.yaml");
+	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_crabnav/path/ych1008_mdf_cut_routes.yaml");
 
 	ifstream fin_path(path_name.c_str());
 	if(fin_path.fail())
@@ -232,7 +232,7 @@ void NavNodeProc::SetupBranchMap(void)
 	char user_name[10];
 	getlogin_r(user_name, 10);
 	string str_username = user_name;
-	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_crabnav/path/sz929_mdf_cut_branch_map.yaml");
+	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_crabnav/path/ych1008_mdf_cut_branch_map.yaml");
 
 	nextnode_heading_map_.clear();	
 	
