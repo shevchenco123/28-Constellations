@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 		
 		pathProcObj.pub_robot_cmd_.publish(pathProcObj.robot_cmd_);
 		pathProcObj.pub_marker_.publish(pathProcObj.goalmark_list_);	
-		cout<<"robot cur_seg: "<<cur_seg<<endl;
+		//cout<<"robot cur_seg: "<<cur_seg<<endl;
 		
 		ros::spinOnce();	  
 		loop_rate.sleep();

@@ -891,8 +891,8 @@ void PathProc::HandleRecvRoute(void)
 {
 	AddTargetNode2KneeNodes(cur_route_.target_id);
 	DecomposeRoute(cur_route_.seg_list, updated_knee_nodes_, micro_seg_num_);
-	cout<<"+++ micro_seg_num_ : "<<micro_seg_num_<<endl;
-	cout<<"--- sub_seg_index : "<<sub_seg_index<<endl;
+	//cout<<"+++ micro_seg_num_ : "<<micro_seg_num_<<endl;
+	//cout<<"--- sub_seg_index : "<<sub_seg_index<<endl;
 	
 	if(micro_seg_num_ > 1)
 	{

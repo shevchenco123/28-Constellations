@@ -187,6 +187,61 @@ float* nav_action::StillRotatingAction(float* cur_yaw, float* ref_yaw, float & a
 	return action4cmd_vel;
 }
 
+float* nav_action::StillRotatingAction(float* cur_yaw, float* ref_yaw, float & angle_vel, float & tolerance, unsigned int* finish_flag)
+{
+
+	float yaw_delta = 0.0;
+	float delta_puv = 1;
+	int rot_dir = 1;
+
+	float tmp_diff = *ref_yaw - *cur_yaw;
+	
+	if(tmp_diff > 180)
+	{
+		yaw_delta = 360 - tmp_diff;
+		rot_dir = -1;
+	}
+	else if(tmp_diff < -180)
+	{
+		yaw_delta = 360 + tmp_diff;
+		rot_dir = 1;
+	}
+	else
+	{
+		yaw_delta = tmp_diff;
+		rot_dir = 1;
+	}
+
+	yaw_delta = yaw_delta * rot_dir;
+
+	action4cmd_vel[0] = 0.0;
+
+	if(abs(yaw_delta) > SLOW_ROT_ANGLE)
+	{
+
+		action4cmd_vel[1] = angle_vel * SgnOfData(&yaw_delta);			
+	}
+	else
+	{
+		delta_puv = abs(yaw_delta/SLOW_ROT_ANGLE);
+
+		action4cmd_vel[1] = angle_vel * SgnOfData(&yaw_delta) * SigmoidFunction(1, &delta_puv);	
+
+	}
+
+	if(abs(yaw_delta) <= tolerance)
+	{
+		*finish_flag = 1;
+		action4cmd_vel[1] = 0.0;	
+	}
+	else
+	{
+		*finish_flag = 0;
+	}
+
+	return action4cmd_vel;
+}
+
 
 int nav_action::SgnOfData(float* input)
 {

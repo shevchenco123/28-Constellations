@@ -30,6 +30,8 @@ local_nav::local_nav()
 		orintation_OK_flag = false;
 		approaching_flag = false;
 
+		cartodom_yaw = 0.0;
+
 		sub_carto_odom = nh_nav.subscribe<nav_msgs::Odometry>("/odom", 1, &local_nav::CartoOdomCallBack, this);
 		pub_apf_twist = nh_nav.advertise<geometry_msgs::Twist>("/t_cmd_vel", 1);
 
@@ -37,6 +39,8 @@ local_nav::local_nav()
 
 		safe_vel_sub4laser = nh_nav.subscribe<colibri_msgs::SafeVel>("/laser_safe_vel", 1, &local_nav::LaserSafeVelCallBack, this);
 		safe_vel_sub4ultra = nh_nav.subscribe<colibri_msgs::SafeVel>("/ultra_safe_vel", 1, &local_nav::UltraSafeVelCallBack, this);
+
+		sub_cartodom = nh_nav.subscribe<cartodom::Cartodom>("/cartodom", 1, &local_nav::CartodomCallback, this);
 
 }
 
@@ -61,6 +65,12 @@ void local_nav::CartoOdomCallBack(const nav_msgs::Odometry::ConstPtr& carto_odom
 	cur_robot_vel[1] = carto_odom->twist.twist.angular.z;
 	
 }
+
+void local_nav::CartodomCallback(const cartodom::Cartodom::ConstPtr & carto)
+{
+	cartodom_yaw = carto->yaw * RAD2DEG;
+}
+
 
 void local_nav::AmclPoseCallBack(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& amcl_pose)
 {

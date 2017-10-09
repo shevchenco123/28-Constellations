@@ -95,6 +95,18 @@ int main(int argc, char* argv[])
 	float ref_vel = 0.6;
 	int length_path = 0;
 	float diff_angle = 0.0;
+	
+	bool start_rot_flag = true;
+	float start_clock_rot = -45.0;
+	float start_anticlock_rot = 45.0;
+	float start_rot_angular = PI / 4.0;	
+	unsigned int clock_rot_flag = 0;
+	unsigned int anticlock_rot_flag = 0;
+	static bool clock_rot_finish = false;
+	static bool anticlock_rot_finish = false;
+	float start_heading = 0.0;
+	unsigned int start_rot_finish = 0;
+	float ang_tolerance = 8.0;
 
 	while (ros::ok())
 	{	
@@ -105,8 +117,45 @@ int main(int argc, char* argv[])
 			ros::spinOnce();
 			loop_rate.sleep();
 		}
+
+		if(delay_cnt >= DELAY_CNT_MAX && start_rot_flag)
+		{
+			ptr_action_cmd_t = actionObj.StillRotatingAction(&local4navObj.cartodom_yaw,&start_clock_rot, start_rot_angular, ang_tolerance, &clock_rot_flag);
+			if(clock_rot_flag == 1)
+			{
+				clock_rot_finish = true;
+			}
+			if(clock_rot_finish)
+			{
+				ptr_action_cmd_t = actionObj.StillRotatingAction(&local4navObj.cartodom_yaw,&start_anticlock_rot, start_rot_angular,ang_tolerance, &anticlock_rot_flag);
+			}
+			if(anticlock_rot_flag)
+			{
+				anticlock_rot_finish = true;
+			}
+			if(anticlock_rot_finish)
+			{
+				ptr_action_cmd_t = actionObj.StillRotatingAction(&local4navObj.cartodom_yaw,&start_heading, start_rot_angular, &start_rot_finish);
+			}
+
+			if(start_rot_finish == 1)
+			{
+				start_rot_flag = false;
+			}
+			cout<<"local4navObj.cartodom_yaw : "<<local4navObj.cartodom_yaw<<endl;
+			
+			local4navObj.apf_cmd_vel.linear.x = 0.0;
+			local4navObj.apf_cmd_vel.angular.z = *(ptr_action_cmd_t + 1);
+			local4navObj.LimitPubTwist(local4navObj.apf_cmd_vel);
+			
+			local4navObj.pub_apf_twist.publish(local4navObj.apf_cmd_vel);
+						
+			ros::spinOnce();
+			loop_rate.sleep();
+
+		}	
 		
-		if(delay_cnt >= DELAY_CNT_MAX)
+		if(start_rot_flag == false)
 		{
 			ROS_INFO("+++++++++ start +++++++++");
 

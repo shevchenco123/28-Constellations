@@ -4,6 +4,7 @@
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 
 #include "colibri_msgs/SafeVel.h"
+#include "cartodom/Cartodom.h"
 
 #ifndef _COLIBRI_LOCAL_NAV_H_
 #define _COLIBRI_LOCAL_NAV_H_
@@ -67,6 +68,10 @@ class local_nav
 
 		colibri_msgs::SafeVel ultra_safe_velocity;
 		ros::Subscriber safe_vel_sub4ultra;
+
+		float cartodom_yaw;
+		ros::Subscriber	sub_cartodom;
+
 		
 		local_nav();
 		~local_nav();
@@ -95,6 +100,7 @@ class local_nav
 	private:
 		
 		void CartoOdomCallBack(const nav_msgs::Odometry::ConstPtr& carto_odom);
+		void CartodomCallback(const cartodom::Cartodom::ConstPtr& carto);
 		void AmclPoseCallBack(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& amcl_pose);
 		void RobotPos2LaserPos(float* robot_pos, float* laser_x, float* laser_y);
 		int	SgnOfData(float* input);

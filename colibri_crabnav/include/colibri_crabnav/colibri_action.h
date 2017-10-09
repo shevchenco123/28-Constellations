@@ -39,6 +39,7 @@ class nav_action
 
 		float* StillRotatingAction(float* cur_yaw, float* ref_yaw, unsigned int* finish_flag);	
 		float* StillRotatingAction(float* cur_yaw, float* ref_yaw, float & angle_bound, unsigned int* finish_flag);
+		float* StillRotatingAction(float* cur_yaw, float* ref_yaw, float & angle_vel, float & tolerance, unsigned int* finish_flag);
 
 
 		float* CL4StillRotatingAction(float* cur_yaw, float* ref_yaw, unsigned int* finish_flag);
