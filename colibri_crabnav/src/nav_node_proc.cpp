@@ -189,7 +189,7 @@ void NavNodeProc::LoadBranchNode(void)
 	char user_name[10];
 	getlogin_r(user_name, 10);
 	string str_username = user_name;
-	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_crabnav/path/sz929_mdf_cut_sp_nodes.yaml");
+	path_name.assign("/home/" + str_username + "/colibri_ws/src/colibri_crabnav/path/ych1008_mdf_cut_sp_nodes.yaml");
 
 	branch_node_.clear();	
 	vector<int> ().swap(branch_node_);
